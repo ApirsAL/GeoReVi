@@ -1,0 +1,240 @@
+﻿<UserControl x:Class="GeoReVi.TransectDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" 
+             Height="Auto"
+             Width="Auto"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                          Storyboard.TargetProperty="Opacity"
+                          From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <!---Updating rock sample informations-->
+    <Border x:Name="MainBorder" 
+            CornerRadius="8"
+            Background="{StaticResource BackgroundVeryLightBrush}">
+        <Grid  HorizontalAlignment="Center" 
+                  Margin="2" 
+                  VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border     Grid.ColumnSpan="3"
+                        Grid.Row="0"
+                        CornerRadius="8,8,0,0"
+                        Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                        BorderBrush="{StaticResource ForegroundDarkBrush}"
+                        BorderThickness="1"
+                        Height="auto">
+                <StackPanel Orientation="Horizontal" 
+                        Margin="2,2,2,0" 
+                        Height="auto" 
+                        VerticalAlignment="Top">
+                    <TextBlock Text="Transect details"
+                           Style="{StaticResource HeaderTextInput}"/>
+                    <!--<Button Content="Cancel" Name="btnCancel" Command="{StaticResource CancelCommand}" FontSize="11" Width="80" Style="{StaticResource MainButton}"/>-->
+                </StackPanel>
+            </Border>
+
+            <StackPanel Grid.Column="0"
+                        Grid.Row="2"
+                        Margin="15,15,15,15"
+                        Height="Auto">
+            <GroupBox >
+                <GroupBox.Header>General information</GroupBox.Header>
+                <StackPanel HorizontalAlignment="Left">
+                    <DockPanel>
+                        <Label Content="Transect ID:" 
+
+                                   Style="{StaticResource inputLabel}" Margin="3,5,0,5"/>
+                        <TextBox HorizontalAlignment="Right"
+                                     IsEnabled="False"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traIdPk, Mode=TwoWay, 
+                                        NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label Content="Name:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="7,4,7,4" HorizontalAlignment="Stretch"/>
+                        <TextBox     IsEnabled="False"
+                                     HorizontalAlignment="Right"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                    </DockPanel>
+
+                    <DockPanel>
+                        <Label Content="Confidential:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                        <CheckBox x:Name="sampProjectTextBox" 
+                                     Content="" Grid.Column="1" 
+                                       HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Path=SelectedTransect.traConfidential, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
+                                       Width="20"/>
+                    </DockPanel>
+                    <DockPanel>
+                        <Label Content="Production date:" 
+                                   Style="{StaticResource inputLabel}"
+                                    Margin="3,4,0,4"/>
+                            <DatePicker SelectedDate="{Binding Path=SelectedTransect.traProductionDate, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" />
+                    </DockPanel>
+                </StackPanel>
+            </GroupBox>            
+            <GroupBox >
+                <GroupBox.Header>Transect information</GroupBox.Header>
+                <StackPanel HorizontalAlignment="Left">
+                    <DockPanel>
+                        <Label Content="Type:" 
+
+                                   Style="{StaticResource inputLabel}" Margin="3,5,0,5"/>
+                            <ComboBox Text="{Binding Path=SelectedTransect.traType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3">
+                                <ComboBoxItem Content="Reflexion seismic 2D"/>
+                                <ComboBoxItem Content="Refraction seismic 2D"/>
+                                <ComboBoxItem Content="Ground penetration Radar (GPR)"/>
+                                <ComboBoxItem Content="Geoelectrics"/>
+                            </ComboBox>
+                        </DockPanel>
+                    <DockPanel>
+                        <Label Content="Measurement device:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="7,4,7,4" HorizontalAlignment="Stretch"/>
+                        <TextBox   HorizontalAlignment="Right"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traMeasurementDevice, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                    </DockPanel>
+
+                    <DockPanel>
+                            <Label Content="Conducting company:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <TextBox   HorizontalAlignment="Right"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traMeasurementCompany, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                </StackPanel>
+            </GroupBox>
+                
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                          Grid.Row="2" 
+                        Grid.RowSpan="2"
+                        Margin="0,0,0,20">
+                <GroupBox 
+                          Margin="15">
+                    <GroupBox.Header>Spatial reference</GroupBox.Header>
+                    <StackPanel>
+                        <DockPanel>
+                            <Label Content="Length [m]:"
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4" />
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traLength, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Depth [m]:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4" />
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traDepthMeter, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Depth [s TWT]:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4" />
+                            <Image Source="/APIRS;component\Media\Icons\Symbols\info.png"
+                                   Width="16"
+                                   Height="Auto"
+                                   Stretch="Uniform">
+                                <Image.ToolTip>
+                                    <StackPanel Width="100">
+                                        <TextBlock Text="TWT = Two way travel time"
+                                                   TextWrapping="WrapWithOverflow"/>
+
+                                    </StackPanel>
+                                </Image.ToolTip>
+                            </Image>
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traDepthTWT, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="North end latitude [°]:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traLatNorthEnd, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="North end longitude [°]:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traLongNorthEnd, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="South end latitude [°]:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traLatSouthEnd, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="South end longitude [°]:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedTransect.traLongSouthEnd, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+                <local:ImageButton x:Name="btnUpdate"
+                                       Tag="Update"
+                                       Margin="40,0,0,0"
+                                   HorizontalAlignment="Right"
+                            ImageSource="/GeoReVi;component\Media\Icons\Save.png">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <cal:ActionMessage MethodName="Update">
+                            </cal:ActionMessage>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </local:ImageButton>
+            </StackPanel>
+            <GroupBox Header="Object orientation"
+                      Grid.Row="2"
+                      Grid.Column="2">
+                <Image Margin="10"
+                       Source="/GeoReVi;component\Media\Images\SubjectSpecific\OrientationTransect.png"
+                       MinWidth="400"
+                       MinHeight="300"
+                       MaxWidth="700"
+                       SnapsToDevicePixels="true"
+                       RenderOptions.BitmapScalingMode ="HighQuality"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       Height="Auto"/>
+            </GroupBox>
+        </Grid>
+    </Border>
+</UserControl>

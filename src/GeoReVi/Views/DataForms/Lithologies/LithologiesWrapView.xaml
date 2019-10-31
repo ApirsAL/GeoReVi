@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="GeoReVi.LithologiesWrapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <TabControl Background="Transparent"
+                    TabStripPlacement="Left"
+                    BorderThickness="0">
+            <TabItem Header="Facies types"
+                     DataContext="{Binding Children[0]}"
+                     Style="{StaticResource LeftSideTabItem}">
+                <ContentControl>
+                    <local:LithologyDetailsView Margin="-3"/>
+                </ContentControl>
+            </TabItem>
+            <TabItem Header="Architectural elements"
+                     DataContext="{Binding Children[1]}"
+                     Style="{StaticResource LeftSideTabItem}">
+                <local:ArchitecturalElementsDetailsView Margin="-3"/>
+            </TabItem>
+            <TabItem Header="Genetical elements"
+                     DataContext="{Binding Children[1]}"
+                     Style="{StaticResource LeftSideTabItem}">
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

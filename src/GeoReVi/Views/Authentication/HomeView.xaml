@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="GeoReVi.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             TextOptions.TextFormattingMode="Ideal">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                  Storyboard.TargetProperty="Opacity"
+                  From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <!---Control to provide scrolling funcitonality-->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Auto">
+        <Grid HorizontalAlignment="Stretch" 
+                            VerticalAlignment="Stretch"
+                            TextBlock.TextAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Background="{StaticResource ForegroundLightBrush}"
+                            CornerRadius="30"
+                            BorderBrush="{StaticResource ApirsMediumGrayBrush}"
+                            BorderThickness="1"
+                            Padding="15, 50, 15, 15"
+                            Width="350"
+                    MaxHeight="350"
+                            Margin="50, 50, 10, 10">
+                <StackPanel HorizontalAlignment="Center" MaxWidth="600" Width="auto">
+                    <TextBlock Text="Welcome to GeoReVi" 
+                                   FontSize="{StaticResource FontSizeLarge}" 
+                                   FontFamily="{StaticResource LatoBold}"
+                                   Foreground="{StaticResource ForegroundVeryDarkBrush}" 
+                                    Margin="0,0,0,20"
+                                   />
+                    <TextBlock Text="Geothermal Reservoir Virtualization"
+                                   FontFamily="{StaticResource LatoRegular}"
+                                   FontSize="{StaticResource FontSizeRegular}"
+                                   Foreground="{StaticResource ApirsMediumGrayBrush}"
+                                   Margin="20,20,20,20"
+                                   TextWrapping="Wrap"/>
+                    <TextBlock Text="Standardize, analyse and formalize your geoscientific data"
+                                   FontFamily="{StaticResource LatoRegular}"
+                                   FontSize="{StaticResource FontSizeRegular}"
+                                   Foreground="{StaticResource ApirsMediumGrayBrush}"
+                                   Margin="20,20,20,20"
+                                   TextWrapping="Wrap"/>
+                    <Button Style="{StaticResource HyperlinkButton}"
+                                Content="Documentation"
+                                cal:Message.Attach="[Event Click] = [Action OpenDocumentation]"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

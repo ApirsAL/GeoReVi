@@ -1,0 +1,154 @@
+﻿<UserControl x:Class="GeoReVi.ImportLocationValuesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid HorizontalAlignment="Stretch">
+        <Border CornerRadius="8"
+            Background="{StaticResource BackgroundVeryLightBrush}"
+            BorderThickness="0"
+            Visibility="{Binding IsStep1, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=true}" Margin="0,0,-432,0">
+            <Grid HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"
+                                  MinWidth="300"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"
+                                  MinWidth="300"/>
+                    <ColumnDefinition Width="*"
+                                  MinWidth="300"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Imported headers"
+                       Grid.Column="0"
+                       Grid.Row="0"
+                       Style="{StaticResource HeaderText}"
+                       Margin="20,20,0,5"/>
+                <TextBlock Text="Database headers"
+                       Grid.Column="2"
+                       Grid.Row="0"
+                       Style="{StaticResource HeaderText}"
+                       Margin="20,20,0,5"/>
+                <StackPanel Grid.Column="1"
+                        Grid.Row="1"
+                            VerticalAlignment="Center">
+                    <Button FontFamily="{StaticResource FontAwesome}"
+                            Content="&#xf061;"
+                            Tag="Map selected together"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            cal:Message.Attach="Connect">
+                    </Button>
+                    <Button FontFamily="{StaticResource FontAwesome}"
+                            Content="&#xf0d0;"
+                            Tag="Auto connect"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            cal:Message.Attach="AutoConnect">
+                    </Button>
+                </StackPanel>
+                <Border Grid.Column="0" 
+                Grid.Row="1"
+                    Margin="20,5"
+                    CornerRadius="10"
+                    Background="{StaticResource BackgroundVeryLightBrush}">
+                    <ListBox ItemsSource="{Binding Headers, NotifyOnSourceUpdated=True}"
+                         SelectedItem="{Binding Path=SelectedHeader}"
+                         IsSynchronizedWithCurrentItem="True">
+                        <ListBox.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey }" Color="{x:Static SystemColors.HighlightColor}" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey }" Color="{x:Static SystemColors.HighlightTextColor}" />
+                        </ListBox.Resources>
+                    </ListBox>
+                </Border>
+                <Border Grid.Column="2" 
+                Grid.Row="1"
+                    Margin="20,5"
+                    CornerRadius="10">
+                    <ListBox ItemsSource="{Binding Alias, NotifyOnSourceUpdated=True}"
+                         SelectedItem="{Binding Path=SelectedAlias}"
+                         IsSynchronizedWithCurrentItem="True">
+                        <ListBox.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey }" Color="{x:Static SystemColors.HighlightColor}" />
+                            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey }" Color="{x:Static SystemColors.HighlightTextColor}" />
+                        </ListBox.Resources>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding alAlias}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Border>
+                <Border Grid.Column="3"
+                    Grid.RowSpan="2"
+                    Width="auto"
+                    HorizontalAlignment="Left"
+                    Margin="20"
+                    Background="{StaticResource BackgroundVeryLightBrush}">
+                    <ScrollViewer>
+                        <StackPanel>
+                            <TextBlock Text="Mappings"
+                               Style="{StaticResource HeaderText}"/>
+                            <Button FontFamily="{StaticResource FontAwesome}" 
+                            FontSize="{StaticResource FontSizeSmall}"
+                                            Content="&#xf056;"
+                                Foreground="Red"
+                                            Tag="Remove selected mapping"
+                                            cal:Message.Attach="RemoveConnection"/>
+                            <ListBox ItemsSource="{Binding Mapping, NotifyOnSourceUpdated=True}"
+                                  SelectedItem="{Binding SelectedMapping}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                 MinWidth="200">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Path=String1}"
+                                                   Margin="10,2"/>
+                                            <TextBlock FontFamily="{StaticResource FontAwesome}" 
+                                                   Text="&#xf061;"
+                                                   VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Path=String2}"
+                                                   Margin="10,2"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <ProgressBar Minimum="0" 
+                                         Height="20"
+                                         Maximum="{Binding Path=TotalImorts}" 
+                                         Value="{Binding Path=ImportOneEntities.Count, Mode=OneWay}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+                <DockPanel Grid.Row="3"
+                        Grid.ColumnSpan="4"
+                       HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                        <Button Content="Cancel"
+                            MinWidth="80"
+                            Style="{StaticResource MainButton}"
+                            local:IsBusyProperty.Value="{Binding Loading}"
+                            cal:Message.Attach="Cancel"/>
+                        <Button Content="Import"
+                            MinWidth="80"
+                            Style="{StaticResource MainButton}"
+                            local:IsBusyProperty.Value="{Binding Loading}"
+                            cal:Message.Attach="Next"/>
+                    </StackPanel>
+                </DockPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

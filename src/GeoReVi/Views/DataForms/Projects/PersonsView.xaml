@@ -1,0 +1,116 @@
+﻿<UserControl x:Class="GeoReVi.PersonsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             Height="Auto" Width="Auto" >
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                          Storyboard.TargetProperty="Opacity"
+                          From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <!---List of participants-->
+    <Border CornerRadius="8"
+             Margin="5,0,5,5"
+             Background="{StaticResource BackgroundLightBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="Gray" Opacity="0.5"/>
+        </Border.Effect>
+        <Grid HorizontalAlignment="Stretch" 
+                      Margin="2" 
+                       VerticalAlignment="Top"
+                      Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0"
+                        CornerRadius="8,8,0,0"
+                        Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                        Height="auto">
+                <StackPanel Orientation="Horizontal" 
+                                    Margin="2,2,2,0" 
+                                    Height="auto" 
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Center">
+                    <TextBlock Text="Add a user"
+                               Style="{StaticResource HeaderTextInput}"/>
+                </StackPanel>
+            </Border>
+            <StackPanel Grid.Row="1" 
+                        Orientation="Horizontal">
+                <TextBox x:Name="Filter"
+                         Tag="Search"
+                         Margin="6"
+                         FontSize="{StaticResource FontSizeRegular}"
+                         Width="200"
+                         Text="{Binding TextFilter, Mode=TwoWay, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+                        
+            <ScrollViewer Grid.Row="2">
+                <ListView Margin="3"
+                               ItemsSource="{Binding FilteredPersons, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                               HorizontalContentAlignment="Center"
+                               HorizontalAlignment="Center">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn  Header="Mail">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock TextAlignment="Right"
+                                                           Text="{Binding Path=persUserName}" 
+                                                           Style="{StaticResource GridViewColumnTextStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Affiliation">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock TextAlignment="Right"
+                                                           Text="{Binding Path=persAffiliation}" 
+                                                           Style="{StaticResource GridViewColumnTextStyle}"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button FontFamily="{StaticResource FontAwesome}"
+                                                 Content="&#xf055;"
+                                                Tag="Add this user"
+                                                Width="30"
+                                                Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                Margin="0"
+                                                VerticalAlignment="Center">
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                    <cal:ActionMessage MethodName="SelectPerson">
+                                                        <cal:Parameter Value="{Binding Path=persIdPk}"/>
+                                                    </cal:ActionMessage>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </Button>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </ScrollViewer>
+        </Grid>
+    </Border>
+</UserControl>

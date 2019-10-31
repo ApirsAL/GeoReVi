@@ -1,0 +1,131 @@
+﻿<UserControl x:Class="GeoReVi.FilesListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="400">
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <Grid>
+                <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Top">
+                    <!---Displaying related files-->
+                    <GroupBox Header="Files">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <ScrollViewer>
+                                <ListView ItemsSource="{Binding Path=FileStore, 
+                                                                Mode=OneWay, 
+                                                                NotifyOnSourceUpdated=True,
+                                                                IsAsync=True}"
+                                                  SelectedItem="{Binding Path=SelectedFileStore}"
+                                                  >
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="File name">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock TextAlignment="Right"
+                                                                   Text="{Binding Path=name, Mode=OneWay}" 
+                                                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                            </ScrollViewer>
+
+                            <Border Background="{StaticResource BackgroundLightBrush}"
+                                            Opacity="0.6"
+                                            Visibility="{Binding Path=IsFileLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=False}">
+                                <TextBlock HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Text="Loading..."
+                                                   FontSize="{StaticResource FontSizeLarge}"/>
+                            </Border>
+                            <StackPanel Orientation="Horizontal"
+                                                Grid.Row="1"
+                                                Background="{StaticResource ButtonNormalBackground1}">
+                                <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf053;"
+                                                Tag="Previous"
+                                            Margin="15,5">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="PreviousFile">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <TextBlock Text="File "
+                                           Style="{StaticResource NavigationTextBlock}"/>
+                                <TextBox Text="{Binding SelectedFileIndex, Mode=TwoWay}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Width="Auto"
+                                                 Padding="2"/>
+                                <TextBlock Text=" of "
+                                           Style="{StaticResource NavigationTextBlock}"/>
+                                <TextBlock Text="{Binding CountFiles, Mode=OneWay}"
+                                           Style="{StaticResource NavigationTextBlock}"/>
+                                <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf054;"
+                                                Tag="Next"
+                                            Margin="15,5">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="NextFile">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf055;"
+                                                Tag="Add file"
+                                            Margin="15,5">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="UploadFile">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf146;"
+                                                Tag="Remove file"
+                                            Margin="15,5">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="DeleteFile">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf019;"
+                                                Tag="Download"
+                                                Margin="15,5">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="DownloadFile">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Template> 
+</UserControl>

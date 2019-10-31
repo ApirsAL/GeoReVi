@@ -1,0 +1,233 @@
+﻿<UserControl x:Class="GeoReVi.DatasetManagementAndVisualizationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:rh="http://schemas.rollinghours.com/wpf"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             x:Name="LoadParameterDataViewControl"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="400">
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <!---Displaying related charts-->
+            <Grid x:Name="ChartStackPan"
+                                Grid.ColumnSpan="3"
+                                        Grid.Row="3"
+                                Margin="6"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch">
+                <TabControl HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        MaxHeight="800">
+                    <TabItem Header="Univariate">
+                        <TabControl>
+                            <TabItem Header="Data">
+                                <Grid>
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                           
+                                            <MenuItem Header="Add data set to line chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToLineChart]"/>
+                                            <MenuItem Header="Add data set to variogram chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToVariogramChart]"/>
+                                            <MenuItem Header="Add data set to box-whisker chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToBoxWhiskerChart]"/>
+                                            <MenuItem Header="Add data set to bar chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToBarChart]"/>
+                                            <MenuItem Header="Add data set to 3D chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddTo3DChart]"/>
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                    <ContentControl cal:View.Model="{Binding SingleParameterViewModel}"/>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Charts">
+                                <Grid>
+                                    <TabControl VerticalAlignment="Stretch">
+                                        <TabItem Header="Log chart">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <StackPanel Margin="10" Orientation="Horizontal">
+                                                    <TextBlock Text="Direction"
+                                                                           FontWeight="DemiBold"
+                                                                           VerticalAlignment="Center"/>
+                                                    <ComboBox HorizontalAlignment="Left" 
+                                                                          VerticalAlignment="Center" 
+                                                                          MinWidth="100"
+                                                                          ItemsSource="{Binding Path=LineAndScatterChartViewModel.Lco.Direction, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                          SelectedValuePath="Value"
+                                                                          DisplayMemberPath="Description"
+                                                                          SelectedValue="{Binding Path=LineAndScatterChartViewModel.Lco.Direction, Mode=OneWayToSource}"
+                                                                          SelectedIndex="0"/>
+                                                </StackPanel>
+                                                <ContentControl  Grid.Row="1"
+                                            cal:View.Model="{Binding LineAndScatterChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Semi-variogram">
+                                            <Grid>
+                                                <ContentControl
+                                                    cal:View.Model="{Binding VariogramChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Box-Whisker-Chart">
+                                            <Grid>
+                                                <ContentControl
+                                                    cal:View.Model="{Binding BoxWhiskerChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Histogram">
+                                            <Grid>
+                                                <ContentControl
+                                                    cal:View.Model="{Binding BarChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="3D">
+                                            <Grid >
+                                                <ContentControl cal:View.Model="{Binding LineChart3DUnivariateViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                    </TabItem>
+                    <TabItem Header="Multivariate">
+                        <ScrollViewer>
+                            <TabControl HorizontalAlignment="Stretch"
+                                        MaxHeight="800">
+                                <TabItem Header="Data">
+                                    <Grid>
+                                        <Grid.ContextMenu>
+                                            <ContextMenu>
+
+                                                <MenuItem Header="Add data set to cluster"
+                                              cal:Message.Attach="[Event Click] = [Action AddToCluster]"/>
+                                                <MenuItem Header="Add data set to PCA"
+                                              cal:Message.Attach="[Event Click] = [Action AddToPca]"/>
+                                                <MenuItem Header="Add data set to Sammon"
+                                              cal:Message.Attach="[Event Click] = [Action AddToSammon]"/>
+                                                <MenuItem Header="Add data set to Correlation"
+                                              cal:Message.Attach="[Event Click] = [Action AddToCorrelation]"/>
+                                            </ContextMenu>
+                                        </Grid.ContextMenu>
+                                        <Grid>
+                                            <ContentControl
+                                                        cal:View.Model="{Binding MultiParameterViewModel}"/>
+                                        </Grid>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Statistics">
+                                    <TabControl>
+                                        <TabItem Header="Correlation analysis">
+                                            <Grid>
+                                                <ContentControl
+                                                        cal:View.Model="{Binding CorrelationHelperViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Principal Component Analysis">
+                                            <Grid>
+                                                <ContentControl
+                                            cal:View.Model="{Binding PrincipalComponentAnalysisViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Sammon Projection">
+                                            <Grid>
+                                                <ContentControl
+                                            cal:View.Model="{Binding SammonProjectionViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Cluster Analysis">
+                                            <Grid>
+                                                <ContentControl cal:View.Model="{Binding ClusteringViewModel}"/>
+                                                <Button Style="{StaticResource HyperlinkButton}"
+                                                    Content="Refresh data"
+                                                    HorizontalAlignment="Right"
+                                                    FontSize="{StaticResource FontSizeVerySmall}"
+                                                    VerticalAlignment="Top"
+                                                    Margin="0"
+                                                    cal:Message.Attach="AddDataToCluster"/>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
+                                </TabItem>
+                                <TabItem Header="Charts">
+                                    <Grid>
+                                        <TabControl>
+                                            <TabItem Header="Scatter chart">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Margin="10"
+                                                    Orientation="Horizontal">
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=SelectedLineChartViewModel.Lco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=SelectedLineChartViewModel.Lco.ColumnList[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateScatterCharts]"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=SelectedLineChartViewModel.Lco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=SelectedLineChartViewModel.Lco.ColumnList[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateScatterCharts]"/>
+                                                    </StackPanel>
+                                                    <ContentControl Grid.Row="1"
+                                            cal:View.Model="{Binding SelectedLineChartViewModel}"/>
+                                                </Grid>
+                                            </TabItem>
+                                            <TabItem Header="Ternary chart">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Margin="10"
+                                                    Orientation="Horizontal">
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=TernaryChartViewModel.Tco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=TernaryChartViewModel.Tco.ColumnList[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=TernaryChartViewModel.Tco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=TernaryChartViewModel.Tco.ColumnList[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=TernaryChartViewModel.Tco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=TernaryChartViewModel.Tco.ColumnList[2], Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
+
+                                                    </StackPanel>
+                                                    <ContentControl Grid.Row="1"
+                                            cal:View.Model="{Binding TernaryChartViewModel}"/>
+                                                </Grid>
+                                            </TabItem>
+                                        </TabControl>
+                                    </Grid>
+                                </TabItem>
+                            </TabControl>
+                        </ScrollViewer>
+                    </TabItem>
+
+                </TabControl>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

@@ -1,0 +1,479 @@
+﻿    <Window x:Class="GeoReVi.ShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:GeoReVi"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cal="http://www.caliburnproject.org"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        Title="GeoReVi"
+        Icon="/GeoReVi;component\Media\Icons\GeoReVi.ico"
+        Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen" 
+        WindowState="Normal" 
+        TextOptions.TextFormattingMode="Display"
+        >
+    <Window.Resources>
+        <Storyboard x:Key="RadialStoryBoard" 
+                    RepeatBehavior="Forever" 
+                    AutoReverse="True">
+            <ColorAnimation   Storyboard.TargetProperty="(Border.Background).(LinearGradientBrush.GradientStops)[0].(GradientStop.Color)" 
+                              Storyboard.TargetName="MainBorder"
+                              Duration="0:0:3"
+                              From="Gray"
+                              To="Red">
+            </ColorAnimation>
+            <ColorAnimation   Storyboard.TargetProperty="(Border.Background).(LinearGradientBrush.GradientStops)[1].(GradientStop.Color)" 
+                              Storyboard.TargetName="MainBorder"
+                              Duration="0:0:3"
+                              From="DarkGray"
+                              To="Green">
+            </ColorAnimation>
+            <ColorAnimation   Storyboard.TargetProperty="(Border.Background).(LinearGradientBrush.GradientStops)[2].(GradientStop.Color)" 
+                              Storyboard.TargetName="MainBorder"
+                              Duration="0:0:3"
+                              From="White"
+                              To="Blue">
+            </ColorAnimation>
+        </Storyboard>
+    </Window.Resources>
+    <!--<Window.Triggers>
+        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource RadialStoryBoard}"/>
+        </EventTrigger>
+    </Window.Triggers>-->
+    <!---Shortcut triggers which will be forwarded to other view models-->
+    <i:Interaction.Triggers>
+        <local:InputBindingTrigger>
+            <local:InputBindingTrigger.InputBinding>
+                <KeyBinding Modifiers="Ctrl" Key="S"/>
+            </local:InputBindingTrigger.InputBinding>
+            <cal:ActionMessage MethodName="ForwardShortCut">
+                <cal:Parameter Value="S"/>
+            </cal:ActionMessage>
+        </local:InputBindingTrigger>
+        <local:InputBindingTrigger>
+            <local:InputBindingTrigger.InputBinding>
+                <KeyBinding Modifiers="Ctrl" Key="N"/>
+            </local:InputBindingTrigger.InputBinding>
+            <cal:ActionMessage MethodName="ForwardShortCut">
+                <cal:Parameter Value="N"/>
+            </cal:ActionMessage>
+        </local:InputBindingTrigger>
+        <local:InputBindingTrigger>
+            <local:InputBindingTrigger.InputBinding>
+                <KeyBinding Modifiers="Ctrl" Key="D"/>
+            </local:InputBindingTrigger.InputBinding>
+            <cal:ActionMessage MethodName="ForwardShortCut">
+                <cal:Parameter Value="D"/>
+            </cal:ActionMessage>
+        </local:InputBindingTrigger>
+        <local:InputBindingTrigger>
+            <local:InputBindingTrigger.InputBinding>
+                <KeyBinding Modifiers="Ctrl" Key="Right"/>
+            </local:InputBindingTrigger.InputBinding>
+            <cal:ActionMessage MethodName="ForwardShortCut">
+                <cal:Parameter Value="Right"/>
+            </cal:ActionMessage>
+        </local:InputBindingTrigger>
+        <local:InputBindingTrigger>
+            <local:InputBindingTrigger.InputBinding>
+                <KeyBinding Modifiers="Ctrl" Key="Left"/>
+            </local:InputBindingTrigger.InputBinding>
+            <cal:ActionMessage MethodName="ForwardShortCut">
+                <cal:Parameter Value="Left"/>
+            </cal:ActionMessage>
+        </local:InputBindingTrigger>
+    </i:Interaction.Triggers>
+
+    <DockPanel>
+        <Border DockPanel.Dock="Top"
+                Visibility="{Binding IsLoggedInOrLocalMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <StackPanel>
+                <Grid Height="25">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                    <Border Grid.ColumnSpan="3"
+                            Background="{StaticResource ApirsMediumGrayBrush}">
+                    </Border>
+                    <Menu Grid.Column="0"
+                  Style="{StaticResource {x:Type Menu}}"
+                 VerticalAlignment="Center">
+                        <MenuItem x:Name="StartMenuItem"
+                                  Header="Start"
+                                  Style="{StaticResource BaseStyleMenuItem}">
+                            <MenuItem Header="Home"
+                                   x:Name="HomeMenuItem">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="Home" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             MaxWidth="25"
+                                                     MaxHeight="25"/>
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="HomeView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <Separator/>
+                            <MenuItem Header="Projects"
+                                      x:Name="ProjectsMenuItem">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="CalendarCheckOutline" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             MaxWidth="25"
+                                                     MaxHeight="25"/>
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="ProjectsView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <Separator Margin="3,0"/>
+                            <MenuItem Header="Update LocalDB"
+                                      x:Name="LocalDatabase"
+                                      cal:Message.Attach="UpdateLocalDB"
+                                      Visibility="{Binding Path=LocalMode, NotifyOnSourceUpdated=True, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True}">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="CalendarCheckOutline" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             MaxWidth="25"
+                                                     MaxHeight="25"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+
+                        <MenuItem x:Name="DataMenuItem"
+                                  Header="Data"
+                                  Style="{StaticResource BaseStyleMenuItem}">
+                            <MenuItem x:Name="GeologicObjects"
+                                      Header="Geological objects">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="AreaChart" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="ObjectDetailsView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem x:Name="Lithology"
+                                      Header="Lithology">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="Cubes" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="LithologyDetailsView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem x:Name="Samples"
+                                      Header="Samples">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="Gavel" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="RockSampleDetailsView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem x:Name="Measurements"
+                                      Header="Measurements">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="BalanceScale" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="MeasurementWrapView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem x:Name="Maps"
+                                  Header="Maps"
+                                  Style="{StaticResource BaseStyleMenuItem}">
+                            <MenuItem x:Name="MapDisplay"
+                                      Header="Global map">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="MapMarker" 
+                                             SnapsToDevicePixels="True"
+                                                 Stretch="Uniform"
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="MapViewWrapView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem x:Name="Help"
+                                  Header="Help"
+                                  Style="{StaticResource BaseStyleMenuItem}">
+                            <MenuItem x:Name="Documentation"
+                                      Header="Documentation">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="Question" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="OpenDocumentation"></cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem x:Name="About"
+                                      Header="About GeoReVi">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="QuestionCircleOutline" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="AboutView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                        </MenuItem>
+                        <MenuItem BorderThickness="0"
+                          BorderBrush="Transparent"
+                          VerticalContentAlignment="Center"
+                          Style="{StaticResource BaseStyleMenuItem}">
+                            <MenuItem.Header>
+                                <fa:ImageAwesome Icon="UserCircle" 
+                                                 Margin="0,0,0,-2"
+                                                 Height="18"
+                                                 SnapsToDevicePixels="True"
+                                                 Stretch="Uniform" 
+                                                 Foreground="{StaticResource ForegroundLightBrush}"
+                                                 />
+                            </MenuItem.Header>
+                            <MenuItem Header="My Account"
+                                  x:Name="MyAccount"
+                                  HorizontalAlignment="Left">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="User" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="LoadView">
+                                            <cal:Parameter Value="UserView"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem Header="Logout"
+                              x:Name="LogoutMenuItem">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="SignOut" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"
+                                             />
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Logout">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                            <MenuItem Header="Exit"
+                              x:Name="ShutDownMenuItem">
+                                <MenuItem.Icon>
+                                    <fa:ImageAwesome Icon="TimesCircle" 
+                                             SnapsToDevicePixels="True"
+                                             Stretch="Uniform" 
+                                             Foreground="{StaticResource ForegroundLightBrush}"/>
+                                </MenuItem.Icon>
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Exit">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </MenuItem>
+                        </MenuItem>
+
+                    </Menu>
+                    <Grid Grid.Column="1"
+                          HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding Path=UserFullName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                               HorizontalAlignment="Right"
+                                   FontSize="11"
+                               FontWeight="Bold"
+                               Margin="0"
+                               Foreground="{StaticResource WordBlueBrush}"
+                               Style="{StaticResource NavigationTextBlock}"/>
+                    </Grid>
+                </Grid>
+                <Separator Background="Black"
+                           Margin="0"
+                           Height="0.5"/>
+            </StackPanel>
+        </Border>
+        <StatusBar Height="25"
+                   DockPanel.Dock="Bottom" 
+                   Margin="0"
+                   Background="{StaticResource ApirsMediumGrayBrush}"
+                   BorderThickness="0">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Grid.Column="2">
+                <Border Visibility="{Binding Path=IsLoading, NotifyOnSourceUpdated=True, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True}">
+                    <Grid>
+                    <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Loading data"
+                                   Foreground="{StaticResource ForegroundLightBrush}"
+                                   VerticalAlignment="Center"
+                                   FontSize="{StaticResource FontSizeSmall}"></TextBlock>
+                            <fa:ImageAwesome Icon="Refresh" 
+                                         Spin="True"
+                                         SnapsToDevicePixels="True"
+                                         Margin="10,0"
+                                         Height="15" 
+                                         Width="15" 
+                                         Foreground="{StaticResource ForegroundLightBrush}"
+                                         />                        
+                            <Button Style="{StaticResource HyperlinkButton}"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Content="Stop loading"
+                                    Margin="10,0"
+                                    Padding="0"
+                                    cal:Message.Attach="StopLoading">
+                                
+                            </Button>
+                    </StackPanel>
+                </Grid>
+                </Border>
+            </StatusBarItem>
+        </StatusBar>
+        <Border x:Name="MainBorder">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0.5,1" 
+                                     EndPoint="0.5,0" 
+                                     MappingMode="RelativeToBoundingBox"
+                                     Opacity="0.4">
+                    <GradientStop x:Name="GradientStop1" Color="Gray" Offset="0.1" />
+                    <GradientStop x:Name="GradientStop2" Color="DarkGray" Offset="0.5" />
+                    <GradientStop x:Name="GradientStop3" Color="White" Offset="1" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Expander Grid.Column="0"
+                          Template="{StaticResource HorizontalExpanderTemp}"
+                          ExpandDirection="Right"
+                          DataContext="{Binding SideMenuViewModel}"
+                          Background="DarkGray"
+                          >
+                    <local:SideMenuView Width="300"
+                                        Background="{StaticResource BackgroundVeryLightBrush}"
+                                        Visibility="{Binding IsLoggedInOrLocalMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                    </local:SideMenuView>
+                </Expander>
+                <Border Grid.Column="1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        BorderThickness="1,1,1,0">
+                    <TextBlock Text="GeoReVi – Geological Reservoir Virtualization"
+                               Style="{StaticResource HeaderText}"
+                               FontSize="14"
+                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                
+                               Margin="10"
+                               />
+                </Border>
+                <Border Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom">
+                    <TextBlock Text="''The greatest use of practical science is discovery''"
+                               Style="{StaticResource HeaderText}"
+                               FontSize="13"
+                               FontStyle="Italic"
+                               FontFamily="Arial"
+                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+
+                               Margin="10"
+                               />
+                </Border>
+                <ContentControl x:Name="ActiveItem" 
+                                Grid.Column="1"></ContentControl>
+            </Grid>
+        </Border>
+
+    </DockPanel>
+</Window>

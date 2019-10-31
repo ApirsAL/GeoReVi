@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="GeoReVi.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" 
+             TextOptions.TextFormattingMode="Display"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                  Storyboard.TargetProperty="Opacity"
+                  From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <!--Acutal grid of this page-->
+    <Grid>
+        <!---Control to provide scrolling funcitonality-->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            TextBlock.TextAlignment="Center">
+                <Border Background="{StaticResource ForegroundLightBrush}"
+                            CornerRadius="80"
+                            Padding="15, 50, 15, 15"
+                            Width="400"
+                            BorderBrush="{StaticResource ApirsMediumGrayBrush}"
+                            BorderThickness="1"
+                            Margin="50, 50, 50, 10"
+                            SnapsToDevicePixels="True">
+                    <StackPanel HorizontalAlignment="Center" MaxWidth="600" Width="auto">
+                        <TextBlock Text="Sign in" 
+                                   Style="{StaticResource HeaderText}"
+                                   Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                   FontFamily="{StaticResource LatoBold}"
+                                   FontSize="35"
+                                   HorizontalAlignment="Left"
+                                   Margin="0,0,0,20"
+                                   />
+                        <TextBlock TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   Height="auto"
+                                   MaxWidth="300"
+                                   Margin="0,20,0,20"
+                                   FontSize="{StaticResource FontSizeRegular}"
+                                   Text="Create, manage and control information from your geoscientific projects"
+                                   Foreground="{StaticResource ApirsMediumGrayBrush}"/>
+
+                        <!---Mail adress-->
+                        <TextBox x:Name="Email"
+                                 Tag="Email"
+                                 FontSize="{StaticResource FontSizeRegular}">
+                        </TextBox>
+
+                        <TextBlock Text="Password"
+                                   TextAlignment="Left"
+                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                        <!---Password-->
+                        <PasswordBox Tag="Password"
+                                     x:Name="pwBox"
+                                     Width="Auto"
+                                     Height="24"
+                                     Padding="0,5,0,5"
+                                     Margin="0,5,0,5"
+                                     VerticalContentAlignment="Center"
+                                     Password="">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="KeyDown">
+                                    <cal:ActionMessage MethodName="Login">
+                                        <cal:Parameter Value="{Binding ElementName=pwBox}"/>
+                                        <cal:Parameter Value="$eventArgs"/>
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </PasswordBox>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="85*"></ColumnDefinition>
+                                <ColumnDefinition Width="20*"/>
+                                <ColumnDefinition Width="123*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <!---Next button-->
+                            <Button Style="{StaticResource HyperlinkButton}"
+                                    Grid.Column="0"
+                                    FontSize="{StaticResource FontSizeSmall}"
+                                    Content="Local mode"
+                                    Tag="Use in local mode"
+                                    cal:Message.Attach="UseLocalMode">
+                            </Button>
+                            <!---Next button-->
+                            <Button Style="{StaticResource MainButton}"
+                                    FontFamily="{StaticResource LatoRegular}"
+                                    Grid.Column="2"
+                                    Content="Sign in"
+                                    FontSize="{StaticResource FontSizeRegular}"
+                                    Tag="Sign In"
+                                    local:IsBusyProperty.Value="{Binding IsLoginRunning}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Login">
+                                            <cal:Parameter Value="{Binding ElementName=pwBox}"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                            </Button>
+                        </Grid>
+
+                        <!--Route to the register page-->
+                        <Button Style="{StaticResource HyperlinkButton}" 
+                                Content="I need an account">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <cal:ActionMessage MethodName="LoadRegisterView">
+                                        <cal:Parameter Value="RegisterView"/>
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+
+                            </i:Interaction.Triggers>
+                        </Button>
+
+                    </StackPanel>
+                </Border>
+
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

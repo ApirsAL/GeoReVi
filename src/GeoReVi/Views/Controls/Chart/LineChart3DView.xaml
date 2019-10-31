@@ -1,0 +1,603 @@
+﻿<UserControl x:Class="GeoReVi.LineChart3DView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <ScrollViewer Margin="2"
+                              Grid.Column="1">
+                    <DockPanel>
+                        <ToolBarTray HorizontalAlignment="Stretch"
+                                          DockPanel.Dock="Top"
+                                         Orientation="Horizontal">
+                            <ToolBar Background="Transparent"
+                                         HorizontalContentAlignment="Left">
+                                <DockPanel HorizontalAlignment="Left">
+                                    <CheckBox IsChecked="{Binding Ch3d.ExcludeOrigin, Mode=TwoWay}"
+                                              Margin="5"
+                                                  ToolTip="Exclude origin"
+                                              VerticalAlignment="Center"/>
+                                    <Grid>
+                                        <fa:ImageAwesome Icon="Bullseye"
+                                                             Height="15"
+                                                             Margin="2,0"/>
+                                        <fa:ImageAwesome Icon="Crosshairs"
+                                                         Height="15"
+                                                         Margin="2,0"/>
+                                    </Grid>
+                                </DockPanel>
+                                <DockPanel Margin="0,0"
+                                               HorizontalAlignment="Left">
+                                    <CheckBox IsChecked="{Binding Ch3d.ShallRender, Mode=TwoWay}"
+                                              Margin="5"
+                                                  ToolTip="Draw chart"
+                                              VerticalAlignment="Center"/>
+                                    <fa:ImageAwesome Icon="PencilSquareOutline"
+                                                         Height="15"
+                                                         Margin="2,0"/>
+                                </DockPanel>
+                                <DockPanel Margin="4,0"
+                                               VerticalAlignment="Center">
+                                    <CheckBox IsChecked="{Binding Ch3d.IsColorMap, Mode=TwoWay}"
+                                                  Margin="5"/>
+                                    <fa:ImageAwesome Icon="PaintBrush"
+                                                         Height="15"
+                                                         Margin="2,0"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,10"
+                                               HorizontalAlignment="Stretch">
+                                    <fa:ImageAwesome Icon="ArrowsH"
+                                                         Width="20"                                                         
+                                                         Margin="4,0"/>
+                                    <Slider HorizontalAlignment="Left" 
+                                            Width="40"
+                                            Maximum="1400"
+                                            ClipToBounds="True"
+                                            Minimum="400"
+                                            Value="500"
+                                            Margin="0,3"
+                                            VerticalAlignment="Center"
+                                            x:Name="ChartWidthSlider"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Text="{Binding ElementName=ChartWidthSlider, Path=Value, StringFormat=N2}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+                                    <Label Content="px"
+                                                   Style="{StaticResource inputLabel}"/>
+
+                                </DockPanel>
+                                <DockPanel Margin="0,0">
+                                    <fa:ImageAwesome Icon="ArrowsV"
+                                                         Height="20"
+                                                         Width="20"
+                                                         Margin="4,0"/>
+                                    <Slider Width="40"
+                                            Maximum="2000"
+                                            HorizontalAlignment="Left"
+                                            ClipToBounds="True"
+                                            Minimum="400"
+                                            Margin="0,3"
+                                            VerticalAlignment="Center"
+                                            Name="ChartHeightSlider"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Text="{Binding ElementName=ChartHeightSlider, Path=Value, StringFormat=N2}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Width="50"
+                                                 Margin="0"/>
+                                    <Label Content="px"
+                                               Style="{StaticResource inputLabel}"/>
+                                </DockPanel>
+                            </ToolBar>
+                        </ToolBarTray>
+
+                        <TabControl>
+                            <TabItem Header="3D">
+                                <Grid>                        
+                                    <local:Line3DChartControl HorizontalAlignment="Left"
+                                            VerticalAlignment="Top"
+                                            Width="{Binding ElementName=ChartWidthSlider, 
+                                                            Path=Value, 
+                                                            Mode=OneWay,
+                                                            NotifyOnSourceUpdated=True, 
+                                                            UpdateSourceTrigger=PropertyChanged, 
+                                                            FallbackValue=500}"
+                                            Height="{Binding ElementName=ChartHeightSlider, 
+                                                             Path=Value, 
+                                                             Mode=OneWay,
+                                                             NotifyOnSourceUpdated=True}"
+                                            DataCollection="{Binding Path=Ch3d.DataCollection}" 
+                                            Xmin="{Binding Path=Ch3d.Xmin, FallbackValue=-1}" 
+                                            Xmax="{Binding Path=Ch3d.Xmax, FallbackValue=1}" 
+                                            XTick="{Binding Path=Ch3d.XTick, FallbackValue=0.5}" 
+                                            Ymin="{Binding Path=Ch3d.Ymin, FallbackValue=-1}" 
+                                            Ymax="{Binding Path=Ch3d.Ymax, FallbackValue=1}" 
+                                            YTick="{Binding Path=Ch3d.YTick, FallbackValue=0.5}" 
+                                            Zmin="{Binding Path=Ch3d.Zmin, FallbackValue=-1}"  
+                                            Zmax="{Binding Path=Ch3d.Zmax, FallbackValue=1}" 
+                                            ZTick="{Binding Path=Ch3d.ZTick, FallbackValue=0.5}" 
+                                            XLabel="{Binding Path=Ch3d.XLabel, FallbackValue=X}" 
+                                            YLabel="{Binding Path=Ch3d.YLabel, FallbackValue=Y}" 
+                                            ZLabel="{Binding Path=Ch3d.ZLabel, FallbackValue=Z}" 
+                                            Title="{Binding Path=Ch3d.Title, FallbackValue=Title}" 
+                                            IsBubble="{Binding Path=Ch3d.IsColorMap, FallbackValue=true}"
+                                            ColorMap="{Binding Path=Ch3d.ColorMap}"
+                                            GridlinePattern="{Binding Path=Ch3d.GridColumnlinePattern, FallbackValue=Solid}" 
+                                            GridlineColor="{Binding Path=Ch3d.GridlineColor, FallbackValue=Black}" 
+                                            GridLineThickness="{Binding Path=Ch3d.GridlineThickness, FallbackValue=1}" 
+                                            Elevation="{Binding Path=Ch3d.Elevation,FallbackValue=30}" 
+                                            Azimuth="{Binding Path=Ch3d.Azimuth, FallbackValue=-30}"
+                                            IsLegend="{Binding Path=Ch3d.HasLegend, FallbackValue=false}"
+                                            LegendPosition="{Binding Path=Ch3d.LegendPosition, FallbackValue=West}"/>
+                                    <Button Style="{StaticResource IconButton}"
+                                DockPanel.Dock="Top"
+                                    FontFamily="{StaticResource FontAwesome}"
+                                    ToolTip="Open in separate window"
+                                    FontSize="14"
+                                    Margin="0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top"
+                                    Content="{StaticResource FontAwesomeNewWindow}"
+                                    cal:Message.Attach="OpenInWindow"/>
+                                    <StackPanel>
+                                    <DockPanel Margin="4,0"
+                                               VerticalAlignment="Top"
+                                           HorizontalAlignment="Right">
+                                        <TextBlock Text="Elevation"
+                                                                           Margin="4,0"/>
+                                        <TextBox Text="{Binding Ch3d.Elevation, Mode=TwoWay}"
+                                                                         Margin="4,0"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="4,0"
+                                           HorizontalAlignment="Right"
+                                               VerticalAlignment="Top">
+                                        <TextBlock Text="Azimuth"
+                                                                           Margin="4,0"/>
+                                        <TextBox Text="{Binding Ch3d.Azimuth, Mode=TwoWay}"
+                                                                         Margin="4,0"/>
+                                    </DockPanel>
+                                </StackPanel>
+                                    
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Variogram">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Button Content="Calculate variogram"
+                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            cal:Bind.ModelWithoutContext="{Binding VariogramChartViewModel.Vco}"
+                                            cal:Message.Attach="CreateVariogramChart"
+                                            />
+                                    <ContentControl Grid.Row="1" 
+                                                    cal:View.Model="{Binding VariogramChartViewModel}"/>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+
+                    </DockPanel>
+                </ScrollViewer>
+                <Grid Grid.Column="0">
+                    <Expander Template="{StaticResource HorizontalExpanderTemp}"
+                                                      ExpandDirection="Left"
+                                                      IsExpanded="False">
+                        <TabControl TabStripPlacement="Left"
+                                                      Width="250">
+                            <TabItem Style="{StaticResource LeftSideTabItem}"
+                                                             Header="Chart style">
+                                <TabControl TabStripPlacement="Left"
+                                                      Width="215">
+                                    <TabItem Header="Axes"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Auto"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <Button Content="Auto subdivision"
+                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            cal:Bind.ModelWithoutContext="{Binding Ch3d}"
+                                            cal:Message.Attach="SubdivideAxes"
+                                            />
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="X axis"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel Margin="6">
+                                                            <TextBlock Text="X max"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.Xmax, Mode=TwoWay}"/>
+                                                            <TextBlock Text="X min"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.Xmin, Mode=TwoWay}"/>
+                                                            <TextBlock Text="X tick"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.XTick, Mode=TwoWay}"/>
+                                                            <DockPanel>
+                                                                <TextBlock Text="X axis log"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Ch3d.IsXLog, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Y axis"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel>
+                                                            <TextBlock Text="Y max"
+                                                                       FontWeight="DemiBold"
+                                                                                   Margin="0,5,0,0"/>
+                                                            <TextBox Text="{Binding Ch3d.Ymax, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Y min"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.Ymin, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Y tick"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.YTick, Mode=TwoWay}"/>
+
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Z axis"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel Margin="6">
+                                                            <TextBlock Text="Z max"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.Zmax, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Z min"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.Zmin, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Z tick"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.ZTick, Mode=TwoWay}"/>
+                                                            <DockPanel>
+                                                                <TextBlock Text="Z axis log"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Ch3d.IsZLog, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                            
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Gridlines"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Gridlines"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel Margin="5">
+                                                            <TextBlock Text="Gridline pattern"
+                                                                       FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=Ch3d.GridlinePattern, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Ch3d.GridlinePattern, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                            <TextBlock Text="Line color"
+                                                                                       FontWeight="DemiBold"/>
+                                                            <xctk:ColorPicker  SelectedColor="{Binding Path=Ch3d.GridlineColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+
+                                                            </xctk:ColorPicker>
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="X grid"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Path=Ch3d.IsXGrid, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="Y grid"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Path=Ch3d.IsYGrid, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="Z grid"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Path=Ch3d.IsZGrid, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Legend"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <Expander ExpandDirection="Down"
+                                                                              Header="Colorbar"
+                                                                              FontWeight="Bold"
+                                                                              Margin="3"
+                                                                              Template="{StaticResource StretchyExpanderTemp}"
+                                                                              IsExpanded="False">
+                                                        <StackPanel>
+                                                            <TextBlock Text="Max"
+                                                                           FontWeight="DemiBold"
+                                                                                       Margin="0,5,0,0"/>
+                                                            <TextBox Text="{Binding Ch3d.ColorMap.Ymax, Mode=TwoWay}">
+                                                            </TextBox>
+                                                            <TextBlock Text="Min"
+                                                                           FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Ch3d.ColorMap.Ymin, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Color bar"
+                                                                           FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                                  VerticalAlignment="Center" 
+                                                                  MinWidth="60"
+                                                                  ItemsSource="{Binding Path=Ch3d.ColorMap.ColormapBrushType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                  SelectedValuePath="Value"
+                                                                  DisplayMemberPath="Description"
+                                                                  SelectedValue="{Binding Path=Ch3d.ColorMap.ColormapBrushType, Mode=TwoWay}"
+                                                                                  SelectedIndex="0"/>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Legend"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel  Margin="5">
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="Has legend"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Ch3d.HasLegend, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                            <TextBlock Text="Legend position"
+                                                                       Margin="0,5"
+                                                                       FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=Ch3d.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Ch3d.LegendPosition, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                </TabControl>
+
+                            </TabItem>
+                            <TabItem Style="{StaticResource LeftSideTabItem}"
+                                                             Header="Data series">
+                                <TabControl TabStripPlacement="Left"
+                                                                    Width="215"
+                                                                    ItemsSource="{Binding Ch3d.DataCollection, NotifyOnSourceUpdated=True}"
+                                                                    SelectedIndex="0">
+                                    <TabControl.ItemContainerStyle>
+                                        <Style TargetType="TabItem" BasedOn="{StaticResource LeftSideTabItem}">
+
+                                        </Style>
+                                    </TabControl.ItemContainerStyle>
+                                    <TabControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border>
+                                                <TextBlock Text="{Binding SeriesName}">
+                                                    <TextBlock.LayoutTransform>
+                                                        <RotateTransform Angle="270"/>
+                                                    </TextBlock.LayoutTransform>
+                                                </TextBlock>
+                                            </Border>
+                                        </DataTemplate>
+                                    </TabControl.ItemTemplate>
+
+                                    <!-- Change ContentTemplate to control main content -->
+                                    <TabControl.ContentTemplate>
+                                        <DataTemplate>
+                                            <Grid VerticalAlignment="Stretch"
+                                                                          Background="{StaticResource ForegroundLightBrush}">
+                                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Disabled"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                                    <StackPanel>
+                                                        <Expander ExpandDirection="Down"
+                                                                          Header="Data"
+                                                                          FontWeight="Bold"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                            <StackPanel  Margin="5">
+                                                                <TextBlock Text="Series name"
+                                                                                               Margin="0,5"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding SeriesName, Mode=TwoWay}"/>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                                                          Header="Line"
+                                                                          FontWeight="Bold"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                            <StackPanel  Margin="5">
+                                                                <TextBlock Text="Line pattern"
+                                                                       FontWeight="DemiBold"/>
+                                                                <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=LinePattern, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=LinePattern, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                <TextBlock Text="Fill color"
+                                                                                               Margin="0,5"
+                                                                               FontWeight="DemiBold"/>
+                                                                <xctk:ColorPicker  SelectedColor="{Binding Path=LineColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                                       Width="140"
+                                                                                                       HorizontalContentAlignment="Left">
+                                                                </xctk:ColorPicker>
+
+                                                                <TextBlock Text="Line thickness"
+                                                                                               Margin="0,5"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding LineThickness, Mode=TwoWay}"/>
+
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                                                          Header="Symbol"
+                                                                          FontWeight="Bold"
+                                                                                      DataContext="{Binding Symbols, NotifyOnSourceUpdated=True, Mode=TwoWay}"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                            <StackPanel  Margin="5">
+                                                                <StackPanel  Margin="5">
+                                                                    <TextBlock Text="Symbol type"
+                                                                                            Margin="0,5"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <ComboBox HorizontalAlignment="Left" 
+                                                                                                      VerticalAlignment="Center" 
+                                                                                                      MinWidth="60"
+                                                                                                      ItemsSource="{Binding Path=SymbolType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                                                      SelectedValuePath="Value"
+                                                                                                      DisplayMemberPath="Description"
+                                                                                                      SelectedValue="{Binding Path=SymbolType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                                      Text="Description"
+                                                                                                      SelectedIndex="1"/>
+                                                                    <TextBlock Text="Fill color"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <xctk:ColorPicker  SelectedColor="{Binding Path=FillColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+                                                                    </xctk:ColorPicker>
+                                                                    <TextBlock Text="Stroke color"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <xctk:ColorPicker  SelectedColor="{Binding Path=BorderColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+                                                                    </xctk:ColorPicker>
+                                                                    <TextBlock Text="Symbol size"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding SymbolSize, Mode=TwoWay}"/>
+                                                                    <TextBlock Text="Border thickness"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding BorderThickness, Mode=TwoWay}"/>
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                    </StackPanel>
+                                                </ScrollViewer>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </TabControl.ContentTemplate>
+                                </TabControl>
+                            </TabItem>
+                            <TabItem Header="Interpolation"
+                                     Style="{StaticResource LeftSideTabItem}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Auto"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                    <Border Background="{StaticResource ForegroundLightBrush}">
+                                        <StackPanel MinWidth="30">
+                                            <Expander ExpandDirection="Down"
+                                                                          Header="Interpolation"
+                                                                          FontWeight="Bold"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                <StackPanel Margin="6">
+                                                    <TextBlock Text="Interpolation method"
+                                                                       FontWeight="DemiBold"/>
+                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=Ch3d.SpatialInterpolationHelper.InterpolationMethod, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Ch3d.SpatialInterpolationHelper.InterpolationMethod, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                    <TextBlock Text="Bins x direction"
+                                                                       FontWeight="DemiBold"/>
+                                                    <TextBox Text="{Binding Path=Ch3d.SpatialInterpolationHelper.BinsX, Mode=TwoWay}"/>
+                                                    <TextBlock Text="Bins y direction"
+                                                                       FontWeight="DemiBold"/>
+                                                    <TextBox Text="{Binding Path=Ch3d.SpatialInterpolationHelper.BinsY, Mode=TwoWay}"/>
+                                                    <TextBlock Text="Bins z direction"
+                                                                       FontWeight="DemiBold"/>
+                                                    <TextBox Text="{Binding Path=Ch3d.SpatialInterpolationHelper.BinsZ, Mode=TwoWay}"/>
+                                                    <TextBlock Text="Interpolated points"
+                                                                       FontWeight="DemiBold"/>
+                                                    <TextBlock Text="{Binding Path=Ch3d.SpatialInterpolationHelper.DiscretizedLocationValues.Count, Mode=OneWay}"/>
+                                                    <TextBlock Text="Power parameter"
+                                                                       FontWeight="DemiBold"/>
+                                                    <TextBox Text="{Binding Path=Ch3d.SpatialInterpolationHelper.Power, Mode=TwoWay}"/>
+                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Bind.ModelWithoutContext="{Binding Path=Ch3d}"
+                                            cal:Message.Attach="DiscretizeAndInterpolateDataSet"
+                                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Content="Compute interpolation"/>
+                                                </StackPanel>
+                                            </Expander>
+                                        </StackPanel>
+                                    </Border>
+                                </ScrollViewer>
+                            </TabItem>
+                        </TabControl>
+                    </Expander>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

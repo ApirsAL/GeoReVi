@@ -1,0 +1,1117 @@
+﻿<UserControl x:Class="GeoReVi.LineAndScatterChartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:core="clr-namespace:GeoReVi;assembly=GeoReVi.Core"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="400">
+    <ScrollViewer>
+        <Grid  x:Name="LineChartGrid">
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Export chart"
+                   Click="MenuItem_Click">
+                    </MenuItem>
+                    <MenuItem Header="Save chart object"
+                          cal:Message.Attach="[Event Click]=[Action SaveChartObject]">
+
+                    </MenuItem>
+                    <MenuItem Header="Load chart object"
+                          cal:Message.Attach="[Event Click]=[Action LoadChartObject]">
+
+                    </MenuItem>
+                    <Separator HorizontalAlignment="Stretch"/>
+                </ContextMenu>
+            </Grid.ContextMenu>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer Margin="2,2"
+                              Grid.Column="1"
+                      VerticalAlignment="Stretch"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+                <DockPanel Grid.Column="0">
+                    <Expander DockPanel.Dock="Bottom"
+                              ExpandDirection="Down"
+                              IsExpanded="False">
+                        <ToolBarTray HorizontalAlignment="Stretch"
+                                          DockPanel.Dock="Top"
+                                         Orientation="Horizontal">
+                            <ToolBar Background="Transparent"
+                                         HorizontalContentAlignment="Left">
+                                <DockPanel Margin="0,0"
+                                               HorizontalAlignment="Left">
+                                    <CheckBox IsChecked="{Binding Lco.ShallRender, Mode=TwoWay}"
+                                              Margin="5"
+                                                  ToolTip="Draw chart"
+                                              VerticalAlignment="Center"/>
+                                    <fa:ImageAwesome Icon="PencilSquareOutline"
+                                                         Height="15"
+                                                         Margin="2,0"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,10"
+                                               HorizontalAlignment="Stretch">
+                                    <fa:ImageAwesome Icon="ArrowsH"
+                                                         Width="20"                                                         
+                                                         Margin="4,0"/>
+                                    <Slider HorizontalAlignment="Left" 
+                                            Width="40"
+                                            Maximum="1400"
+                                            ClipToBounds="True"
+                                            Minimum="200"
+                                            Margin="0,3"
+                                            VerticalAlignment="Center"
+                                            x:Name="ChartWidthSlider"
+                                                Value="{Binding Lco.ChartWidth, Delay=300, Mode=TwoWay}"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Text="{Binding ElementName=ChartWidthSlider, Path=Value, StringFormat=N2,Mode=TwoWay}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+                                    <Label Content="px"
+                                                   Style="{StaticResource inputLabel}"/>
+
+                                </DockPanel>
+                                <DockPanel Margin="0,0">
+                                    <fa:ImageAwesome Icon="ArrowsV"
+                                                         Height="20"
+                                             Width="20"
+                                                         Margin="4,0"/>
+                                    <Slider Width="40"
+                                            Maximum="2000"
+                                            HorizontalAlignment="Left"
+                                            ClipToBounds="True"
+                                            Minimum="200"
+                                            Margin="0,3"
+                                            VerticalAlignment="Center"
+                                            Name="ChartHeightSlider"
+                                                Value="{Binding Lco.ChartHeight, Delay=300, Mode=TwoWay}"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Text="{Binding ElementName=ChartHeightSlider, Path=Value, StringFormat=N2}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Width="50"
+                                                 Margin="0"/>
+                                    <Label Content="px"
+                                               Style="{StaticResource inputLabel}"/>
+                                </DockPanel>
+                            </ToolBar>
+                        </ToolBarTray>
+                    </Expander>
+                    <Button Style="{StaticResource IconButton}"
+                                DockPanel.Dock="Left"
+                                    FontFamily="{StaticResource FontAwesome}"
+                                    ToolTip="Refresh"
+                                    FontSize="14"
+                                    Margin="0"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Content="{StaticResource FontAwesomeNewWindow}"
+                                    cal:Bind.ModelWithoutContext="{Binding Lco}"
+                                    cal:Message.Attach="CreateChart"/>
+                    <Grid DockPanel.Dock="Top"
+                              Name="ChartGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Column="1"
+                                  Grid.Row="0"
+                                  HorizontalAlignment="Stretch">
+                            <TextBlock Text="{Binding Path=Lco.Title}"
+                                           HorizontalAlignment="Center">
+                            </TextBlock>
+
+                        </Grid>
+                        <DockPanel Grid.Column="0"
+                           Grid.Row="1"
+                          VerticalAlignment="Stretch">
+                            <Grid VerticalAlignment="Stretch">
+                                <TextBlock Text="{Binding Path=Lco.YLabel}"
+                                               VerticalAlignment="Center">
+                                    <TextBlock.LayoutTransform>
+                                        <RotateTransform Angle="270"/>
+                                    </TextBlock.LayoutTransform>
+                                </TextBlock>
+
+                            </Grid>
+                            <ItemsControl ItemsSource="{Binding Path=Lco.YLabels}"
+                                              MaxHeight="{Binding Path=Lco.ChartHeight}"
+                                          VirtualizingPanel.IsVirtualizing="True">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1">
+                                        </UniformGrid>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Text}"
+                                                       Foreground="Transparent"
+                                                       Margin="5,0,5,0"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DockPanel>
+                        <StackPanel Grid.Column="1"
+                           Grid.Row="2"
+                          Margin="10"
+                          VerticalAlignment="Stretch"
+                                        HorizontalAlignment="Center">
+                            <ItemsControl ItemsSource="{Binding Path=Lco.XLabels}"
+                                              MaxWidth="100"
+                                          VirtualizingPanel.IsVirtualizing="True">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1">
+                                        </UniformGrid>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                                               FontWeight="DemiBold"
+                                                       Foreground="Transparent"
+                                               VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Grid HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Path=Lco.XLabel}"
+                                                   HorizontalAlignment="Center">
+                                </TextBlock>
+
+                            </Grid>
+                        </StackPanel>
+                        <Border Grid.Column="1"
+                      Grid.Row="1"
+                                    Margin="0"
+                                Padding="5,5,100,5">
+                            <Grid Name="ChartContainerGrid"
+                                  Height="{Binding Path=Lco.ChartHeight}"
+                                   Width="{Binding Path=Lco.ChartWidth}">
+                                <!--
+    	This ItemsControl presents the colored Symbols.
+        
+        The data-template that defines the visuals for each rectangle is in the 
+        resources section at the start of this file.
+        -->
+                                <Rectangle Width="{Binding Path=Lco.ChartWidth}"
+                                           Height="{Binding Path=Lco.ChartHeight}"
+                                           Stroke="Black"
+                                           StrokeThickness="1"/>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.XGridlines}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              Grid.Column="0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <Polyline
+                                                       Stroke="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                                    AncestorType={x:Type UserControl}}, Path=DataContext.Lco.GridlineColor}"
+                                                       StrokeThickness="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                                        AncestorType={x:Type UserControl}}, Path=DataContext.Lco.GridlineThickness}"
+                                                       Points="{Binding Path=Points}"
+                                                        Visibility="{Binding IsXGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                </Polyline>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.YGridlines}"
+                                              VirtualizingPanel.IsVirtualizing="True" 
+                                              Grid.Column="0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <Polyline
+                                                       Stroke="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type UserControl}}, Path=DataContext.Lco.GridlineColor}"
+                                                       StrokeThickness="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type UserControl}}, Path=DataContext.Lco.GridlineThickness}"
+                                                       Points="{Binding Path=Points}"
+                                                        Visibility="{Binding IsYGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                </Polyline>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.XTicks}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              Grid.Column="0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <Polyline
+                                                       Stroke="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
+                                                       StrokeThickness="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickThickness}"
+                                                       Points="{Binding Path=Points}">
+                                                </Polyline>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.YTicks}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              Grid.Column="0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <Polyline
+                                                       Stroke="{Binding RelativeSource={RelativeSource FindAncestor, 
+AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
+                                                       StrokeThickness="1"
+                                                       Points="{Binding Path=Points}">
+                                                </Polyline>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.XLabels}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              Grid.Column="0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <TextBlock Text="{Binding Text}"
+                                                           FontWeight="DemiBold"
+                                                               Canvas.Left="{Binding X}"
+                                                               Canvas.Top="{Binding Y}"/>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.YLabels}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              Grid.Column="0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <TextBlock Text="{Binding Text}"
+                                                               FontWeight="DemiBold"
+                                                               Canvas.Left="{Binding X}"
+                                                               Canvas.Top="{Binding Y}"/>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.DataCollection, NotifyOnSourceUpdated=True}"
+                                              VirtualizingPanel.IsVirtualizing="True">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Grid/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border>
+                                                <Grid x:Name="DataCollectionControl">
+                                                    <Canvas>
+                                                        <Polyline  Stroke="{Binding LineColor}"
+                                                                  StrokeThickness="{Binding LineThickness}">
+                                                            <Polyline.Points>
+                                                                <MultiBinding Converter="{StaticResource LocationValueToPointCollectionConverter}">
+                                                                    <Binding Path="LinePoints" />
+                                                                    <Binding Path="Symbols.SymbolSize" />
+                                                                </MultiBinding>
+                                                            </Polyline.Points>
+                                                        </Polyline>
+                                                    </Canvas>
+                                                    <ItemsControl ItemsSource="{Binding Path=LinePoints}"
+                                                              VirtualizingPanel.IsVirtualizing="True"
+                                                                  ScrollViewer.CanContentScroll="True">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Canvas>
+                                                                    <Polyline Stroke="Black"
+                                                                                   StrokeThickness="1"
+                                                                                   HorizontalAlignment="Stretch"
+                                                                                   VerticalAlignment="Stretch"/>
+                                                                </Canvas>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <ItemsControl ItemsSource="{Binding Path=LinePoints}"
+                                                                  >
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <Canvas>
+                                                                    <Rectangle Stroke="Black"
+                                                                                   StrokeThickness="1"
+                                                                                   HorizontalAlignment="Stretch"
+                                                                                   VerticalAlignment="Stretch"/>
+                                                                    <Rectangle Fill="{Binding Brush}"
+                                                                                               Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               Stretch="Uniform"
+                                                                                                   Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                           Canvas.Left="{Binding X}"
+                                                                           Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                            Canvas.Top="{Binding Y}"
+                                                                               Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Box}">
+                                                                    </Rectangle>
+                                                                    <Ellipse Fill="{Binding Brush}"
+                                                                                               Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                         Stretch="Uniform"
+                                                                                                                                                                                   Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                           Canvas.Left="{Binding X}"
+                                                                           Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                            Canvas.Top="{Binding Y}"
+                                                                               Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Dot}">
+
+                                                                    </Ellipse>
+                                                                    <Polygon Points="0.1,1.2 0.6,0.1 1.2,1.2"
+                                                                                            Fill="{Binding Brush}"
+                                                                                         Stretch="Uniform"
+                                                                                                                                                                                   Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                           Canvas.Left="{Binding X}"
+                                                                           Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                            Canvas.Top="{Binding Y}"
+                                                                               Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}"
+                                                                                         Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Triangle}"/>
+
+                                                                    <Polygon Points="0,0 0.5,0 0.25,0.25"
+                                                                                             Fill="{Binding Brush}"
+                                                                                               Stretch="Uniform"
+                                                                                                                                                                                           Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                           Canvas.Left="{Binding X}"
+                                                                           Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                            Canvas.Top="{Binding Y}"
+                                                                               Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}"
+                                                                                                 Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=InvertedTriangle}"/>
+                                                                    <Polygon Points="0.5,0 1,0.50, 0.5,1.00 0,0.5"
+                                                                                                Fill="{Binding Brush}"
+                                                                                               Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               Stretch="Uniform"
+                                                                                                                                                                                           Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                           Canvas.Left="{Binding X}"
+                                                                           Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                            Canvas.Top="{Binding Y}"
+                                                                               Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}"
+                                                                                                 StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Diamond}"/>
+                                                                    <Polygon Points="1.0,0.2 1.0,0.7 1.7,0.7 1.2,1.0 1.4,1.5 0.9,1.2 0.4,1.5 0.6,1.0 0.1,0.7 0.7,0.7"
+                                                                                               Fill="{Binding Brush}"
+                                                                                         Stretch="Uniform"   
+                                                                                                                                                                                   Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                           Canvas.Left="{Binding X}"
+                                                                           Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                            Canvas.Top="{Binding Y}"
+                                                                               Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}"
+                                                                                         Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Star}"/>
+
+
+                                                                    <Grid       Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                           Canvas.Left="{Binding X}"
+                                                                           Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                            Canvas.Top="{Binding Y}"
+                                                                               Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}" >
+                                                                        <Line X1="0" Y1="0" X2="1.00" Y2="1.0" 
+                                                                                                  VerticalAlignment="Stretch"
+                                                                                               Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
+                                                                        <Line X1="0" Y1="1" X2="1" Y2="0" 
+                                                                                                  HorizontalAlignment="Stretch"
+                                                                                               Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
+                                                                    </Grid>
+                                                                    <Grid>
+                                                                        <Line X1="0" Y1="0.50" X2="1.00" Y2="0.50" 
+                                                                                                  VerticalAlignment="Stretch"
+                                                                                               Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
+                                                                        <Line X1="0.50" Y1="0" X2="0.50" Y2="1.00" 
+                                                                                                  HorizontalAlignment="Stretch"
+                                                                                               Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                                               StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                                               Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
+                                                                    </Grid>
+                                                                </Canvas>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Path=Lco.ColorMap.ColormapBrushes}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                              Visibility="{Binding Path=Lco.IsColorMap, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <Rectangle Fill="{Binding Brush}"
+                                                       Height="{Binding Height}"
+                                                       Width="20"
+                                                       Canvas.Top="{Binding Y}"
+                                                       Canvas.Left="{Binding X}"/>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <ItemsControl ItemsSource="{Binding Lco.ColorMap.Labels}"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                               Visibility="{Binding Path=Lco.IsColorMap, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas>
+                                                <TextBlock Text="{Binding Text}"
+                                                   FontWeight="DemiBold"
+                                                    Canvas.Left="{Binding X}"
+                                                    Canvas.Top="{Binding Y}"/>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <Grid Width="100"
+                                      Height="Auto"
+                                      VerticalAlignment="Top"
+                                      HorizontalAlignment="Left">
+                                    <Rectangle VerticalAlignment="Stretch"
+                                           HorizontalAlignment="Stretch"
+                                           Stroke="Black"
+                                               Fill="White"
+                                           StrokeThickness="1"/>
+                                    <ItemsControl ItemsSource="{Binding Path=Lco.DataCollection, NotifyOnSourceUpdated=True}"
+                                              VirtualizingPanel.IsVirtualizing="True">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="1"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <DockPanel>
+                                                    <Grid Width="10"
+                                                          Height="10">
+                                                        <Canvas>
+                                                            <Polyline  Stroke="{Binding LineColor}"
+                                                                      StrokeThickness="{Binding LineThickness}"
+                                                                       Points="0,5 10,5">
+                                                            </Polyline>
+                                                            <Rectangle Fill="{Binding Path=Symbols.FillColor}"
+                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                          Width="5"
+                                                                          Height="5"
+                                                                          Opacity="{Binding Path=Symbols.Opacity}"
+                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
+                                                                          Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Box}">
+                                                            </Rectangle>
+                                                            <Ellipse Fill="{Binding Path=Symbols.FillColor}"
+                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                     Canvas.Left="2"
+                                                                     Canvas.Top="2"
+                                                                          Width="5"
+                                                                          Height="5"                                                                          Opacity="{Binding Path=Symbols.Opacity}"
+                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
+                                                                          Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Dot}">
+                                                            </Ellipse>
+                                                            <Polygon Points="0.1,1.2 0.6,0.1 1.2,1.2"
+                                                                          Fill="{Binding Path=Symbols.FillColor}"
+                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                          Width="5"
+                                                                          Height="5"
+                                                                          Opacity="{Binding Path=Symbols.Opacity}"
+                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
+                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Triangle}"/>
+
+                                                            <Polygon Points="0,0 0.5,0 0.25,0.25"
+                                                                        Fill="{Binding Path=Symbols.FillColor}"
+                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                          Width="5"
+                                                                          Height="5"
+                                                                          Opacity="{Binding Path=Symbols.Opacity}"
+                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
+                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=InvertedTriangle}"/>
+                                                            <Polygon Points="5,2.5 7.5,5, 5,7.5 2.5,5"
+                                                                        Fill="{Binding Path=Symbols.FillColor}"
+                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                          Width="10"
+                                                                          Height="10"
+                                                                          Opacity="{Binding Path=Symbols.Opacity}"
+                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
+                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Diamond}"/>
+                                                            <Polygon Points="1.0,0.2 1.0,0.7 1.7,0.7 1.2,1.0 1.4,1.5 0.9,1.2 0.4,1.5 0.6,1.0 0.1,0.7 0.7,0.7"
+                                                                         Fill="{Binding Path=Symbols.FillColor}"
+                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                          Width="5"
+                                                                          Height="5"
+                                                                          Opacity="{Binding Path=Symbols.Opacity}"
+                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
+                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Star}"/>
+
+
+                                                            <Grid       Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                                   Canvas.Left="0"
+                                                                                   Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
+                                                                                    Canvas.Top="0"
+                                                                                       Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}" >
+                                                                <Line X1="0" Y1="0" X2="1.00" Y2="1.0" 
+                                                                          VerticalAlignment="Stretch"
+                                                                          Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                          StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
+                                                                <Line X1="0" Y1="1" X2="1" Y2="0" 
+                                                                           HorizontalAlignment="Stretch"
+                                                                            Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                         StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
+                                                            </Grid>
+                                                            <Grid>
+                                                                <Line X1="0" Y1="0.50" X2="1.00" Y2="0.50" 
+                                                                             VerticalAlignment="Stretch"
+                                                                          Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                          StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
+                                                                <Line X1="0.50" Y1="0" X2="0.50" Y2="1.00" 
+                                                                             HorizontalAlignment="Stretch"
+                                                                          Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
+                                                                          StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
+                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
+                                                            </Grid>
+
+                                                        </Canvas>
+                                                    </Grid>
+                                                    <TextBlock Text="{Binding SeriesName}"
+                                                               Margin="10,0"/>
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+                </DockPanel>
+            </ScrollViewer>
+            <Grid Grid.Column="0"
+                      Grid.RowSpan="2">
+                <Expander Template="{StaticResource HorizontalExpanderTemp}"
+                                                      ExpandDirection="Left"
+                                                      IsExpanded="False">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Auto"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Stretch">
+                        <TabControl TabStripPlacement="Left"
+                                                      Width="250">
+                            <TabItem Style="{StaticResource LeftSideTabItem}"
+                                                             Header="Chart style">
+                                <TabControl TabStripPlacement="Left"
+                                                      Width="215">
+                                    <TabItem Header="Labels"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Disabled"
+                                                                      MaxHeight="460"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Labels"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False"
+                                                                                              HorizontalContentAlignment="Left">
+                                                        <StackPanel Margin="4">
+                                                            <TextBlock Text="Title"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.Title, Mode=TwoWay}"/>
+                                                            <TextBlock Text="X label"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.XLabel, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Y label"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.YLabel, Mode=TwoWay}"/>
+
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Axes"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Auto"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="SubdivideAxes"
+                                                        cal:Bind.ModelWithoutContext="{Binding Lco}"
+                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Subdivide axes"
+                                    HorizontalAlignment="Left"
+                                    Margin="5"/>
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="X axis"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel Margin="6">
+                                                            <TextBlock Text="X max"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Path=Lco.Xmax, Mode=TwoWay}"/>
+                                                            <TextBlock Text="X min"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.Xmin, Mode=TwoWay}"/>
+                                                            <TextBlock Text="X tick"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.XTick, Mode=TwoWay}"/>
+                                                            <DockPanel>
+                                                                <TextBlock Text="X axis log"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Lco.IsXLog, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Y axis"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel>
+                                                            <TextBlock Text="Y max"
+                                                                       FontWeight="DemiBold"
+                                                                                   Margin="0,5,0,0"/>
+                                                            <TextBox Text="{Binding Lco.Ymax, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Y min"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.Ymin, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Y tick"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.YTick, Mode=TwoWay}"/>
+                                                            <DockPanel>
+                                                                <TextBlock Text="Y axis log"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Lco.IsYLog, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Gridlines"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Gridlines"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel Margin="5">
+                                                            <TextBlock Text="Gridline pattern"
+                                                                       FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=Lco.GridlinePattern, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Lco.GridlinePattern, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                            <TextBlock Text="Line color"
+                                                                                       FontWeight="DemiBold"/>
+                                                            <xctk:ColorPicker  SelectedColor="{Binding Path=Lco.GridlineColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+
+                                                            </xctk:ColorPicker>
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="Vertical grid"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Lco.IsYGrid, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="Horizontal grid"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Lco.IsXGrid, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Legend"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Legend"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel  Margin="5">
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="Has legend"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Lco.HasLegend, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                            <TextBlock Text="Legend position"
+                                                                                               Margin="0,5"
+                                                                       FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=Lco.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Lco.LegendPosition, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Expander ExpandDirection="Down"
+                                                                              Header="Colorbar"
+                                                                              FontWeight="Bold"
+                                                                              Margin="3"
+                                                                              Template="{StaticResource StretchyExpanderTemp}"
+                                                                              IsExpanded="False">
+                                                        <StackPanel>
+                                                            <DockPanel>
+                                                                <TextBlock Text="Is color map"
+                                                                               FontWeight="DemiBold"
+                                                                                           Margin="0,5,0,0"/>
+                                                                <CheckBox IsChecked="{Binding Path=Lco.IsColorMap, Mode=TwoWay}"
+                                                                                         VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+                                                            <TextBlock Text="Max"
+                                                                           FontWeight="DemiBold"
+                                                                                       Margin="0,5,0,0"/>
+                                                            <TextBox Text="{Binding Path=Lco.ColorMap.Ymax, Mode=TwoWay}">
+                                                            </TextBox>
+                                                            <TextBlock Text="Min"
+                                                                           FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Path=Lco.ColorMap.Ymin, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Color bar"
+                                                                           FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                                  VerticalAlignment="Center" 
+                                                                  MinWidth="60"
+                                                                  ItemsSource="{Binding Path=Lco.ColorMap.ColormapBrushType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                  SelectedValuePath="Value"
+                                                                  DisplayMemberPath="Description"
+                                                                      IsSynchronizedWithCurrentItem="True"
+                                                                  SelectedValue="{Binding Path=Lco.ColorMap.ColormapBrushType, Mode=TwoWay}"
+                                                                                  SelectedIndex="0"/>
+                                                            <TextBlock Text="Label subdivisions"
+                                                                           FontWeight="DemiBold"
+                                                                                       Margin="0,5,0,0"/>
+                                                            <TextBox Text="{Binding Lco.ColorMap.LabelSubdivisions, Mode=TwoWay}">
+                                                            </TextBox>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                    <Expander ExpandDirection="Down"
+                                                                          Header="Visibility range"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                        <StackPanel Margin="6">
+                                                            <DockPanel Margin="0,5">
+                                                                <TextBlock Text="Color map filter active"
+                                                                           FontWeight="DemiBold"/>
+                                                                <CheckBox IsChecked="{Binding Lco.ColorMapFilterActive, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                            </DockPanel>
+
+                                                            <TextBlock Text="Maximum value"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.MaximumVisibility, Mode=TwoWay}"/>
+                                                            <TextBlock Text="Minimum value"
+                                                                       FontWeight="DemiBold"/>
+                                                            <TextBox Text="{Binding Lco.MinimumVisibility, Mode=TwoWay}"/>
+                                                        </StackPanel>
+                                                    </Expander>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Convex hull"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <StackPanel MinWidth="30">
+                                                    <DockPanel>
+                                                        <TextBlock Text="Show convex hull"
+                                                                           FontWeight="DemiBold"/>
+                                                        <CheckBox IsChecked="{Binding Lco.ShowConvexHull, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                    </DockPanel>
+                                                </StackPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                </TabControl>
+
+                            </TabItem>
+                            <TabItem Style="{StaticResource LeftSideTabItem}"
+                                                             Header="Data series">
+                                <TabControl TabStripPlacement="Left"
+                                                                    Width="215"
+                                                                    ItemsSource="{Binding Path=Lco.DataCollection, NotifyOnSourceUpdated=True}"
+                                                                    SelectedIndex="0">
+                                    <TabControl.ItemContainerStyle>
+                                        <Style TargetType="TabItem" BasedOn="{StaticResource LeftSideTabItem}">
+
+                                        </Style>
+                                    </TabControl.ItemContainerStyle>
+                                    <TabControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border>
+                                                <TextBlock Text="{Binding SeriesName}">
+                                                    <TextBlock.LayoutTransform>
+                                                        <RotateTransform Angle="270"/>
+                                                    </TextBlock.LayoutTransform>
+                                                </TextBlock>
+                                            </Border>
+                                        </DataTemplate>
+                                    </TabControl.ItemTemplate>
+
+                                    <!-- Change ContentTemplate to control main content -->
+                                    <TabControl.ContentTemplate>
+                                        <DataTemplate>
+                                            <Grid VerticalAlignment="Stretch"
+                                                                          Background="{StaticResource ForegroundLightBrush}">
+                                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Disabled"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                                    <StackPanel>
+                                                        <Expander ExpandDirection="Down"
+                                                                          Header="Data"
+                                                                          FontWeight="Bold"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                            <StackPanel  Margin="5">
+                                                                <TextBlock Text="Series name"
+                                                                                               Margin="0,5"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding SeriesName, Mode=TwoWay}"/>
+                                                                <DockPanel>
+                                                                    <TextBlock Text="Show labels"
+                                                                               FontWeight="DemiBold"/>
+                                                                    <CheckBox IsChecked="{Binding ShowPointLabels, Mode=TwoWay}"
+                                                                                          HorizontalAlignment="Right"/>
+                                                                </DockPanel>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                                                          Header="Line"
+                                                                          FontWeight="Bold"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                            <StackPanel  Margin="5">
+                                                                <TextBlock Text="Line pattern"
+                                                                       FontWeight="DemiBold"/>
+                                                                <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=LinePattern, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=LinePattern, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                <TextBlock Text="Fill color"
+                                                                                               Margin="0,5"
+                                                                               FontWeight="DemiBold"/>
+                                                                <xctk:ColorPicker  SelectedColor="{Binding Path=LineColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                                       Width="140"
+                                                                                                       HorizontalContentAlignment="Left">
+                                                                </xctk:ColorPicker>
+
+                                                                <TextBlock Text="Line thickness"
+                                                                                               Margin="0,5"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding LineThickness, Mode=TwoWay}"/>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                                                          Header="Symbol"
+                                                                          FontWeight="Bold"
+                                                                                      DataContext="{Binding Symbols, NotifyOnSourceUpdated=True, Mode=TwoWay}"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                            <StackPanel  Margin="5">
+                                                                <StackPanel  Margin="5">
+                                                                    <TextBlock Text="Symbol type"
+                                                                                            Margin="0,5"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <ComboBox HorizontalAlignment="Left" 
+                                                                                                      VerticalAlignment="Center" 
+                                                                                                      MinWidth="60"
+                                                                                                      ItemsSource="{Binding Path=SymbolType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                                                      SelectedValuePath="Value"
+                                                                                                      DisplayMemberPath="Description"
+                                                                                                      SelectedValue="{Binding Path=SymbolType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                                      Text="Description"
+                                                                                                      SelectedIndex="1"/>
+                                                                    <TextBlock Text="Fill color"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <xctk:ColorPicker  SelectedColor="{Binding Path=FillColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+                                                                    </xctk:ColorPicker>
+                                                                    <TextBlock Text="Stroke color"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <xctk:ColorPicker  SelectedColor="{Binding Path=BorderColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+                                                                    </xctk:ColorPicker>
+                                                                    <TextBlock Text="Symbol size"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding SymbolSize, Mode=TwoWay}"/>
+                                                                    <TextBlock Text="Border thickness"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding BorderThickness, Mode=TwoWay}"/>
+                                                                    <TextBlock Text="Opacity"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding Opacity, Mode=TwoWay}"/>
+
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                    </StackPanel>
+                                                </ScrollViewer>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </TabControl.ContentTemplate>
+                                </TabControl>
+                            </TabItem>
+                            <TabItem Header="Editor"
+                                     Style="{StaticResource LeftSideTabItem}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Auto"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                    <Border Background="{StaticResource ForegroundLightBrush}">
+                                        <StackPanel MinWidth="30">
+                                            <Expander ExpandDirection="Down"
+                                                                          Header="Editing"
+                                                                          FontWeight="Bold"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                <StackPanel Margin="6">
+                                                    <WrapPanel>
+                                                        <Button Style="{StaticResource IconButton}"
+                                                                    Content="{StaticResource FontAwesomeTrash}"
+                                                                    Foreground="Red"
+                                                                    ToolTip="Remove series from chart"
+                                                                    cal:Message.Attach="RemoveSelectedSeries"
+                                                                cal:Bind.ModelWithoutContext="{Binding Lco}">
+                                                        </Button>
+                                                    </WrapPanel>
+                                                    <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                                  SelectionMode="Single"
+                                                  ItemsSource="{Binding Path=Lco.DataSet}"
+                                                                  SelectedItem="{Binding Path=Lco.SelectedDataSet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  BorderBrush="Transparent">
+                                                        <ListView.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name, Mode=OneWay}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"
+                                                                             >
+                                                                </TextBlock>
+                                                            </DataTemplate>
+                                                        </ListView.ItemTemplate>
+                                                    </ListView>
+
+                                                </StackPanel>
+                                            </Expander>
+                                        </StackPanel>
+                                    </Border>
+                                </ScrollViewer>
+                            </TabItem>
+                        </TabControl>
+                    </ScrollViewer>
+                </Expander>
+            </Grid>
+            <Border Background="{StaticResource ApirsGrayBrush}"
+                                        Opacity="0.60"
+                                        Visibility="{Binding Path=Lco.Updating, 
+                                                    Converter={StaticResource BooleanToVisibilityConverter}, 
+                                                    NotifyOnSourceUpdated=True}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                <ProgressBar IsIndeterminate="True"
+                                                 HorizontalAlignment="Left"
+                                                 VerticalAlignment="Top"
+                                                 Margin="20"
+                                                 Width="100"/>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

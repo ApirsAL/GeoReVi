@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GeoReVi">
+    <ResourceDictionary.MergedDictionaries>
+        <!---Order is important here, because ressources can reference to each other
+                e.g. if a button gets loaded before the color, the color attribute of the button can't find
+                the color due to the missing dictionary-->
+        <ResourceDictionary Source="Colors.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="ToolBarTray" BasedOn="{StaticResource {x:Type ToolBarTray}}">
+        <Setter Property="Background" Value="{StaticResource ApirsLightGrayBrush}"/>
+    </Style>
+
+    <Style TargetType="ToolBar" BasedOn="{StaticResource {x:Type ToolBar}}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Style.Resources>
+            <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
+                <Setter Property="Background" Value="{StaticResource ButtonReverseBackground1}" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
+
+</ResourceDictionary>

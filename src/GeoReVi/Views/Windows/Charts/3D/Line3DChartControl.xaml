@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="GeoReVi.Line3DChartControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             x:Name="Line3DChartUserControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid x:Name="chartGrid" 
+          Margin="20" 
+          MouseWheel="chartGrid_MouseWheel"
+          MouseMove="chartGrid_MouseMove"
+          SizeChanged="chartGrid_SizeChanged">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Export chart"
+                          Click="MenuItem_Click">
+                </MenuItem>
+                <MenuItem Header="Reorientate"
+                          Click="MenuItem_Click_1">
+                </MenuItem>
+                <MenuItem Header="Background color">
+                    <local:ColorPicker x:Name="BackgroundPicker"
+                                       SelectedColor="Transparent"
+                                       Margin="0"></local:ColorPicker>
+                </MenuItem>
+                <MenuItem Header="Stop rendering"
+                          Click="MenuItem_Click_2">
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <Canvas x:Name="chartCanvas" 
+                Background="{Binding ElementName=BackgroundPicker, Path=SelectedColor, Mode=TwoWay}" 
+                Width="{Binding ElementName=chartGrid,Path=ActualWidth}" 
+                Height="{Binding ElementName=chartGrid,Path=ActualHeight}" 
+                ClipToBounds="True">
+            <!-- The following XAML creates a BitmapCache with default properties and assigns -->
+            <!-- it as the CacheM -->
+            <Canvas.CacheMode>
+                <BitmapCache EnableClearType="False"
+
+                 RenderAtScale="1"
+
+                 SnapsToDevicePixels="False" />
+</Canvas.CacheMode>
+        </Canvas>
+        <Border Background="{StaticResource ApirsGrayBrush}"
+                Opacity="0.60"
+                Visibility="{Binding Path=IsDrawing, ElementName=Line3DChartUserControl, Converter={StaticResource BooleanToVisibilityConverter}, Mode=TwoWay, FallbackValue=false}"
+                x:Name="drawingBackground"
+                HorizontalAlignment="Stretch"
+                Grid.ColumnSpan="3"
+                Grid.RowSpan="4"
+                VerticalAlignment="Stretch">
+            <ProgressBar IsIndeterminate="True"
+                         HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                         Margin="20"
+                         Width="100"/>
+        </Border>
+    </Grid>
+</UserControl>

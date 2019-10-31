@@ -1,0 +1,112 @@
+﻿<UserControl x:Class="GeoReVi.MeasurementWrapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+             mc:Ignorable="d" 
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                  Storyboard.TargetProperty="Opacity"
+                  From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <Grid Background="{StaticResource BackgroundDarkSlateGrayBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"
+                           MinHeight="100"/>
+            <!--<RowDefinition Height="3"/>
+            <RowDefinition Height="Auto"
+                           MinHeight="100"/>-->
+        </Grid.RowDefinitions>
+        <xcad:DockingManager Grid.Row="0"
+                             BorderBrush="Black"
+                             BorderThickness="1">
+            <xcad:DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconSource}" Margin="0,0,4,0"/>
+                        <TextBlock Text="{Binding Title}"
+                                   VerticalAlignment="Center"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Margin="3"
+                                   FontFamily="{StaticResource LatoBold}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </xcad:DockingManager.DocumentHeaderTemplate>
+            <xcad:LayoutRoot x:Name="_layoutRoot">
+                <xcad:LayoutPanel Orientation="Horizontal">
+                    <xcad:LayoutDocumentPaneGroup >
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument ContentId="document1" 
+                                                 Title="Measurements"
+                                                 CanClose="False">
+                                <TabControl Background="Transparent"
+                    TabStripPlacement="Top"
+                    BorderThickness="0"
+                    SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                    Grid.Row="0">
+                                    <TabItem Header="Laboratory measurements"
+                     BorderThickness="0">
+
+                                        <ContentControl Grid.Row="1"
+                                                        cal:View.Model="{Binding LabMeasurementDetailsViewModel}">
+                                        </ContentControl>
+                                    </TabItem>
+                                    <TabItem Header="Field measurements"
+                     BorderThickness="0">
+                                        <ContentControl Grid.Row="1"
+                            cal:View.Model="{Binding FieldMeasurementDetailsViewModel}">
+                                        </ContentControl>
+                                    </TabItem>
+                                </TabControl>
+                            </xcad:LayoutDocument>
+                            <xcad:LayoutDocument ContentId="_dataAnalysis" 
+                                                 Title="Data analysis"
+                                                 CanClose="False">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <DockPanel>
+                                        <Button Style="{StaticResource IconButton}"
+                Content="{StaticResource FontAwesomeDownload}"
+                ToolTip="Load univariate data matrix"
+                HorizontalAlignment="Left"
+                    
+                VerticalAlignment="Top"
+                Foreground="Black"
+                Margin="30,0,0,0"
+                cal:Message.Attach="LoadSingleParameterDataMatrix"/>
+                                            <Button Style="{StaticResource IconButton}"
+                Content="{StaticResource FontAwesomeDownload}"
+                ToolTip="Load multivariate data matrix"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Foreground="Gray"
+                Margin="50,0,0,0"
+                cal:Message.Attach="LoadMultiparametricDataMatrix"/>
+                                    </DockPanel>
+                                    <ContentControl Grid.Row="1"
+                                        VerticalAlignment="Top"
+                    cal:View.Model="{Binding DatasetManagementAndVisualizationViewModel}">
+                                    </ContentControl>
+                                </Grid>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup >
+                </xcad:LayoutPanel>
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+    </Grid>
+</UserControl>

@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="GeoReVi.UserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             TextOptions.TextFormattingMode="Display"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                  Storyboard.TargetProperty="Opacity"
+                  From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <!--Acutal grid of this page-->
+    <Grid>
+        <!---Control to provide scrolling funcitonality-->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <StackPanel HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            TextBlock.TextAlignment="Center">
+                <Border Background="{StaticResource ApirsLightGrayBrush}"
+                            CornerRadius="80"
+                            Padding="15, 50, 15, 15"
+                            Width="500"
+                            Margin="50, 50, 50, 10"
+                            BorderBrush="{StaticResource ApirsMediumGrayBrush}"
+                            BorderThickness="1">
+                    <StackPanel HorizontalAlignment="Center" MaxWidth="600" Width="auto">
+                        <TextBlock Text="My account" 
+                                   Style="{StaticResource HeaderText}"
+                                   Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                   FontFamily="{StaticResource LatoBold}"
+                                   FontSize="35"
+                                   HorizontalAlignment="Left"
+                                   Margin="0,0,0,20"
+                                   />
+
+                      
+                        <!---FirstName-->
+                        <TextBlock Text="First name"
+                                   TextAlignment="Left"
+                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                        <TextBox Tag="First name"
+                                 Text="{Binding SelectedPerson.persVorname, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                 x:Name="FirstName"
+                                 FontSize="{StaticResource FontSizeRegular}">   
+                        </TextBox>
+
+                        <!---LastName-->
+                        <TextBlock Text="Last name"
+                                   TextAlignment="Left"
+                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                        <TextBox Tag="Last name"
+                                 Text="{Binding SelectedPerson.persName, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                 x:Name="LastName"
+                                 FontSize="{StaticResource FontSizeRegular}">
+                        </TextBox>
+
+                        <!---Affiliation-->
+                        <TextBlock Text="Affiliation"
+                                   TextAlignment="Left"
+                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                        <TextBox Text="{Binding SelectedPerson.persAffiliation, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                 x:Name="Affiliation"
+                                 FontSize="{StaticResource FontSizeRegular}">
+                        </TextBox>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100*"></ColumnDefinition>
+                                <ColumnDefinition Width="62*"/>
+                                <ColumnDefinition Width="150*"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!---Update button-->
+                            <Button Style="{StaticResource MainButton}"
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Content="Update"
+                                    local:IsBusyProperty.Value="{Binding IsUpdateRunning}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Update">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                            </Button>
+                            <!---Delete button-->
+                            <Button Style="{StaticResource MainButton}"
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    Content="Delete my account"
+                                    local:IsBusyProperty.Value="{Binding IsUpdateRunning}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Delete">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                            </Button>
+                        </Grid>
+
+                        <!--Route to the register page-->
+                        <Button Style="{StaticResource HyperlinkButton}" Content="Back to login">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <cal:ActionMessage MethodName="LoadLoginView">
+                                        <cal:Parameter Value="LoginView"/>
+                                    </cal:ActionMessage>
+                                </i:EventTrigger>
+
+                            </i:Interaction.Triggers>
+                        </Button>
+
+                    </StackPanel>
+                </Border>
+
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

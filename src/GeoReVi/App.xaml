@@ -1,0 +1,44 @@
+﻿<Application x:Class="GeoReVi.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:core="clr-namespace:GeoReVi;assembly=GeoReVi.Core">
+    <Application.Resources>
+
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <local:AppBootstrapper x:Key="bootstrapper" />
+                </ResourceDictionary>
+                <ResourceDictionary>
+                    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+                    <local:VisibilityToInverseBooleanConverter x:Key="VisibilityToInverseBooleanConverter"/>
+                    <local:LookBackConverter x:Key="LookBackValueConverter"/>
+                    <local:IntegerToStringConverter x:Key="IntegerToStringConverter"/>
+                    <local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+                    <local:ColorToSolidBrushValueConverter x:Key="ColorToSolidBrushValueConverter"/>
+                    <local:TernaryHeightConverter x:Key="TernaryHeightConverter"/>
+                    <local:GridViewItemValueConverter x:Key="GridViewItemValueConverter"/>
+                    <local:EnumValueConverter x:Key="EnumValueConverter"/>
+                    <local:LocationValueToPointCollectionConverter x:Key="LocationValueToPointCollectionConverter"/>
+                </ResourceDictionary>
+                <!--Order is important here, because ressources can reference to each other
+                e.g. if a button gets loaded before the color, the color attribute of the button can't find
+                the color due to the missing dictionary-->
+                <ResourceDictionary Source="Styles\Xaml\UserControl.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\Colors.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\Scrollviewer.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\ToolbarTrays.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\Fonts.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\Texts.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\Images.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\ToolTips.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\MenuItems.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\ListView.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\Buttons.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\CheckAndComboBox.xaml" />
+                <ResourceDictionary Source="Styles\Xaml\Maps.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

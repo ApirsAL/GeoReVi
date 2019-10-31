@@ -1,0 +1,72 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GeoReVi"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+    
+    <FontFamily x:Key="LatoRegular">pack:://application/,,,/Fonts/#Lato Regular</FontFamily>
+    <FontFamily x:Key="LatoBold">pack:://application/,,,/Fonts/#Lato Bold</FontFamily>
+    <FontFamily x:Key="LatoThin">pack:://application/,,,/Fonts/#Lato Thin</FontFamily>
+    <FontFamily x:Key="FontAwesome">pack://application:,,,/FontAwesome.WPF;component/#FontAwesome</FontFamily>
+
+
+    <Style TargetType="{x:Type Control}" x:Key="BaseStyle">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+    </Style>
+
+    <Style TargetType="{x:Type TextBlock}" x:Key="BaseTextBlockStyle">
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+    </Style>
+
+    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource BaseStyle}"/>
+    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BaseTextBlockStyle}"></Style>
+    <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource BaseStyle}"/>
+    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseTextBlockStyle}"></Style>
+
+
+    <system:Double x:Key="FontSizeVerySmall">11</system:Double>
+    <system:Double x:Key="FontSizeSmall">13</system:Double>
+    <system:Double x:Key="FontSizeRegular">17</system:Double>
+    <system:Double x:Key="FontSizeMedium">20</system:Double>
+    <system:Double x:Key="FontSizeLarge">23</system:Double>
+
+    <system:String x:Key="FontAwesomeAlignLeft">&#xf036;</system:String>
+    <system:String x:Key="FontAwesomeBackward">&#xf04a;</system:String>
+    <system:String x:Key="FontAwesomeBoxplot">&#xf0c8;</system:String>
+    <system:String x:Key="FontAwesomeBubble">&#xf2a1;</system:String>
+    <system:String x:Key="FontAwesomeChatIcon">&#xf086;</system:String>
+    <system:String x:Key="FontAwesomeCogIcon">&#xf013;</system:String>
+    <system:String x:Key="FontAwesomeConnect">&#xf1e6;</system:String>
+    <system:String x:Key="FontAwesomeCube">&#xf1b2;</system:String>
+    <system:String x:Key="FontAwesomeCalculator">&#xf1ec;</system:String>
+    <system:String x:Key="FontAwesomeDetails">&#xf15c;</system:String>
+    <system:String x:Key="FontAwesomeDetect">&#xf362;</system:String>
+    <system:String x:Key="FontAwesomeDownload">&#xf019;</system:String>
+    <system:String x:Key="FontAwesomeDot">&#xf111;</system:String>
+    <system:String x:Key="FontAwesomeFileSignature">&#xf573;</system:String>
+    <system:String x:Key="FontAwesomeFilter">&#xf0b0;</system:String>
+    <system:String x:Key="FontAwesomeForward">&#xf04e;</system:String>
+    <system:String x:Key="FontAwesomeHeight">&#xf338;</system:String>
+    <system:String x:Key="FontAwesomeHistogram">&#xf080;</system:String>
+    <system:String x:Key="FontAwesomeKeyboard">&#xf11c;</system:String>
+    <system:String x:Key="FontAwesomeMessage">&#xf0e0;</system:String>
+    <system:String x:Key="FontAwesomeMinus">&#xf056;</system:String>
+    <system:String x:Key="FontAwesomeNewWindow">&#xf2d2;</system:String>
+    <system:String x:Key="FontAwesomePlus">&#xf0fe;</system:String>
+    <system:String x:Key="FontAwesomePrint">&#xf02f;</system:String>
+    <system:String x:Key="FontAwesomeProject">&#xf0ae;</system:String>
+    <system:String x:Key="FontAwesomePictureIcon">&#xf1c5;</system:String>
+    <system:String x:Key="FontAwesomeSave">&#xf0c7;</system:String>
+    <system:String x:Key="FontAwesomeScatterChart">&#xf142;</system:String>
+    <system:String x:Key="FontAwesomeStepForward">&#xf051;</system:String>
+    <system:String x:Key="FontAwesomeStepBackward">&#xf048;</system:String>
+    <system:String x:Key="FontAwesomeRefresh">&#xf021;</system:String>
+    <system:String x:Key="FontAwesomeRemoveUser">&#xf503;</system:String>
+    <system:String x:Key="FontAwesomeSquareRoot">&#xf698;</system:String>
+    <system:String x:Key="FontAwesomeTable">&#xf0ce;</system:String>
+    <system:String x:Key="FontAwesomeTrash">&#xf1f8;</system:String>
+    <system:String x:Key="FontAwesomeTriangle">&#xf0d8;</system:String>
+    <system:String x:Key="FontAwesomeUserIcon">&#xf007;</system:String>
+    <system:String x:Key="FontAwesomeVariogram">&#xf201;</system:String>
+    <system:String x:Key="FontAwesomeWidth">&#xf337;</system:String>
+    
+</ResourceDictionary>

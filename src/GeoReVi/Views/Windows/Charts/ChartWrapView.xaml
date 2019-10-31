@@ -1,0 +1,237 @@
+﻿<UserControl x:Class="GeoReVi.ChartWrapView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border Background="{StaticResource BackgroundLightBrush}">
+        <Grid>
+            <TabControl TabStripPlacement="Top">
+                <TabItem Header="Scatterplots">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid  x:Name="LineChartGrid"
+                               Grid.Column="1">
+                            <local:LineChartControl
+                            Background="{StaticResource BackgroundVeryLightBrush}"
+                            DataCollection="{Binding Path=DataCollection}"
+                            x:Name="MyLineChart"
+                            Xmin="{Binding Path=Xmin, FallbackValue=0}"
+                            Xmax="{Binding Path=Xmax, FallbackValue=1}"
+                            XTick="{Binding Path=XTick, FallbackValue=1}"
+                            Ymin="{Binding Path=Ymin, FallbackValue=-1}"
+                            Ymax="{Binding Path=Ymax, FallbackValue=1}"
+                            YTick="{Binding Path=YTick, FallbackValue=1}"
+                            XLabel="{Binding Path=XLabel}"
+                            YLabel="{Binding Path=YLabel}"
+                            Title="{Binding Path=Title}"
+                            GridlinePattern="Dot"
+                            GridlineColor="Green"
+                            IsLegend="True"/>
+                        </Grid>
+                        <Border Grid.Column="0"
+                                BorderBrush="{StaticResource ApirsGrayBrush}"
+                                BorderThickness="0.3"
+                                CornerRadius="8"
+                                Margin="6,0,0,6"
+                                 Background="{StaticResource BackgroundVeryLightBrush}">
+                            <Border.Effect>
+                                <DropShadowEffect Opacity="0.5" Color="Gray"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="10,10,0,10">
+                                    <RadioButton GroupName="Entities"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,10,0">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <cal:ActionMessage MethodName="AddData">
+                                                    <cal:Parameter Value="SpectralGammaRay"></cal:Parameter>
+                                                </cal:ActionMessage>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </RadioButton>
+                                    <TextBlock Text="Spectral gamma ray"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="10,10,0,10">
+                                    <RadioButton GroupName="Entities"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,10,0">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <cal:ActionMessage MethodName="AddData">
+                                                    <cal:Parameter Value="Densities"></cal:Parameter>
+                                                </cal:ActionMessage>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </RadioButton>
+                                    <TextBlock Text="Densities"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="10,10,0,10">
+                                    <RadioButton GroupName="Entities"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,10,0">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <cal:ActionMessage MethodName="AddData">
+                                                    <cal:Parameter Value="PoroPerm"></cal:Parameter>
+                                                </cal:ActionMessage>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </RadioButton>
+                                    <TextBlock Text="PoroPerm"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="10,10,0,10">
+                                    <RadioButton GroupName="Entities"
+                                                 HorizontalAlignment="Center"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,10,0">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <cal:ActionMessage MethodName="AddData">
+                                                    <cal:Parameter Value="Thermophysics"></cal:Parameter>
+                                                </cal:ActionMessage>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </RadioButton>
+                                    <TextBlock Text="Thermophysics"/>
+                                </StackPanel>
+
+
+                                <Button x:Name="RemoveData" 
+                                    Content="Remove data" 
+                                    Width="100" Height="25" 
+                                    Grid.Column="1"
+                                     VerticalAlignment="Bottom"
+                                        Margin="0,40,0,40"/>
+
+                                <Button Content="Export graph">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="ExportControl">
+                                                <cal:Parameter Value="{Binding ElementName=LineChartGrid}"></cal:Parameter>
+                                                <cal:Parameter Value="True"></cal:Parameter>
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Histograms">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="1"
+                              x:Name="BarChartGrid">
+                            <local:BarChartControl
+                                            Background="{StaticResource BackgroundVeryLightBrush}"
+                                            DataCollection="{Binding BarDataCollection}"
+                                            x:Name="MyBarChart"
+                                            BorderBrush="AliceBlue"
+                                            Xmin="{Binding Path=Xmin, FallbackValue=0}"
+                                            Xmax="{Binding Path=Xmax, FallbackValue=1}"
+                                            XTick="{Binding Path=XTick, FallbackValue=1}"
+                                            Ymin="{Binding Path=Ymin, FallbackValue=-1}"
+                                            Ymax="{Binding Path=Ymax, FallbackValue=1}"
+                                            YTick="{Binding Path=YTick, FallbackValue=0.5}"
+                                            XLabel="{Binding Path=XLabel}"
+                                            YLabel="{Binding Path=YLabel}"
+                                            Title="{Binding Path=Title}"
+                                            BarType="Vertical"
+                                            IsLegend="True"/>
+                        </Grid>
+                        <Border Grid.Column="0"
+                                BorderBrush="{StaticResource ApirsGrayBrush}"
+                                BorderThickness="0.3"
+                                CornerRadius="8"
+                                Margin="6,0,0,6"
+                                 Background="{StaticResource BackgroundVeryLightBrush}">
+                            <Border.Effect>
+                                <DropShadowEffect Opacity="0.5" Color="Gray"/>
+                            </Border.Effect>
+                            <StackPanel Grid.Column="0">
+                                <StackPanel Orientation="Horizontal"
+                                        Margin="10,10,0,10">
+                                    <RadioButton GroupName="BarEntities"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Margin="0,0,10,0">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <cal:ActionMessage MethodName="AddBarData">
+                                                    <cal:Parameter Value="Porosity"></cal:Parameter>
+                                                </cal:ActionMessage>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </RadioButton>
+                                    <TextBlock Text="Porosity"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                        Margin="10,10,0,10">
+                                    <RadioButton GroupName="BarEntities"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Margin="0,0,10,0">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Checked">
+                                                <cal:ActionMessage MethodName="AddBarData">
+                                                    <cal:Parameter Value="GrainDensity"></cal:Parameter>
+                                                </cal:ActionMessage>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </RadioButton>
+                                    <TextBlock Text="Grain density"/>
+                                </StackPanel>
+                                <Button x:Name="RemoveBarData" 
+                                Content="Remove data" 
+                                Width="100" Height="25" 
+                                Grid.Column="1"
+                                 VerticalAlignment="Bottom"
+                                    Margin="0,40,0,40">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="RemoveData">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Content="Export graph">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="ExportControl">
+                                                <cal:Parameter Value="{Binding ElementName=MyBarChart}"></cal:Parameter>
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Box-Whisker-plot">
+
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Border>
+</UserControl>

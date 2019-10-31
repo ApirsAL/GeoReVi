@@ -1,0 +1,73 @@
+fcCode,fcDecoding,fcDescription,fcFaciesType,fcHierarchy
+Gcg,"Gravel, chaotic bedding, grain supported",Grain supported gravel,Siliciclastic,Facies type
+Ghg,"Gravel, horizontal bedding, grain supported","Grain supported, horizontally bedded gravel",Siliciclastic,Facies type
+Gpg,"Gravel, planar cross bedding, grain supported",NULL,Siliciclastic,Facies type
+Gmg,"Gravel, massive bedding, grain supported",NULL,Siliciclastic,Facies type
+Gcm,"Gravel chaotic bedding, matrix supported",NULL,Siliciclastic,Facies type
+Ghm,"Gravel, horizontal bedding, matrix supported",NULL,Siliciclastic,Facies type
+Gpm,"Gravel, planar cross bedding, matrix supported",NULL,Siliciclastic,Facies type
+Gmm,"Gravel, massive bedding, matrix supported",NULL,Siliciclastic,Facies type
+Sc,"Sand, chaotic bedding",NULL,Siliciclastic,Facies type
+Sh,"Sand, horizontal bedding",NULL,Siliciclastic,Facies type
+Sp,"Sand, planary cross bedding",NULL,Siliciclastic,Facies type
+Sm,"Sand, massive bedding",NULL,Siliciclastic,Facies type
+St,"Sand, trough cross bedding",NULL,Siliciclastic,Facies type
+Sr,"Sand, ripple cross bedding",NULL,Siliciclastic,Facies type
+Fc,"Fines, chaotic bedding",NULL,Siliciclastic,Facies type
+Fh,Fines horizontal bedding,NULL,Siliciclastic,Facies type
+Fp,Fines planary cross bedding,NULL,Siliciclastic,Facies type
+Fr,"Fines, ripple cross bedding",NULL,Siliciclastic,Facies type
+Fl,"Fines, laminated",Set height < 0.5 cm,Siliciclastic,Facies type
+Unknown,Unknown,Facies code is not derivable,All,All
+Core loss,Core loss,Core loss,All,All
+Ms,Mudstone,NULL,Biochemical,Facies type
+Gs,Grainstone,NULL,Biochemical,Facies type
+Ws,Wackestone,NULL,Biochemical,Facies type
+BAS,Basalt,NULL,Volcanic,Facies type
+AND,Andesite,NULL,Volcanic,Facies type
+DAC,Dacite,NULL,Volcanic,Facies type
+Rs,Rudstone,NULL,Biochemical,Facies type
+Fs,Floatstone,NULL,Biochemical,Facies type
+RHY,Rhyolith,NULL,Volcanic,Facies type
+LAT,Latite,NULL,Volcanic,Facies type
+TRA,Trachyte,NULL,Volcanic,Facies type
+TEPH,Tephrite,NULL,Volcanic,Facies type
+BASA,Basanite,NULL,Volcanic,Facies type
+PHON,Phonolite,NULL,Volcanic,Facies type
+FOI,Foidite,NULL,Volcanic,Facies type
+DIOR,Diorite,NULL,Igneous,Facies type
+TUFF,Tuff,NULL,Volcanic,Facies type
+LAP,Lapilli,NULL,Volcanic,Facies type
+BLOCK,Blocks,NULL,Volcanic,Facies type
+PEGM,Pegmatite,NULL,Volcanic,Facies type
+LAMBR,Lamprophyre,NULL,Volcanic,Facies type
+GABB,Gabbro,NULL,Igneous,Facies type
+ANORTH,Anorthosite,NULL,Igneous,Facies type
+MONZ,Monzonite,NULL,Igenous,Facies type
+TON,Tonalite,NULL,Igneous,Facies type
+GRANO,Granodiorite,NULL,Igneous,Facies type
+GRANI,Granite,NULL,Igneous,Facies type
+Qrich,Quartz-rich granitoids,NULL,Igneous,Facies type
+SYEN,Syenite,NULL,Igneous,Facies type
+FDIOR,Foid diorite,NULL,Igneous,Facies type
+FOIDO,Foidolite,NULL,Igneous,Facies type
+FSYEN,Foid syenite,NULL,Igneous,Facies type
+Ps,Packstone,NULL,Biochemical,Facies type
+Bs,Boundstone,NULL,Biochemical,Facies type
+Dol,Dolomite,NULL,Biochemical,Facies type
+Gyp,Gypsum,NULL,Biochemical,Facies type
+Anh,Anhydrite,NULL,Biochemical,Facies type
+Hal,Halite,NULL,Biochemical,Facies type
+Coa,Coal,NULL,Biochemical,Facies type
+Ma,Marl,NULL,Biochemical,Facies type
+Cal,Calcite,NULL,Biochemical,Facies type
+Ch,Cherts/Radiolarite,NULL,Biochemcial,Facies type
+Io,Iron ore,NULL,Biochemical,Facies type
+Ph,Phosphorite,NULL,Biochemical,Facies type
+Mf,Mud flow,NULL,Siliciclastic,Architectural element
+Df,Debris flow,NULL,Siliciclastic,Architectural element
+Sf,Sheet flood,NULL,Siliciclastic,Architectural element
+Cha,Channel ,NULL,Siliciclastic,Architectural element
+Ff,Floodplain fines,NULL,Siliciclastic,Architectural element
+Cl,Clinothem,NULL,Siliciclastic,Architectural element
+Pl,Prodelta lacustrine,NULL,Siliciclastic,Architectural element

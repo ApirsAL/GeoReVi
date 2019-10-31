@@ -1,0 +1,485 @@
+alColumnName,alAlias,alTableName,alTableAlias,alImport,alDataType
+secIdPk,Section ID,tblSection,Section,0,Numerical
+secName,Section Name,tblSection,Section,1,Categorical
+secType,Type,tblSection,Section,1,Categorical
+secInterpreter,Interpreter,tblSection,Section,0,Categorical
+secLatitude,Latitude [WGS84],tblSection,Section,1,Numerical
+secLongitude,Longitude [WGS84],tblSection,Section,1,Numerical
+secOoiName,Object of Investigation,tblSection,Section,1,Categorical
+secInterpreterIdFk,Interpreter ID,tblSection,Section,0,Numerical
+secprjIdFk,Project ID,tblSection,Section,0,Numerical
+secInterpreterName,Interpreter,tblSection,Section,0,Categorical
+secProjectName,Project,tblSection,Section,0,Categorical
+litsecIdPk,Bed ID,tblSectionLithofacy,Section lithofacies,0,Numerical
+litsecIdFk,Section ID Reference,tblSectionLithofacy,Section lithofacies,1,Numerical
+litsecLithostratigraphy,Lithostratigraphy,tblSectionLithofacy,Section lithofacies,1,Categorical
+litseclftId,Facies ID,tblSectionLithofacy,Section lithofacies,1,Numerical
+litseclftCode,Facies Code,tblSectionLithofacy,Section lithofacies,1,Categorical
+litsecTop,Top [m],tblSectionLithofacy,Section lithofacies,1,Numerical
+litsecBase,Base [m],tblSectionLithofacy,Section lithofacies,1,Numerical
+litsecThickness,Thickness [m],tblSectionLithofacy,Section lithofacies,1,Numerical
+litsecGrainSizeTop,Grain size top,tblSectionLithofacy,Section lithofacies,1,Numerical
+litsecGrainSizeBase,Grain size base,tblSectionLithofacy,Section lithofacies,1,Numerical
+litsecFossils,Fossils,tblSectionLithofacy,Section lithofacies,1,Categorical
+affIdPk,Affiliation ID,tblAffiliation,Affiliation,0,Numerical
+affname,Affiliation Name,tblAffiliation,Affiliation,1,Categorical
+affStreet,Street,tblAffiliation,Affiliation,1,Categorical
+affHouseNumber,House nr.,tblAffiliation,Affiliation,1,Numerical
+affCity,City,tblAffiliation,Affiliation,1,Categorical
+affPostCode,Post code,tblAffiliation,Affiliation,1,Numerical
+affURL,URL,tblAffiliation,Affiliation,1,Categorical
+affCountry,Country,tblAffiliation,Affiliation,1,Categorical
+apermIdFk,Measurement ID,tblApparentPermeability,Apparent permeability,0,Numerical
+apermMeasurementDirection,Measurement direction,tblApparentPermeability,Apparent permeability,1,Categorical
+apermTemperature,Temperature [ｰC],tblApparentPermeability,Apparent permeability,1,Numerical
+apermAirPressure,Air pressure [mbar],tblApparentPermeability,Apparent permeability,1,Numerical
+apermDifferentialPressure,Differential pressure [mbar],tblApparentPermeability,Apparent permeability,1,Numerical
+apermInjectionPressure,Injection pressure [mbar],tblApparentPermeability,Apparent permeability,1,Numerical
+apermValueM2,Apparent permeability [m2],tblApparentPermeability,Apparent permeability,1,Numerical
+apermLogM2,Apparent permeability log[m2],tblApparentPermeability,Apparent permeability,1,Numerical
+apermValueMD,Apparent permeability [mD],tblApparentPermeability,Apparent permeability,1,Numerical
+apermLocalCoordinateX,Local x [cm],tblApparentPermeability,Apparent permeability,1,Numerical
+apermLocalCoordinateY,Local y [cm],tblApparentPermeability,Apparent permeability,1,Numerical
+apermLocalCoordinateZ,Local z [cm],tblApparentPermeability,Apparent permeability,1,Numerical
+apermMeasurementAngle,Measurement angle [ｰ],tblApparentPermeability,Apparent permeability,1,Numerical
+sampIdPk,Rock sample ID,tblRockSample,Rock sample,0,Numerical
+sampLithofacies,Facies ID,tblRockSample,Rock sample,1,Numerical
+sampLabel,Rock sample name,tblRockSample,Rock sample,1,Categorical
+sampType,Type,tblRockSample,Rock sample,1,Categorical
+sasampSamplingMethod,Sampling Method,tblRockSample,Rock sample,1,Categorical
+sampooiName,Object of investigation,tblRockSample,Rock sample,1,Categorical
+sampLithostratigraphyName,Lithostratigraphy,tblRockSample,Rock sample,1,Categorical
+sampChronStratName,Chronostratigraphy,tblRockSample,Rock sample,1,Categorical
+sampPetrographicTerm,Petrography,tblRockSample,Rock sample,1,Categorical
+sampLocalXCoordinates,Local x [m],tblRockSample,Rock sample,1,Numerical
+sampLocalYCoordinates,Local y [m],tblRockSample,Rock sample,1,Numerical
+sampLocalZCoordinates,Local z [m],tblRockSample,Rock sample,1,Numerical
+sampMass,Mass [g],tblRockSample,Rock sample,1,Numerical
+sampSampler,Sampler,tblRockSample,Rock sample,1,Categorical
+sampDate,Date,tblRockSample,Rock sample,1,Date
+sampNotes,Notes,tblRockSample,Rock sample,1,Categorical
+sampprjIdFk,Project ID,tblRockSample,Rock sample,0,Numerical
+sampLatitude,Latitude [WGS84],tblRockSample,Rock sample,1,Numerical
+sampLongitude,Longitude [WGS84],tblRockSample,Rock sample,1,Numerical
+sampConfidential,Confidential,tblRockSample,Rock sample,1,Categorical
+sampProject,Project name,tblRockSample,Rock sample,0,Categorical
+sampFaciesFk,Facies type,tblRockSample,Rock sample,0,Numerical
+sampThinSectionAvailable,Thin section available,tblRockSample,Rock sample,1,Boolean
+sampUploaderIdFk,Uploader ID,tblRockSample,Rock sample,0,Numerical
+sampUploaderName,Uploader Name,tblRockSample,Rock sample,0,Categorical
+plugIdPk,Plug ID,tblPlug,Plug,0,Numerical
+plugLabel,Rock sample label reference,tblPlug,Plug,1,Categorical
+plugHeight,Height [mm],tblPlug,Plug,1,Numerical
+plugDiameter,Diameter [mm],tblPlug,Plug,1,Numerical
+plugOrientationDipDirection,Orientation dip direction [ｰ],tblPlug,Plug,1,Numerical
+plugOrientationDipAngle,Orientation dip angle [ｰ],tblPlug,Plug,1,Numerical
+plugOrientationToBedding,Orientation relative to bedding,tblPlug,Plug,1,Categorical
+plugBeddingDipDirection,Bedding dip direction [ｰ],tblPlug,Plug,1,Numerical
+plugBeddingDipAngle,Bedding dip angle [ｰ],tblPlug,Plug,1,Numerical
+plugStratificationDipDirection,Stratification dip direction [ｰ],tblPlug,Plug,1,Numerical
+plugStratificationDipAngle,Stratification dip angle [ｰ],tblPlug,Plug,1,Numerical
+plugDestroyed,Destroyed,tblPlug,Plug,1,Boolean
+cubIdPk,Cuboid ID,tblCuboid,Cuboid,0,Numerical
+cubLabel,Rock sample label reference,tblCuboid,Cuboid,1,Categorical
+cubHeigth,Height [mm],tblCuboid,Cuboid,1,Numerical
+cubLength,Length [mm],tblCuboid,Cuboid,1,Numerical
+cubWidth,Width [mm],tblCuboid,Cuboid,1,Numerical
+cubDestroyed,Destroyed,tblCuboid,Cuboid,1,Boolean
+cubXAxisDipDirection,XY plane dip direction [ｰ],tblCuboid,Cuboid,1,Numerical
+cubXAxisDipAngle,XY plane dip angle [ｰ],tblCuboid,Cuboid,1,Numerical
+cubStratificationDipDirection,Stratification dip direction [ｰ],tblCuboid,Cuboid,1,Numerical
+cubStratificationDipAngle,Stratification dip angle [ｰ],tblCuboid,Cuboid,1,Numerical
+cubBeddingDipDirection,Bedding dip direction [ｰ],tblCuboid,Cuboid,1,Numerical
+cubBeddingDipAngle,Bedding dip angle [ｰ],tblCuboid,Cuboid,1,Numerical
+cubOrientationToBedding,Orientation relative to bedding,tblCuboid,Cuboid,1,Categorical
+hpIdPk,Handpiece ID,tblHandpiece,Handpiece,0,Numerical
+hpLabelFk,Rock sample label reference,tblHandpiece,Handpiece,1,Categorical
+hpGeometry,Geometry,tblHandpiece,Handpiece,1,Categorical
+hpPurpose,Purpose,tblHandpiece,Handpiece,1,Categorical
+hpDescription,Description,tblHandpiece,Handpiece,1,Categorical
+hpOrientation,Orientation relative to bedding,tblHandpiece,Handpiece,1,Categorical
+ooiIdPk,Object of investigation ID,tblObjectOfInvestigation,Object of investigation,0,Numerical
+ooiName,Object of investigation name,tblObjectOfInvestigation,Object of investigation,1,Categorical
+ooiType,Type,tblObjectOfInvestigation,Object of investigation,1,Categorical
+ooiOriginHeight,Altitude of origin [m],tblObjectOfInvestigation,Object of investigation,1,Numerical
+ooiHeightReferenceSystem,Height reference system,tblObjectOfInvestigation,Object of investigation,1,Numerical
+ooiBasin,Basin,tblObjectOfInvestigation,Object of investigation,1,Categorical
+ooiGeologicalMapNumber,Geological map number,tblObjectOfInvestigation,Object of investigation,1,Categorical
+ooiLatitude,Latitude [WGS84],tblObjectOfInvestigation,Object of investigation,1,Numerical
+ooiLongitude,Longitude [WGS84],tblObjectOfInvestigation,Object of investigation,1,Numerical
+ooiDateUpload,Upload date,tblObjectOfInvestigation,Object of investigation,1,Date
+ooiUploadersName,Uploader,tblObjectOfInvestigation,Object of investigation,0,Categorical
+ooiOwner,Owner,tblObjectOfInvestigation,Object of investigation,1,Categorical
+ooiNotes,Notes,tblObjectOfInvestigation,Object of investigation,1,Categorical
+ooiUploaderIdFk,Uploader ID,tblObjectOfInvestigation,Object of investigation,0,Numerical
+outIdPk,Outcrop ID,tblOutcrop,Outcrop,0,Numerical
+outLocalName,Object of investigation name reference,tblOutcrop,Outcrop,1,Categorical
+outArea,Geographical area,tblOutcrop,Outcrop,1,Categorical
+outCity,City,tblOutcrop,Outcrop,1,Categorical
+outDescription,Description,tblOutcrop,Outcrop,1,Categorical
+outLocalityJourney,How to get there,tblOutcrop,Outcrop,1,Categorical
+outActive,Active construction,tblOutcrop,Outcrop,1,Categorical
+outLiterature,Literature,tblOutcrop,Outcrop,1,Categorical
+outWidth,Width [m],tblOutcrop,Outcrop,1,Numerical
+outHeight,Height [m],tblOutcrop,Outcrop,1,Numerical
+outURL,URL,tblOutcrop,Outcrop,1,Categorical
+outLastCondition,Last conditions,tblOutcrop,Outcrop,1,Categorical
+outLastJourney,Last visit,tblOutcrop,Outcrop,1,Categorical
+outWorkingPermission,Working permission,tblOutcrop,Outcrop,1,Boolean
+outOutcropArea,Outcrop area,tblOutcrop,Outcrop,1,Boolean
+drillIdPk,Drilling ID,tblDrilling,Drilling,0,Numerical
+drillName,Object of investigation name reference,tblDrilling,Drilling,1,Categorical
+drillDate,Spud date,tblDrilling,Drilling,1,Date
+drillLength,Length [m],tblDrilling,Drilling,1,Numerical
+drillSampleMaterial,Sample material,tblDrilling,Drilling,1,Categorical
+drillLiterature,Literature reference,tblDrilling,Drilling,1,Categorical
+drillUsage,Usage,tblDrilling,Drilling,1,Categorical
+drillDrillingProcess,Drilling process,tblDrilling,Drilling,1,Categorical
+drillDrillingFluid,Drilling fluid,tblDrilling,Drilling,1,Categorical
+drillDip,Dip [ｰ],tblDrilling,Drilling,1,Numerical
+drillDipDirection,Dip direction [ｰ],tblDrilling,Drilling,1,Numerical
+drillCored,Cored,tblDrilling,Drilling,1,Boolean
+drillDatabase,Database,tblDrilling,Drilling,1,Categorical
+drillContact,Contact,tblDrilling,Drilling,1,Categorical
+traIdPk,Transect ID,tblTransects,Transect,0,Numerical
+traName,Object of investigation name reference,tblTransects,Transect,1,Categorical
+traType,Transect type,tblTransects,Transect,1,Categorical
+traLength,Length [m],tblTransects,Transect,1,Numerical
+traDepthMeter,Depth [m],tblTransects,Transect,1,Numerical
+traDepthTWT,Depth [TWT],tblTransects,Transect,1,Numerical
+traProductionDate,Production date,tblTransects,Transect,1,Date
+traMeasurementDevice,Measurement device,tblTransects,Transect,1,Categorical
+traMeasurementCompany,Conducting company,tblTransects,Transect,1,Categorical
+traLatNorthEnd,Latitude north end [WGS84],tblTransects,Transect,1,Numerical
+traLongNorthEnd,Longitude north end [WGS84],tblTransects,Transect,1,Numerical
+traLatSouthEnd,Latitude south end [WGS84],tblTransects,Transect,1,Numerical
+traLongSouthEnd,Latitude south end [WGS84],tblTransects,Transect,1,Numerical
+Grain_density,Grain density [g cm-3],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Bulk_density,Bulk density [g cm^-3],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Porosity,Porosity [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Intrinsic_permeability,Intrinsic permeability [m^2],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Apparent_permeability,Apparent permeability [m^2],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Thermal_conductivity,Thermal conductivity [W m^-1 K^-1],,,,
+v_PetrophysicsRockSamples,Petrophysics,1,Numerical,,
+Thermal_diffusivity,Thermal diffusivity [m^2 s^-1],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+P_sonic_wave_velocity,P sonic wave velocity [m s^-1],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+S_sonic_wave_velocity,S sonic wave velocity [m s^-1],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+SiO2,SiO2 [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Al2O3,Al2O3 [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Fe2O3,Fe2O3 [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Project_ID,Project ID,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+litsecBaseType,Base boundary type,tblSectionLithofacies,Section lithofacies,1,Numerical
+litsecGrainSizeMin,Minimum grain size,tblSectionLithofacies,Section lithofacies,1,Numerical
+labmeIdPk,Measurement ID,tblLaboratoryMeasurement,Laboratory measurement,0,Numerical
+labmeParameter,Parameter,tblLaboratoryMeasurement,Laboratory measurement,1,Categorical
+labmeSampleName,Sample name,tblLaboratoryMeasurement,Laboratory measurement,1,Categorical
+labmeDate,Measurement date,tblLaboratoryMeasurement,Laboratory measurement,1,Date
+labmeUploader,Uploader ,tblLaboratoryMeasurement,Laboratory measurement,0,Categorical
+labmeNotes,Notes,tblLaboratoryMeasurement,Laboratory measurement,1,Categorical
+labmeprjIdFk,Project ID,tblLaboratoryMeasurement,Laboratory measurement,0,Numerical
+labmeProjectName,Project name,tblLaboratoryMeasurement,Laboratory measurement,0,Categorical
+labmeUploaderId,Uploader ID,tblLaboratoryMeasurement,Laboratory measurement,0,Numerical
+labmeConfidential,Confidential,tblLaboratoryMeasurement,Laboratory measurement,1,Boolean
+labmeUploadDate,Upload date,tblLaboratoryMeasurement,Laboratory measurement,0,Date
+labmeChangeDate,Change date,tblLaboratoryMeasurement,Laboratory measurement,0,Date
+bdIdFk,Measurement ID,tblBulkDensity,Bulk density,0,Numerical
+bdValue,Bulk density [g cm-3],tblBulkDensity,Bulk density,1,Numerical
+bdAccuracy,Standard deviation [g cm-3],tblBulkDensity,Bulk density,1,Numerical
+porIdFk,Measurement ID,tblEffectivePorosity,Porosity,0,Numerical
+porValuePerc,Porosity [%],tblEffectivePorosity,Porosity,1,Numerical
+porValueDec,Porosity [-],tblEffectivePorosity,Porosity,1,Numerical
+porStandardDeviationDec,Standard deviation [%],tblEffectivePorosity,Porosity,1,Numerical
+porAccuracy,Accuracy [%],tblEffectivePorosity,Porosity,1,Numerical
+porType,Type,tblEffectivePorosity,Porosity,1,Categorical
+porDateCreated,Date created,tblEffectivePorosity,Porosity,1,Date
+gdIdFk,Measurement ID,tblGrainDensity,Grain density,0,Numerical
+gdTemperature,Temperature [ｰC],tblGrainDensity,Grain density,1,Numerical
+gdCellVolume,Cell volume [cm3],tblGrainDensity,Grain density,1,Numerical
+gdMeanVolume,Mean volume [cm3],tblGrainDensity,Grain density,1,Numerical
+gdMeanVolumeStdDev,Mean volume standard deviation [cm3],tblGrainDensity,Grain density,1,Numerical
+gdMeanDensity,Mean density [g cm-3],tblGrainDensity,Grain density,1,Numerical
+gdMeanDensityStdDev,Mean density standard deviation [g cm-3],tblGrainDensity,Grain density,1,Numerical
+inpeIdFk,Measurement ID,tblGrainDensity,Grain density,0,Numerical
+inpeLength,Sample length [mm],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeDifferentialPressure,Differential pressure [mbar],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeRadius,Sample radius [mm],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeValuem2,Intrinsic permeability [m2],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeValuemD,Intrinsic permeability [mD],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeArrayPressure,Pressure array,tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeArrayDifferentialPressure,Differential pressure array,tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeArrayApparentPermm2,Apparent permeability array,tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeAccuracym2,Accuracy [m2],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeTemperature,Temperature [ｰC],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+inpeArrayDischarge,Discharge array,tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
+sgrIdPk,Measurement ID,tblSpectralGammaRay,Spectral gamma ray,0,Numerical
+sgType,Type,tblSpectralGammaRay,Spectral gamma ray,1,Categorical
+sgDate,Date,tblSpectralGammaRay,Spectral gamma ray,1,Date
+sgMeasuringTime,Measuring time [s],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgTotalCounts,Total counts [-],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgPotassiumCPS,Potassium [cps],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgPotassiumPercent,Potassium [%],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgUraniumCPS,Uranium [cps],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgUraniumPPM,Uranium [ppm],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgThoriumCPS,Thorium [cps],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgThoriumPPM,Thorium [ppm],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgAccuracy,Accuracy [%],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgNotes,Notes,tblSpectralGammaRay,Spectral gamma ray,1,Categorical
+sgAPI,Total radiation [API],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+swIdFk,Measurement ID,tblSonicWave,Sonic wave velocity,0,Numerical
+swWavetype,Wavetype [p-wave or s-wave],tblSonicWave,Sonic wave velocity,1,Categorical
+swSampleSaturation,Sample saturation [-],tblSonicWave,Sonic wave velocity,1,Numerical
+swFrequency,Frequency [kHz],tblSonicWave,Sonic wave velocity,1,Numerical
+swAmplitude,Amplitude [V],tblSonicWave,Sonic wave velocity,1,Numerical
+swPeriod,Period [myS],tblSonicWave,Sonic wave velocity,1,Numerical
+swVelocity,Velocity [km s-1],tblSonicWave,Sonic wave velocity,1,Numerical
+swMeasurementDirection,Measurement direction,tblSonicWave,Sonic wave velocity,1,Categorical
+swLocalCoordinateX,Local x-coordinate [cm],tblSonicWave,Sonic wave velocity,1,Numerical
+swLocalCoordinateY,Local y-coordinate [cm],tblSonicWave,Sonic wave velocity,1,Numerical
+swLocalCoordinateZ,Local z-coordinate [cm],tblSonicWave,Sonic wave velocity,1,Numerical
+swMeasurementAngle,Measurement angle [ｰ],tblSonicWave,Sonic wave velocity,1,Numerical
+swMeasurementDisplacement,Measurement displacement [cm],tblSonicWave,Sonic wave velocity,1,Categorical
+swMeasuringTime,Measuring time [s],tblSonicWave,Sonic wave velocity,1,Numerical
+susfimeIdPk,Measurement ID,tblSusceptibility,Magnetic susceptibility,0,Numerical
+susDate,Date,tblSusceptibility,Magnetic susceptibility,1,Date
+susValue,Magnetic susceptibility [10-3 SI],tblSusceptibility,Magnetic susceptibility,1,Numerical
+susAccuracy,Accuracy [%],tblSusceptibility,Magnetic susceptibility,1,Numerical
+susNotes,Notes,tblSusceptibility,Magnetic susceptibility,1,Categorical
+xrfIdPk,Measurement ID,tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,0,Numerical
+xrfType,Type,tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Categorical
+xrfSiO2,SiO2 [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfTiO2,TiO2 [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfAl2O3,Al2O3 [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfFe2O3,Fe2O3 [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCaO,CaO [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfMgO,MgO [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfMnO,MnO [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfK2O,K2O [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfNa2O,Na2O [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfP2O5,P2O5 [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfAs,As [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfBa,Ba [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfBi,Bi [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCd,Cd [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCe,Ce [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCl,Cl [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCo,Co [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCr,Cr [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCs,Cs [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCu,Cu [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfDy,Dy [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfEr,Er [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfEu,Eu [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfF,F [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfGa,Ga [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfGd,Gd [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfHf,Hf [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfHo,Ho [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfLa,La [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfMo,Mo [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfNb,Nb [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfNd,Nd [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfNi,Ni [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfPb,Pb [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfPr,Pr [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfRb,Rb [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfS,S [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfSb,Sb [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfSc,Sc [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfSm,Sm [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfSn,Sn [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfSr,Sr [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfTa,Ta [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfTb,Tb [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfTh,Th [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfU,U [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfV,V [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfW,W [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfY,Y [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfYb,Yb [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfZn,Zn [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfZr,Zr [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfSum,Sum [%],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfTime,Measuring time [s],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfMode,Measuring mode,tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Categorical
+xrfTi,Ti [ppm],tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Numerical
+xrfCalibrationPassed,Calibration passed,tblXRayFluorescenceSpectroscopy,X-Ray Fluorescence,1,Boolean
+tcIdFk,Measurement ID,tblThermalConductivity,Thermal conductivity,0,Numerical
+tcMeasurementDirection,Measurement direction,tblThermalConductivity,Thermal conductivity,1,Categorical
+tcAvValue,Average thermal conductivity [W m-1 K-1],tblThermalConductivity,Thermal conductivity,1,Numerical
+tcMinValue,Minimum thermal conductivity [W m-1 K-1],tblThermalConductivity,Thermal conductivity,1,Numerical
+tcMaxValue,Maximum thermal conductivity [W m-1 K-1],tblThermalConductivity,Thermal conductivity,1,Numerical
+tcStandardDev,Standard deviation [W m-1 K-1],tblThermalConductivity,Thermal conductivity,1,Numerical
+tcHeterogeneity,Heterogeneity  [W m-1 K-1],tblThermalConductivity,Thermal conductivity,1,Numerical
+tcFileName,NULL,tblThermalConductivity,Thermal conductivity,1,Categorical
+SSMA_TimeStamp,NULL,tblThermalConductivity,Thermal conductivity,1,Date
+tcSampleSaturation,Sample saturation [-],tblThermalConductivity,Thermal conductivity,1,Numerical
+tcUsedReferenceSample,Used reference sample,tblThermalConductivity,Thermal conductivity,1,Categorical
+tdIdFk,Measurement ID,tblThermalDiffusivity,Thermal diffusivity,0,Numerical
+tdtcIdFk,Thermal diffusivity measurement ID,tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tcMeasurementDirection,Measurement direction,tblThermalDiffusivity,Thermal diffusivity,1,Categorical
+tdtcAvValue,Average thermal conductivity [W m-1 K-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdtcMinValue,Minimum thermal conductivity [W m-1 K-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdtcMaxValue,Maximum thermal conductivity [W m-1 K-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdtcStandardDev,Standard deviation [W m-1 K-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdtcHeterogeneity,Heterogeneity  [W m-1 K-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdAvValue,Average thermal diffusivity [m2 s-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdMinValue,Minimum thermal diffusivity [m2 s-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdMaxValue,Maximum thermal diffusivity [m2 s-1],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdFile,NULL,tblThermalDiffusivity,Thermal diffusivity,1,Categorical
+SSMA_TimeStamp,NULL,tblThermalDiffusivity,Thermal diffusivity,1,Date
+tdSampleSaturation,Sample saturation [-],tblThermalDiffusivity,Thermal diffusivity,1,Numerical
+tdUsedReferenceSample,Used reference sample,tblThermalDiffusivity,Thermal diffusivity,1,Categorical
+sofimeIdFk,Measurement ID,tblStructureOrientation,Structure Orientation,0,Numerical
+soDipDirection,Dip direction [ｰ],tblStructureOrientation,Structure Orientation,1,Numerical
+soDipAngle,Dip angle [ｰ],tblStructureOrientation,Structure Orientation,1,Numerical
+soNotes,Notes,tblStructureOrientation,Structure Orientation,1,Categorical
+SSMA_TimeStamp,NULL,tblStructureOrientation,Structure Orientation,1,Date
+soMeasuredGeometricalStructure,Measured geometrical structure,tblStructureOrientation,Structure Orientation,1,Categorical
+soMeasuredGeologicalStructure,Measured geological structure,tblStructureOrientation,Structure Orientation,1,Categorical
+soAccuracy,Accuracy [%],tblStructureOrientation,Structure Orientation,1,Numerical
+litsecBaseType,Base type,tblSectionLithofacy,Section lithofacies,1,Categorical
+resValue,Resistivity (?m),tblResistivity,Resistivity,1,Numerical
+resDirection,Direction,tblResistivity,Resistivity,1,Categorical
+resSaturation,Sample saturation [%],tblResistivity,Resistivity,1,Numerical
+reslabmeIdFk,Measurement ID,tblResistivity,Resistivity,0,Numerical
+sampArchitecturalElementIdFk,Architectural element ID,tblRockSample,Rock sample,1,Numerical
+sampArchitecturalElementI,Architectural element,tblRockSample,Rock sample,0,Categorical
+sampDepositionalEnvironmentIdFk,Depositional environment ID,tblRockSample,Rock sample,1,Numerical
+sampDepositionalEnvironment,Depositional environment,tblRockSample,Rock sample,0,Categorical
+Apparent_permeability_Minimum,Minimum Apparent Permeability [m2],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Lithostratigraphy,Lithostratigraphy,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Petrography,Petrography,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Object_of_investigation,Object of investigation,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Sample_type,Sample type,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Chronostratigraphy,Chronostratigraphy,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Lithofacies,Lithofacies,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Architectural_element,Architectural element,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Depositional_environment,Depositional environment,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+Grain_density_Minimum,Grain density [g cm-3] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Bulk_density_Minimum,Bulk density [g cm-3] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Apparent_permeability_Average,Apparent permeability [m2] Average,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Sample_type,Sample type,v_PetrophysicsRockSamples,Petrophysics,1,Categorical
+CaO,CaO [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+P2O5,P2O5 [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+MgO,MgO [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+K2O,K2O [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Na2O,Na2O [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+MnO,MnO [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+TiO2,TiO2 [%],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Intrinsic_permeability,,,,,
+Intrinsic permeability [m2] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical,
+Porosity_Minimum,Porosity [%] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Thermal_conductivity_Minimum,Thermal conductivity [W m^-1 K^-1] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Thermal_diffusivity_Minimum ,Thermal diffusivity [m^2 s^-1] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+P_sonic_wave_velocity_Minimum ,P sonic wave velocity [m s^-1] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+S_sonic_wave_velocity_Minimum ,S sonic wave velocity [m s^-1] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Local_x,Local x [m],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Local_y,Local y [m],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Local_z,Local z [m],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+RowID,ID,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Local_x,Local x (m),v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Local_y,Local y (m),v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Local_z,Local z (m),v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Lithostratigraphy,Lithostratigraphy,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Categorical
+Petrography,Petrography,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Categorical
+Magnetic_susceptibility_maximum,Magnetic susceptibility [10-6 SI] maximum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Magnetic_susceptibility_minimum,Magnetic susceptibility [10-6 SI] minimum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Potassium_maximum_percent,Potassium [%] maximum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Potassium_minimum_percent,Potassium [%] minimum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Uranium_maximum_ppm,Uranium [ppm] maximum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Uranium_minimum_ppm,Uranium [ppm] minimum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Thorium_maximum_ppm,Thorium [ppm] maximum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Thorium_minimum_ppm,Thorium [ppm] minimum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+API_maximum,Total radiation [API] maximum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+API_minimum,Total radiation [API] minimum,v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+Dip_direction_degree,Dip direction [ｰ],v_PetrophysicsFieldMeasurements,Petrophysics field,1,Numerical
+rqdfimeIdFk,Measurement ID,tblRockQualityDesignationIndex,RQD,0,Numerical
+rqdValue,RQD Value,tblRockQualityDesignationIndex,RQD,1,Numerical
+rqdType,RQD Type,tblRockQualityDesignationIndex,RQD,1,Categorical
+rqdZfrom,Local z from,tblRockQualityDesignationIndex,RQD,1,Numerical
+rqdZto,Local z to,tblRockQualityDesignationIndex,RQD,1,Numerical
+rqdXfrom,Local x from,tblRockQualityDesignationIndex,RQD,1,Numerical
+rqdXto,Local x to,tblRockQualityDesignationIndex,RQD,1,Numerical
+rqdYfrom,Local y from,tblRockQualityDesignationIndex,RQD,1,Numerical
+rqdYto,Local y to,tblRockQualityDesignationIndex,RQD,1,Numerical
+btValue,Temperature [ｰC],tblBoreholeTemperature,Temperature,1,Numerical
+btfimeIdFk,Measurement ID,tblBoreholeTemperature,Temperature,0,Numerical
+btMeasurementTime,Measurement time [s],tblBoreholeTemperature,Temperature,1,Numerical
+btDeviceVelocity,Device velocity [m/s],tblBoreholeTemperature,Temperature,1,Numerical
+slfimeIdFk,Measurement ID,tblSonicLog,Sonic Log,0,Numerical
+slValue,Sonic velocity [m/s],tblSonicLog,Sonic Log,1,Numerical
+slMeasurementTime,Measurement time [s],tblSonicLog,Sonic Log,1,Numerical
+slDeviceVelocity,Device velocity [m/s],tblSonicLog,Sonic Log,1,Numerical
+Longitude,Longitude [ｰ],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Latitude,Latitude [ｰ],v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Resistivity_Maximum,Resistivity [Ohmm] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Resistivity_Minimum,Resistivity [Ohmm] Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+C14,14C [云,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+O16,16O [云 ,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+O18,18O [云,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Grain_Size_Maximum,Grain size class Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Grain_Size_Minimum,Grain size class Minimum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+gslabmeIdPk,Measurement ID,tblGrainSize,Grain size,0,Numerical
+gsAverage,Average grain size class,tblGrainSize,Grain size,1,Numerical
+gsMaximum,Maximum grain size class,tblGrainSize,Grain size,1,Numerical
+gsMinimum,Minimum grain size,tblGrainSize,Grain size,1,Numerical
+gsScale,Used scale,tblGrainSize,Grain size,1,Numerical
+gsSizeDomain,Size domain m2,tblGrainSize,Grain size,1,Numerical
+gscIdPk,Measurement ID,tblGrainSizeCurve,Grain Size Curve,0,Numerical
+gscGsIdFk,Measurement Reference,tblGrainSizeCurve,Grain Size Curve,1,Numerical
+gsGrainSizeMM,Grain size [mm],tblGrainSizeCurve,Grain Size Curve,1,Numerical
+gsPercentage,Ratio [%],tblGrainSizeCurve,Grain Size Curve,1,Numerical
+aclabmeIdFk,Measurement ID,tblAxialCompression,Axial compression,0,Numerical
+acType,Compression type,tblAxialCompression,Axial compression,1,Categorical
+acAxialStressMax,Maximal axial stress [MPa],tblAxialCompression,Axial compression,1,Numerical
+acAxialStrainAtStressMax,Axial strain at maximum stress [MPa],tblAxialCompression,Axial compression,1,Numerical
+acAxialStrainMax,Maximal axial strain [MPa],tblAxialCompression,Axial compression,1,Numerical
+acLateralStress,Lateral stress [MPa],tblAxialCompression,Axial compression,1,Numerical
+acStrainMeasuringMethod,Strain measurement method,tblAxialCompression,Axial compression,1,Categorical
+acLoadControl,Load control,tblAxialCompression,Axial compression,1,Categorical
+acYoungsModulus,Youngs modulus [GPa],tblAxialCompression,Axial compression,1,Numerical
+acPoissonRatio,Poisson ratio [-],tblAxialCompression,Axial compression,1,Numerical
+Grain_density_Maximum,Grain density [g cm-3] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Bulk_density_Maximum,Bulk density [g cm^-3] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Porosity_Maximum,Porosity [%] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Intrinsic_permeability_Maximum,Intrinsic permeability [m^2] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Apparent_permeability_Maximum,Apparent permeability [m^2] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Thermal_conductivity_Maximum,Thermal conductivity [W m^-1 K^-1] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Thermal_diffusivity_Maximum,Thermal diffusivity [m^2 s^-1] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+P_sonic_wave_velocity_Maximum,P sonic wave velocity [m s^-1] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+S_sonic_wave_velocity_Maximum ,S sonic wave velocity [m s^-1] Maximum,v_PetrophysicsRockSamples,Petrophysics,1,Numerical
+Resistivity,Resistivity [Ohmm],NULL,NULL,NULL,Numerical
+C13,13C [云,NULL,NULL,NULL,Numerical
+measIdPk,Measurement ID,tblMeasurement,Measurements,0,Numerical
+measType,Measurement Type,tblMeasurement,Measurements,1,Categorical
+measParameter,Parameter,tblMeasurement,Measurements,1,Categorical
+measResultType,Result type,tblMeasurement,Measurements,1,Categorical
+measRockSampleIdFk,Rock sample reference,tblMeasurement,Measurements,1,Categorical
+measObjectOfInvestigationIdFk,Object of investigation reference,tblMeasurement,Measurements,1,Categorical
+measLithostratigraphy,Lithostratigraphy,tblMeasurement,Measurements,1,Categorical
+measChronostratigraphy,Chronostratigraphy,tblMeasurement,Measurements,1,Categorical
+measDevice,Analytical device,tblMeasurement,Measurements,1,Categorical
+measPetrography,Petrography,tblMeasurement,Measurements,1,Categorical
+measFacies,Facies type,tblMeasurement,Measurements,1,Categorical
+measArchitecturalElement,Architectural element,tblMeasurement,Measurements,1,Categorical
+measLocalCoordinateX,Local X coordinate [m],tblMeasurement,Measurements,1,Numerical
+measLocalCoordinateY,Local Y coordinate [m],tblMeasurement,Measurements,1,Numerical
+measLocalCoordinateZ,Local Z coordinate [m],tblMeasurement,Measurements,1,Numerical
+measLatitude,Latitude [WGS84],tblMeasurement,Measurements,1,Numerical
+measLongitude,Longitude [WGS84],tblMeasurement,Measurements,1,Numerical
+measElevation,Elevation [m asl],tblMeasurement,Measurements,1,Numerical
+measDirection,Direction,tblMeasurement,Measurements,1,Categorical
+measUploadDate,Date,tblMeasurement,Measurements,1,Categorical
+measProject,Project,tblMeasurement,Measurements,0,Categorical
+measprjIdFk,Project ID,tblMeasurement,Measurements,0,Numerical
+measUploaderId,Uploader ID,tblMeasurement,Measurements,0,Numerical
+measFaciesIdFk,Facies ID,tblMeasurement,Measurements,1,Numerical
+measArchitecturalElementIdFk,Architectural Element ID,tblMeasurement,Measurements,1,Numerical
+measDepositionalEnvironmentIdFk,Depositional environment ID,tblMeasurement,Measurements,1,Numerical
+measAnalyticalDeviceId,Analytical device ID,tblMeasurement,Measurements,1,Numerical
+measUploader,Uploader,tblMeasurement,Measurements,0,Categorical
+hhmeasIdFk,Measurement ID,tblHydraulicHead,Hydraulic head,0,Numerical
+hhHead,Hydraulic head [m],tblHydraulicHead,Hydraulic head,1,Numerical
+hhAccuracy,Hydraulic head accuracy [m],tblHydraulicHead,Hydraulic head,1,Numerical
+hhMeasurementTime,Measurement time [s],tblHydraulicHead,Hydraulic head,1,Numerical
+sampElevation,Elevation [m a.s.l.],tblRockSample,Rock sample,1,Numerical

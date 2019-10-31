@@ -1,0 +1,1026 @@
+﻿<UserControl x:Class="GeoReVi.LithologicalSectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:map="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             TextOptions.TextFormattingMode="Display"
+             Height="Auto" Width="Auto" >
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                  Storyboard.TargetProperty="Opacity"
+                  From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <!---Resources for the user control-->
+    <!---Shortcut trigger to update the dataset-->
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="groupedObjects" Source="{Binding ObjectsOfInvestigation}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="ooiBasin"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+    <Border Background="Transparent">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!---Navigation panel-->
+            <Border     Grid.ColumnSpan="3"
+                        Grid.Row="0"
+                        Background="{StaticResource BackgroundVeryLightBrush}"
+                        BorderBrush="{StaticResource ForegroundDarkBrush}"
+                        BorderThickness="0"
+                        Height="auto">
+                <StackPanel Orientation="Horizontal" 
+                        Height="Auto" 
+                        VerticalAlignment="Top">
+                    <DockPanel>
+                        <ToolBarTray DockPanel.Dock="Top">
+                            <ToolBar>
+                                <Button Tag="First" Content="{StaticResource FontAwesomeBackward}"
+                                    Style="{StaticResource IconButton}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="First">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Tag="Previous" 
+                                    Content="{StaticResource FontAwesomeStepBackward}"
+                                    Style="{StaticResource IconButton}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="Previous">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Object "
+                                   Style="{StaticResource NavigationTextBlock}"/>
+                                    <TextBox Text="{Binding SelectedObjectIndex, Mode=TwoWay}"
+                                 Style="{StaticResource inputTextBox}"
+                                 Width="Auto"
+                                 VerticalContentAlignment="Center"
+                                 Padding="2"/>
+                                    <TextBlock Text=" of "
+                                   Style="{StaticResource NavigationTextBlock}"/>
+                                    <TextBlock Text="{Binding CountObjects, Mode=OneWay}"
+                                   Style="{StaticResource NavigationTextBlock}"/>
+                                </StackPanel>
+                                <Button Tag="Next"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeStepForward}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="Next">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button Tag="Last" 
+                                    Content="{StaticResource FontAwesomeForward}"
+                                    Style="{StaticResource IconButton}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="Last">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </ToolBar>
+                            <ToolBar>
+                                <Button  x:Name="btnDetails"
+                                     Tag="Details"
+                                     Style="{StaticResource IconButton}"
+                                     Content="{StaticResource FontAwesomeDetails}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="AddDetails">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </ToolBar>
+                            <ToolBar Background="Transparent">
+                                <Button Style="{StaticResource IconButton}"
+                                                Content="{StaticResource FontAwesomePlus}"
+                                                HorizontalAlignment="Right"
+                                                Tag="New section" >
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="Add">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button x:Name="btnUpdate"
+                                    Tag="Save record"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeSave}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="Update">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                                <Button x:Name="btnDelete"
+                                    Tag="Delete record"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeTrash}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="Delete">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </ToolBar>
+                            <ToolBar Background="Transparent">
+                                <Button Tag="Refresh"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeRefresh}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="Click">
+                                            <cal:ActionMessage MethodName="InRefresh">
+                                            </cal:ActionMessage>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Button>
+                            </ToolBar>
+                            <ToolBar>
+                                <Button x:Name="btnExportReport"
+                            Tag="Print report"
+                            Style="{StaticResource IconButton}"
+                                       Content="{StaticResource FontAwesomePrint}"
+                                               HorizontalAlignment="Right">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="ExportControl">
+                                            <cal:Parameter Value="{Binding ElementName=UpdateRockSampleGrid}"/>
+                                            <cal:Parameter Value="True"/>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <local:ImageButton Tag="Export section"
+                                                               ImageSource="/GeoReVi;component\Media\Icons\Symbols\GeologicalSection.png"
+                                                               HorizontalAlignment="Right"
+                                                               Visibility="{Binding Path=IsLithologicalSectionSelected, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="ExportControl">
+                                            <cal:Parameter Value="{Binding ElementName=LithologicalSection}"></cal:Parameter>
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </local:ImageButton>
+                            </ToolBar>
+                        </ToolBarTray>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+            <!---Navigation pain-->
+            <Border BorderBrush="LightGray"
+                     BorderThickness="1"
+                     Background="{StaticResource BackgroundVeryLightBrush}"
+                     Grid.Column="0"
+                    Grid.Row="1">
+                <Grid MaxHeight="1000">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <Border Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                                Margin="0,0,0,5">
+                            <DockPanel>
+                                <ComboBox Name="OOICombo" 
+                                          FontSize="{StaticResource FontSizeSmall}"
+                                          FontWeight="DemiBold"
+                                          HorizontalAlignment="Left"
+                                          IsEditable="False"
+                                          MinWidth="250"
+                                          MaxWidth="300"
+                                           Text="{Binding Path=Type, Mode=TwoWay, NotifyOnSourceUpdated=True, FallbackValue='No value'}"
+                                          IsSynchronizedWithCurrentItem="True"
+                                          Margin="10,5">
+                                    <ComboBoxItem Content="Outcrop"/>
+                                    <ComboBoxItem Content="Drilling"/>
+                                    <ComboBoxItem Content="Transect"/>
+                                </ComboBox>
+
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                    <TextBox Text="{Binding TextFilter, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="Filter text"
+                             FontSize="{StaticResource FontSizeSmall}"
+                             Margin="10,5,10,5"
+                             Grid.Row="1"/>
+                    <StackPanel Grid.Row="2">
+                        <Expander Style="{StaticResource BaseStyle}"
+                              Header="Import functionality"
+                                  FontWeight="DemiBold"
+                                  FontSize="{StaticResource FontSizeSmall}"
+                              Template="{StaticResource StretchyExpanderTemp}"
+                              ExpandDirection="Up">
+                            <Border Margin="10,16,10,16"
+                                AllowDrop="True"
+                            CornerRadius="8"
+                            Background="{StaticResource WordBlueBrush}"
+                            BorderThickness="10"
+                            Grid.Row="2"
+                            Width="200"
+                            Height="200"
+                            cal:Message.Attach="[Event Drop] = [Action ImportFile($eventArgs)];">
+                                <Border.BorderBrush>
+                                    <DrawingBrush Viewport="0,0,20,20" 
+                                          ViewportUnits="Absolute" 
+                                          TileMode="Tile">
+                                        <DrawingBrush.Drawing>
+                                            <DrawingGroup>
+                                                <GeometryDrawing Brush="White">
+                                                    <GeometryDrawing.Geometry>
+                                                        <GeometryGroup>
+                                                            <RectangleGeometry Rect="0,0,50,50" />
+                                                            <RectangleGeometry Rect="50,50,50,50" />
+                                                        </GeometryGroup>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                            </DrawingGroup>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Border.BorderBrush>
+                                <Border.Effect>
+                                    <DropShadowEffect Opacity="0.5" Color="Gray"/>
+                                </Border.Effect>
+                                <StackPanel HorizontalAlignment="Center"
+                                   VerticalAlignment="Center">
+                                    <TextBlock Text="Import data set&#x0a;(Drag and drop)"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource ForegroundLightBrush}"
+                                   FontFamily="{StaticResource LatoBold}"
+                                   FontSize="{StaticResource FontSizeRegular}"/>
+                                    <Image Source="/GeoReVi;component\Media\Icons\Symbols\info.png"
+                                           Width="16"
+                                           Height="Auto"
+                                           Stretch="Uniform">
+                                        <Image.ToolTip>
+                                            <StackPanel Width="100">
+                                                <TextBlock Text=".csv or .xlsx allowed"
+                                                   TextWrapping="WrapWithOverflow"/>
+
+                                            </StackPanel>
+                                        </Image.ToolTip>
+                                    </Image>
+                                    <Label Content="Import type"
+                                               Style="{StaticResource inputAddLabel}"/>
+                                    <ComboBox  SelectedIndex="0"
+                                                Text="{Binding Path=ImportType, 
+                                                        Mode=OneWayToSource,
+                                                        UpdateSourceTrigger=PropertyChanged,
+                                                        NotifyOnSourceUpdated=True, 
+                                                        FallbackValue='No specific'}">
+                                        <ComboBoxItem Content="Lithological"/>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Border>
+                        </Expander>
+                    </StackPanel>
+                    <ListView x:Name="RockSampleDetailsList"
+                              Margin="3"
+                              ItemsSource="{Binding Source={StaticResource groupedObjects}}"
+                              SelectedItem="{Binding SelectedObject}"
+                              ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                              AlternationCount="2"
+                              Grid.Row="3">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Expander IsExpanded="False"
+                                                              Style="{StaticResource BaseStyle}"
+                                                              Template="{StaticResource StretchyExpanderTemp}">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="{Binding Name}" 
+                                                                           FontWeight="DemiBold" 
+                                                                           FontSize="14" 
+                                                                           VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding ItemCount}" 
+                                                                           FontSize="11" 
+                                                                           Foreground="Gray"
+                                                                           FontWeight="Bold" 
+                                                                           FontStyle="Italic" 
+                                                                           Margin="5,0,0,0" 
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <ItemsPresenter />
+                                                    </Expander>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+                        <ListView.View>
+                            <GridView x:Name="RockSampleGridViewList">
+                                <GridViewColumn x:Name="IdGvc"
+                                                            Header="Object Id">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=ooiIdPk}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="LabelGvc"
+                                                            Header="Name">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=ooiName}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="TypeGvc"
+                                                            Header="Type">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=ooiType}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <Border Grid.Row="4"
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            Margin="15">
+                        <map:Map  CredentialsProvider="{StaticResource BingTest}"
+                             Mode="Road"
+                             Tag="{Binding Path=SelectedObject.ooiType, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                             Margin="8"
+                            ZoomLevel="4"
+                            Background="{StaticResource BackgroundLightBrush}"
+                            Culture="en-au"
+                            local:MapHelper.Center="{Binding Center, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                  MinHeight="300">
+                        </map:Map>
+                    </Border>
+                </Grid>
+            </Border>
+            <GridSplitter Grid.Column="1"
+                          Grid.Row="1"
+                          Width="2"
+                          Background="{StaticResource ApirsMediumGrayBrush}"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Center"
+                          ShowsPreview="True"
+                          />
+            <!---Updating rock sample informations-->
+            <Border x:Name="MainBorder"
+                    Grid.Row="1" 
+                    Grid.Column="2"
+                    BorderBrush="{StaticResource ForegroundDarkBrush}"
+                    Background="{StaticResource BackgroundVeryLightBrush}"
+                    BorderThickness="0">
+                <ScrollViewer>
+                    <Grid x:Name="UpdateRockSampleGrid" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Border Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                            Grid.ColumnSpan="3"
+                            HorizontalAlignment="Stretch"
+                            Grid.Row="0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Section details"
+                           Margin="20,5,20,5"
+                           Style="{StaticResource HeaderTextInput}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <TabControl Grid.Column="0"
+                                    Grid.Row="1"
+                                    Grid.RowSpan="4">
+                            <TabItem Header="Meta information">
+                        <!---Field measurements related to the object-->
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Stretch"
+                                Grid.Column="0"
+                                Grid.Row="1">
+                            <Border Background="{StaticResource BackgroundVeryLightBrush}"
+                             CornerRadius="8"
+                            Margin="15"
+                            BorderBrush="{StaticResource ApirsGrayBrush}"
+                            BorderThickness="1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Height="auto"
+                                        Grid.Row="0"
+                                        Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                                        CornerRadius="8,8,0,0">
+                                        <TextBlock Text="Object sections"
+                                               Style="{StaticResource HeaderTextInput}"
+                                               HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <ListView  Margin="3"
+                                           ItemsSource="{Binding LithologicalSections}"
+                                           SelectedItem="{Binding SelectedLithologicalSection}"
+                                            Grid.Row="1"
+                                            MaxHeight="200"     
+                                           ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                                            AlternationCount="2"
+                                           VerticalAlignment="Top">
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="Sec. Id"
+                                                            Width="40">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <TextBlock TextAlignment="Left"
+                                                                       Text="{Binding Path=secIdPk}" 
+                                                                       Style="{StaticResource GridViewColumnTextStyle}"
+                                                                       MinWidth="90"
+                                                                       MaxWidth="100"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Type"
+                                                            Width="100">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock TextAlignment="Left"
+                                                                   Text="{Binding Path=secType}" 
+                                                                   Style="{StaticResource GridViewColumnTextStyle}"
+                                                                   MinWidth="150"/>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Interpreter"
+                                                            Width="100">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock TextAlignment="Left"
+                                                                   Text="{Binding Path=secInterpreterName}" 
+                                                                   Style="{StaticResource GridViewColumnTextStyle}"
+                                                                   HorizontalAlignment="Left"
+                                                                   MinWidth="150"/>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                </Grid>
+                            </Border>
+                            <!--General information-->
+                            <StackPanel>
+                                        <GroupBox  Margin="15"
+                              Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                              >
+                                            <GroupBox.Header>General information</GroupBox.Header>
+                                            <StackPanel Orientation="Horizontal">
+                                                <StackPanel HorizontalAlignment="Left">
+                                                    <DockPanel>
+                                                        <Label Content="Section ID:" 
+                                       Style="{StaticResource inputLabel}" Margin="3,5,0,5" />
+                                                        <TextBox HorizontalAlignment="Right"
+                                         IsEnabled="False"
+                                         Style="{StaticResource inputTextBox}"
+                                         Text="{Binding Path=SelectedLithologicalSection.secIdPk, Mode=TwoWay, 
+                                            NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Content="Name:" 
+                                                   Style="{StaticResource inputLabel}"
+                                                   Grid.Column="0" 
+                                                   Grid.Row="19" 
+                                                   Margin="3,4,0,4"/>
+                                                        <TextBox IsEnabled="True"
+                                         HorizontalAlignment="Right"
+                                         Style="{StaticResource inputTextBox}"
+                                         Text="{Binding Path=SelectedLithologicalSection.secName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Content="Project:"
+                                    Style="{StaticResource inputLabel}"
+                                     Margin="3,4,0,4"/>
+                                                        <ComboBox IsEditable="False"
+                                          ItemsSource="{Binding Path=Projects, Mode=OneTime,UpdateSourceTrigger=PropertyChanged}"
+                                          SelectedValuePath="prjIdPk"
+                                          SelectedValue="{Binding Path=SelectedLithologicalSection.secprjIdFk, Mode=TwoWay, NotifyOnValidationError=True, ValidatesOnExceptions=true}"
+                                          DisplayMemberPath="prjName" 
+                                          Text="{Binding Path=SelectedLithologicalSection.secProjectName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                                          IsTextSearchEnabled="True"
+                                          IsSynchronizedWithCurrentItem="True" Margin="0,3,3,3" />
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Content="Type:"
+                                            Style="{StaticResource inputLabel}"
+                                            Margin="3,5,0,5"/>
+                                                        <ComboBox x:Name="sampTypeTextBox" 
+                                              IsEditable="False"
+                                              SelectedValue="{Binding Path=SelectedLithologicalSection.secType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                              SelectedValuePath="Content"
+                                              Text="{Binding Path=SelectedLithologicalSection.secType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                              IsSynchronizedWithCurrentItem="True">
+                                                            <ComboBoxItem Content="Lithological"/>
+                                                        </ComboBox>
+                                                    </DockPanel>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Left">
+                                                    <DockPanel>
+                                                        <Label Content="Latitude:" 
+                                           Style="{StaticResource inputLabel}" Margin="3,4,0,4"/>
+                                                        <TextBox Text="{Binding Path=SelectedLithologicalSection.secLatitude, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, StringFormat='{}{0:0.000000}',UpdateSourceTrigger=PropertyChanged}" 
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Margin="0,3,3,3"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Content="Longitude:" 
+                                                    Style="{StaticResource inputLabel}"
+                                                     Margin="3,4,0,4"/>
+                                                        <TextBox Text="{Binding Path=SelectedLithologicalSection.secLongitude, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, StringFormat='{}{0:0.000000}',UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Margin="0,3,3,3"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Content="Altitude:" 
+                                                    Style="{StaticResource inputLabel}"
+                                                     Margin="3,4,0,4"/>
+                                                        <TextBox Text="{Binding Path=SelectedLithologicalSection.secAltitude, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Margin="0,3,3,3"/>
+                                                    </DockPanel>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                        <ContentControl cal:View.Model="{Binding FilesListViewModel}"/>
+                                    </StackPanel>
+                        </StackPanel>
+                            </TabItem>
+                            <TabItem Header="Section"
+                                     >
+                                <Border HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="0,0,0,5"
+                                BorderThickness="0"
+                                BorderBrush="Black"
+                                CornerRadius="8">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Border Height="auto"
+                                            Grid.Row="0"
+                                            Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                                            CornerRadius="8,8,0,0">
+                                        <Grid>
+                                            <TextBlock Text="Lithological section"
+                                               Style="{StaticResource HeaderTextInput}"
+                                               HorizontalAlignment="Left"
+                                                       Margin="10,2"/>
+                                            <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf055;"
+                                                Tag="Add a bed"
+                                                    Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                           HorizontalAlignment="Right"
+                                                           VerticalAlignment="Center"
+                                                           Padding="1"
+                                                           Margin="5,3">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="AddBed">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                    <ListView  Margin="3"
+                                       ItemsSource="{Binding FaciesBeds}"
+                                               SelectedItem="{Binding SelectedFaciedBed}"
+                                           x:Name="FaciesBedsListView"
+                                        Grid.Row="1"
+                                               Height="500"
+                                           MaxWidth="800"
+                                       ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                                        AlternationCount="2"
+                                       VerticalAlignment="Stretch"
+                                           HorizontalAlignment="Left">
+                                        <i:Interaction.Behaviors>
+                                            <local:SelectedFaciedBedsBehavior
+                                                SelectedItemCollection="{Binding SelectedFaciesBeds}">
+                                            </local:SelectedFaciedBedsBehavior>
+                                        </i:Interaction.Behaviors>
+                                        <ListView.ContextMenu>
+                                            <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+                                                <MenuItem Header="Add bed"
+                                                          cal:Message.Attach="[Event Click] = [Action AddBed]">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock FontFamily="{StaticResource FontAwesome}"
+                                                                   Text="&#xf055;"
+                                                                   Foreground="Green"
+                                                                   Tag="Add bed"
+                                                                   HorizontalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                </MenuItem>
+                                                <MenuItem Header="Delete selected">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock FontFamily="{StaticResource FontAwesome}"
+                                                                    Text="&#xf146;"
+                                                                   Foreground="Red"
+                                                                    Tag="Delete selected beds"
+                                                                   HorizontalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="Click">
+                                                            <cal:ActionMessage MethodName="RemoveBeds">
+                                                            </cal:ActionMessage>
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
+                                                </MenuItem>
+                                                <Separator/>
+                                                <MenuItem Header="Move to section">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock FontFamily="{StaticResource FontAwesome}"
+                                                                    Text="&#xf337;"
+                                                                   Foreground="Red"
+                                                                    Tag="Delete selected beds"
+                                                                   HorizontalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                    <DockPanel>
+                                                        <ComboBox FontWeight="DemiBold"
+                                                                  MinWidth="120"
+                                                                  Background="{StaticResource BackgroundVeryLightBrush}"
+                                                                  FontSize="{StaticResource FontSizeVerySmall}"
+                                                                  Margin="0"
+                                                                  ItemsSource="{Binding Path=LithologicalSections, Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
+                                                                  SelectedValuePath="secIdPk"
+                                                                  SelectedValue="{Binding Path=MoveToSectionId, 
+                                                        Mode=OneWayToSource,
+                                                        UpdateSourceTrigger=PropertyChanged,
+                                                        NotifyOnSourceUpdated=True, 
+                                                        FallbackValue=0}"
+                                                                  DisplayMemberPath="secName"
+                                                                  
+                                                                  ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                                                  MaxDropDownHeight ="250"
+                                                                  >
+                                                        </ComboBox>
+                                                        <Button FontFamily="{StaticResource FontAwesome}"
+                                                                Content="&#xf058;"
+                                                                Tag="Submit"
+                                                                HorizontalAlignment="Left"
+                                                                Margin="15,5"
+                                                                Foreground="Green">
+                                                            <i:Interaction.Triggers>
+                                                                <i:EventTrigger EventName="Click">
+                                                                    <cal:ActionMessage MethodName="MoveBeds">
+                                                                    </cal:ActionMessage>
+                                                                </i:EventTrigger>
+                                                            </i:Interaction.Triggers>
+                                                        </Button>
+                                                    </DockPanel>
+                                                </MenuItem>
+                                                <Separator/>
+                                                <MenuItem Header="Export to CSV">
+                                                    <MenuItem.Icon>
+                                                        <TextBlock FontFamily="{StaticResource FontAwesome}"
+                                                                    Text="&#xf0ce;"
+                                                                    Tag="Export to CSV"
+                                                                   HorizontalAlignment="Center"/>
+                                                    </MenuItem.Icon>
+                                                    <i:Interaction.Triggers>
+                                                        <i:EventTrigger EventName="Click">
+                                                            <cal:ActionMessage MethodName="ExportControl">
+                                                                <cal:Parameter Value="{Binding ElementName=LithologicalSection}"></cal:Parameter>
+                                                            </cal:ActionMessage>
+                                                        </i:EventTrigger>
+                                                    </i:Interaction.Triggers>
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </ListView.ContextMenu>
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="Bed Id">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <TextBlock TextAlignment="Right"
+                                                                   Text="{Binding Path=litsecIdPk}" 
+                                                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Top [m]"
+                                                            Width="80">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <TextBox TextAlignment="Right"
+                                                                   Text="{Binding Path=litsecTop,NotifyOnValidationError=True}" 
+                                                                   Style="{StaticResource inputTextBox}"
+                                                                     Width="60"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Base [m]"
+                                                            Width="80">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <TextBox TextAlignment="Right"
+                                                                   Text="{Binding Path=litsecBase,NotifyOnValidationError=True}" 
+                                                                   Style="{StaticResource inputTextBox}"
+                                                                     Width="60"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Facies type"
+                                                            Width="110">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ComboBox IsEditable="False"
+                                                                  ItemsSource="{Binding Path=DataContext.Facies, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}, Mode=OneWay}"
+                                                                  SelectedValue="{Binding Path=litseclftId, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                                                  SelectedValuePath="facIdPk"
+                                                                  Text="{Binding Path=litseclftCode, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                                                  IsTextSearchEnabled="True"
+                                                                  IsSynchronizedWithCurrentItem="False"
+                                                                  Margin="0,3,3,3"
+                                                                  Width="95">
+                                                                <ComboBox.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBlock>
+                                                                            <TextBlock.Text>
+                                                                                <MultiBinding StringFormat="{}{0}: {1} | {2}">
+                                                                                    <Binding Path="facCode"/>
+                                                                                    <Binding Path="facType"/>
+                                                                                    <Binding Path="facChronostratigraphy"/>
+                                                                                </MultiBinding>
+                                                                            </TextBlock.Text>
+                                                                        </TextBlock>
+                                                                    </DataTemplate>
+                                                                </ComboBox.ItemTemplate>
+                                                            </ComboBox>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Grain size base">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <ComboBox x:Name="sampTypeTextBox" 
+                                                                      IsEditable="False"
+                                                                          IsReadOnly="False"
+                                                                      SelectedValue="{Binding Path=litsecGrainSizeBase, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                                                      SelectedValuePath="Content"
+                                                                      Text="{Binding Path=litsecGrainSizeBase, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                                                      IsSynchronizedWithCurrentItem="True">
+                                                                    <ComboBoxItem Content="Boulder"/>
+                                                                    <ComboBoxItem Content="Cobble"/>
+                                                                    <ComboBoxItem Content="Pebble"/>
+                                                                    <ComboBoxItem Content="Granule"/>
+                                                                    <ComboBoxItem Content="Very coarse sand"/>
+                                                                    <ComboBoxItem Content="Coarse sand"/>
+                                                                    <ComboBoxItem Content="Medium sand"/>
+                                                                    <ComboBoxItem Content="Fine sand"/>
+                                                                    <ComboBoxItem Content="Very fine sand"/>
+                                                                    <ComboBoxItem Content="Silt"/>
+                                                                    <ComboBoxItem Content="Mud"/>
+                                                                    <ComboBoxItem Content="Giant (&gt;30 mm)"/>
+                                                                    <ComboBoxItem Content="Huge (&gt;10 – 30 mm)"/>
+                                                                    <ComboBoxItem Content="Coarse (&gt;3 – 10 mm)"/>
+                                                                    <ComboBoxItem Content="Medium (&gt;1 – 3 mm)"/>
+                                                                    <ComboBoxItem Content="Small (&gt;0.3 – 1 mm)"/>
+                                                                    <ComboBoxItem Content="Fine (&gt;0.1 – 0.3 mm)"/>
+                                                                    <ComboBoxItem Content="Dense (&lt;0.1 mm)"/>
+                                                                    <ComboBoxItem Content="Unknown"/>
+                                                                </ComboBox>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Grain size top">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <ComboBox x:Name="sampTypeTextBox" 
+                                                                      IsEditable="False"
+                                                                      SelectedValue="{Binding Path=litsecGrainSizeTop, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                                                      SelectedValuePath="Content"
+                                                                      Text="{Binding Path=litsecGrainSizeTop, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                                                      IsSynchronizedWithCurrentItem="True">
+                                                                    <ComboBoxItem Content="Boulder"/>
+                                                                    <ComboBoxItem Content="Cobble"/>
+                                                                    <ComboBoxItem Content="Pebble"/>
+                                                                    <ComboBoxItem Content="Granule"/>
+                                                                    <ComboBoxItem Content="Very coarse sand"/>
+                                                                    <ComboBoxItem Content="Coarse sand"/>
+                                                                    <ComboBoxItem Content="Medium sand"/>
+                                                                    <ComboBoxItem Content="Fine sand"/>
+                                                                    <ComboBoxItem Content="Very fine sand"/>
+                                                                    <ComboBoxItem Content="Silt"/>
+                                                                    <ComboBoxItem Content="Mud"/>
+                                                                    <ComboBoxItem Content="Giant (&gt;30 mm)"/>
+                                                                    <ComboBoxItem Content="Huge (&gt;10 – 30 mm)"/>
+                                                                    <ComboBoxItem Content="Coarse (&gt;3 – 10 mm)"/>
+                                                                    <ComboBoxItem Content="Medium (&gt;1 – 3 mm)"/>
+                                                                    <ComboBoxItem Content="Small (&gt;0.3 – 1 mm)"/>
+                                                                    <ComboBoxItem Content="Fine (&gt;0.1 – 0.3 mm)"/>
+                                                                    <ComboBoxItem Content="Dense (&lt;0.1 mm)"/>
+                                                                    <ComboBoxItem Content="Unknown"/>
+                                                                </ComboBox>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Base type">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <ComboBox x:Name="sampTypeTextBox" 
+                                                                      IsEditable="False"
+                                                                      SelectedValue="{Binding Path=litsecBaseType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                                                      SelectedValuePath="Content"
+                                                                      Text="{Binding Path=litsecBaseType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                                                      IsSynchronizedWithCurrentItem="True">
+                                                                    <ComboBoxItem Content="Paraconform"/>
+                                                                    <ComboBoxItem Content="Conform"/>
+                                                                    <ComboBoxItem Content="Erosive"/>
+                                                                </ComboBox>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Thickness [m]"
+                                                            Width="80">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <TextBlock TextAlignment="Right"
+                                                                   Text="{Binding Path=litsecThickness}" 
+                                                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Grain size min">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid>
+                                                                <ComboBox x:Name="sampTypeTextBox" 
+                                                                      IsEditable="False"
+                                                                      SelectedValue="{Binding Path=litsecGrainSizeMin, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                                                      SelectedValuePath="Content"
+                                                                      Text="{Binding Path=litsecGrainSizeMin, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                                                      IsSynchronizedWithCurrentItem="True">
+                                                                    <ComboBoxItem Content="Boulder"/>
+                                                                    <ComboBoxItem Content="Cobble"/>
+                                                                    <ComboBoxItem Content="Pebble"/>
+                                                                    <ComboBoxItem Content="Granule"/>
+                                                                    <ComboBoxItem Content="Very coarse sand"/>
+                                                                    <ComboBoxItem Content="Coarse sand"/>
+                                                                    <ComboBoxItem Content="Medium sand"/>
+                                                                    <ComboBoxItem Content="Fine sand"/>
+                                                                    <ComboBoxItem Content="Very fine sand"/>
+                                                                    <ComboBoxItem Content="Silt"/>
+                                                                    <ComboBoxItem Content="Mud"/>
+                                                                    <ComboBoxItem Content="Giant (&gt;30 mm)"/>
+                                                                    <ComboBoxItem Content="Huge (&gt;10 – 30 mm)"/>
+                                                                    <ComboBoxItem Content="Coarse (&gt;3 – 10 mm)"/>
+                                                                    <ComboBoxItem Content="Medium (&gt;1 – 3 mm)"/>
+                                                                    <ComboBoxItem Content="Small (&gt;0.3 – 1 mm)"/>
+                                                                    <ComboBoxItem Content="Fine (&gt;0.1 – 0.3 mm)"/>
+                                                                    <ComboBoxItem Content="Dense (&lt;0.1 mm)"/>
+                                                                    <ComboBoxItem Content="Unknown"/>
+                                                                </ComboBox>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                            </GridView>
+                                        </ListView.View>
+                                    </ListView>
+                                    <Border Grid.Row="2"
+                                        Background="{StaticResource ButtonNormalBackground1}"
+                                            HorizontalAlignment="Stretch">
+                                        <DockPanel>
+                                            <Label Content="# of beds:"
+                                                    VerticalAlignment="Center"
+                                                   Margin="10,0,0,0"
+                                                   Style="{StaticResource inputLabel}"/>
+                                            <Label Content="{Binding Path=FaciesBeds.Count}"
+                                                       VerticalAlignment="Center"
+                                                   Margin="0"
+                                                       Style="{StaticResource inputLabel}"/>
+                                            <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf146;"
+                                                Tag="Delete selected beds"
+                                                    HorizontalAlignment="Right"
+                                                Margin="15,5">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="RemoveBeds">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                        </DockPanel>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            </TabItem>
+                        </TabControl>
+
+
+                        <Border Grid.Column="2"
+                                Grid.Row="1"
+                                Grid.RowSpan="3"
+                                Margin="15,0,15,15"
+                                HorizontalAlignment="Stretch"
+                                CornerRadius="10"
+                                MaxHeight="800"
+                                 Visibility="{Binding Path=IsLithologicalSectionSelected, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Button Style="{StaticResource MainButton}"
+                                        Height="30"
+                                                Content="Create chart"
+                                                cal:Message.Attach="CreateCharts"
+                                                ToolTip="Please, check if you loaded the data matrices beforehand"/>
+                                <ContentControl Grid.Row="1" cal:View.Model="{Binding SectionChartViewModel}"/>
+                            </Grid>
+                        </Border>
+                        <StackPanel Grid.Column="0"
+                                Grid.RowSpan="2"
+                                Grid.Row="3"
+                                Margin="15,0,15,0"
+                                VerticalAlignment="Top">
+                        </StackPanel>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

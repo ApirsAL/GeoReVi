@@ -1,0 +1,258 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GeoReVi"                    
+                    xmlns:map="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF" >
+
+    <!---Style template for bing maps pushpins showing rock samples-->
+    <Style x:Key="RockSamplePushPin" TargetType="map:Pushpin">
+        <Setter Property="Cursor" Value="Cross"></Setter>
+        <Setter Property="Height" Value="25"></Setter>
+        <Setter Property="Width" Value="25"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="map:Pushpin">
+                    <Grid x:Name="ContentGrid" 
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <StackPanel>
+                            <Grid Margin="0" 
+                                  Width="{TemplateBinding Width}" 
+                                  Height="{TemplateBinding Height}">
+                                <Rectangle HorizontalAlignment="Left" 
+                                           Margin="-0.208,13.238,0,-0.146" 
+                                           Width="10.555" 
+                                           Fill="#FF005167" 
+                                           RenderTransformOrigin="0.5,0.5">
+
+                                    <Rectangle.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform/>
+                                            <SkewTransform AngleX="-23"/>
+                                            <RotateTransform Angle="-12.944"/>
+                                            <TranslateTransform/>
+                                        </TransformGroup>
+                                    </Rectangle.RenderTransform>
+                                </Rectangle>
+
+                                <Rectangle Fill="{StaticResource ApirsGrayBrush}" 
+                                           Stroke="#FF005167" 
+                                           RadiusX="5" 
+                                           RadiusY="5"/>
+
+                                <Image x:Name="PushpinImage"
+                                    Source="/GeoReVi;component\Media\Icons\Symbols\RockSamples.png"
+                                   Height="25"
+                                   Width="auto"/>
+
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Margin="0" 
+                                                  TextBlock.FontFamily="Segoe UI" TextBlock.FontWeight="Bold" TextBlock.Foreground="#FFB8D30B">
+                                </ContentPresenter>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="PushpinImage"
+                                        Storyboard.TargetProperty="Height"
+                                        To="30" Duration="0:0:0.3" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="PushpinImage"
+                                        Storyboard.TargetProperty="Height"
+                                        To="25" Duration="0:0:0.3" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style template for bing maps pushpins showing Drillings-->
+    <Style x:Key="DrillingPushPin" TargetType="map:Pushpin">
+        <Setter Property="Cursor" Value="Cross"></Setter>
+        <Setter Property="Height" Value="25"></Setter>
+        <Setter Property="Width" Value="25"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="map:Pushpin">
+                    <Grid x:Name="ContentGrid" 
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <StackPanel>
+                            <Grid Margin="0" 
+                                  Width="{TemplateBinding Width}" 
+                                  Height="{TemplateBinding Height}">
+                                <Ellipse HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Width="{TemplateBinding Width}"
+                                         Height="{TemplateBinding Height}"
+                                         Fill="{StaticResource ApirsBlueBrush}"/>
+
+                                <Ellipse x:Name="PushpinEllipse"
+                                    HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Width="10"
+                                         Height="10"
+                                         Fill="{StaticResource BackgroundVeryLightBrush}">
+                                    <Ellipse.RenderTransform>
+                                        <ScaleTransform x:Name="MyAnimatedScaleTransform" 
+                                                        ScaleX="1" ScaleY="1"  />
+                                    </Ellipse.RenderTransform>
+                                </Ellipse>
+
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Margin="0" 
+                                                  TextBlock.FontFamily="Segoe UI" TextBlock.FontWeight="Bold" TextBlock.Foreground="#FFB8D30B">
+                                </ContentPresenter>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="PushpinEllipse"
+                                        Storyboard.TargetProperty="Width"
+                                        To="12" Duration="0:0:0.3" AutoReverse="False"/>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="PushpinEllipse"
+                                        Storyboard.TargetProperty="Height"
+                                        To="12" Duration="0:0:0.3" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="PushpinEllipse"
+                                        Storyboard.TargetProperty="Width"
+                                        To="10" Duration="0:0:0.3" AutoReverse="False"/>
+                                    <DoubleAnimation
+                                        Storyboard.TargetName="PushpinEllipse"
+                                        Storyboard.TargetProperty="Height"
+                                        To="10" Duration="0:0:0.3" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style template for bing maps pushpins showing outcrops-->
+    <Style x:Key="OutcropPushPin" TargetType="map:Pushpin">
+        <Setter Property="Cursor" Value="Cross"></Setter>
+        <Setter Property="Height" Value="20"></Setter>
+        <Setter Property="Width" Value="20"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="map:Pushpin">
+                    <Grid x:Name="ContentGrid" 
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <StackPanel>
+                            <Grid Margin="0" 
+                                  Width="{TemplateBinding Width}" 
+                                  Height="{TemplateBinding Height}">
+                                <Image x:Name="PushpinImage" 
+                                        Source="/GeoReVi;component\Media\Icons\quarry.png"
+                                           MaxWidth="{TemplateBinding Width}"
+                                           MaxHeight="{TemplateBinding Height}"
+                                           Stretch="Fill"/>
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Margin="0" 
+                                                  TextBlock.FontFamily="Segoe UI" TextBlock.FontWeight="Bold" TextBlock.Foreground="#FFB8D30B">
+                                </ContentPresenter>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="Height"
+                                        To="22" Duration="0:0:0.3" AutoReverse="False"/>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="Width"
+                                        To="22" Duration="0:0:0.3" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="Height"
+                                        To="20" Duration="0:0:0.3" AutoReverse="False"/>
+                                    <DoubleAnimation
+                                        Storyboard.TargetProperty="Width"
+                                        To="20" Duration="0:0:0.3" AutoReverse="False"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style template for bing maps pushpins showing outcrops-->
+    <Style x:Key="PalaeoFlowPushPin" TargetType="map:Pushpin">
+        <Setter Property="Cursor" Value="Cross"></Setter>
+        <Setter Property="Height" Value="20"></Setter>
+        <Setter Property="Width" Value="8"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="map:Pushpin">
+                    <Grid x:Name="ContentGrid" 
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
+                        <StackPanel>
+                            <Grid Margin="0" 
+                                  Width="{TemplateBinding Width}" 
+                                  Height="{TemplateBinding Height}">
+                                <Image x:Name="PushpinImage" 
+                                        Source="/GeoReVi;component\Media\Icons\Symbols\Arrow.png"
+                                           MaxWidth="{TemplateBinding Width}"
+                                           MaxHeight="{TemplateBinding Height}"
+                                           Stretch="Fill"/>
+                                <ContentPresenter HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  Margin="0" 
+                                                  TextBlock.FontFamily="Segoe UI" TextBlock.FontWeight="Bold" TextBlock.Foreground="#FFB8D30B">
+                                </ContentPresenter>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+</ResourceDictionary>

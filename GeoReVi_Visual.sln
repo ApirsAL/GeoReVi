@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2006
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoReVi", "src\GeoReVi\GeoReVi.csproj", "{A59B1FC2-BFDF-4BDB-A949-A21ABF96C7A5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoReVi.Core", "src\GeoReVi.Core\GeoReVi.Core.csproj", "{3FA3837F-01BD-46CC-B7C8-67873E15374B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoReVi.Data", "src\GeoReVi.Data\GeoReVi.Data.csproj", "{96A8C3B0-07ED-49C6-B03E-B7FDCD01903F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeoReVi.Tests", "src\GeoReVi.Tests\GeoReVi.Tests.csproj", "{1ECFFC8D-4905-412A-A27B-72441AA9E89C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A59B1FC2-BFDF-4BDB-A949-A21ABF96C7A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A59B1FC2-BFDF-4BDB-A949-A21ABF96C7A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A59B1FC2-BFDF-4BDB-A949-A21ABF96C7A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A59B1FC2-BFDF-4BDB-A949-A21ABF96C7A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FA3837F-01BD-46CC-B7C8-67873E15374B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FA3837F-01BD-46CC-B7C8-67873E15374B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FA3837F-01BD-46CC-B7C8-67873E15374B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FA3837F-01BD-46CC-B7C8-67873E15374B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96A8C3B0-07ED-49C6-B03E-B7FDCD01903F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96A8C3B0-07ED-49C6-B03E-B7FDCD01903F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96A8C3B0-07ED-49C6-B03E-B7FDCD01903F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96A8C3B0-07ED-49C6-B03E-B7FDCD01903F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ECFFC8D-4905-412A-A27B-72441AA9E89C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ECFFC8D-4905-412A-A27B-72441AA9E89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ECFFC8D-4905-412A-A27B-72441AA9E89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ECFFC8D-4905-412A-A27B-72441AA9E89C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F7476D1B-9CAB-43CE-A4B8-E9568FC6A1AB}
+	EndGlobalSection
+EndGlobal

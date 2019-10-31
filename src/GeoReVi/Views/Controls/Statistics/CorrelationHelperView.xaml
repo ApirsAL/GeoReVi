@@ -1,0 +1,238 @@
+﻿<UserControl x:Class="GeoReVi.CorrelationHelperView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="400">
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <Grid  x:Name="DataGrid">
+                <TabControl VerticalAlignment="Stretch"
+                            Grid.Row="1">
+                    <TabItem Header="Parameters"
+                             Height="30">
+                        <Grid>
+                            <StackPanel MaxWidth="400"
+                                        HorizontalAlignment="Left">
+                                <Button Style="{StaticResource MainButton}"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                        Content="Compute"
+                        ToolTip="Compute"
+                        cal:Message.Attach="Compute"
+                                        cal:Bind.ModelWithoutContext="{Binding CorrelationHelper}"
+                        HorizontalAlignment="Left">
+
+                                </Button>
+                                <TextBlock Text="Included data sets"
+                                           FontWeight="Bold"/>
+                                <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=DataSet}"
+                                                              SelectionMode="Multiple"
+                                                  BorderBrush="Transparent">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                                <Button Style="{StaticResource MainButton}"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                        Content="Clear"
+                        ToolTip="Clear data sets"
+                        cal:Message.Attach="ClearDataSets"
+                        HorizontalAlignment="Left">
+
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Used data matrix">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <DataGrid ItemsSource="{Binding Path=CorrelationHelper.Merge,
+                                                                Mode=OneWay, 
+                                                                NotifyOnSourceUpdated=True, 
+                                                                UpdateSourceTrigger=PropertyChanged}"
+                                                                          Grid.Row="1"
+                                                  AlternatingRowBackground="Gainsboro"  
+                                                                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                                                  AutoGenerateColumns="True"
+                                                                                                                                                                                HorizontalScrollBarVisibility="Auto"
+                                                              VerticalScrollBarVisibility="Auto"
+                                                              EnableColumnVirtualization="True"
+                                                              EnableRowVirtualization="True"
+                                                  AlternationCount="2"
+                                                  SelectionUnit="Cell"
+                                                  ColumnWidth="Auto">
+                            </DataGrid>
+                            <Border Background="{StaticResource ApirsGrayBrush}"
+                                        Opacity="0.60"
+                                        Visibility="{Binding Path=CorrelationHelper.IsComputing, 
+                                                    Converter={StaticResource BooleanToVisibilityConverter}, 
+                                                    NotifyOnSourceUpdated=True}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                                <ProgressBar IsIndeterminate="True"
+                                                 HorizontalAlignment="Left"
+                                                 VerticalAlignment="Top"
+                                                 Margin="20"
+                                                 Width="100"/>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Covariance">
+                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                            <DataGrid ItemsSource="{Binding Path=CorrelationHelper.CorrelationMatrix,
+                                                                Mode=OneWay, 
+                                                                NotifyOnSourceUpdated=True, 
+                                                                UpdateSourceTrigger=PropertyChanged}"
+                                                                          Grid.Row="1"
+                                                  AlternatingRowBackground="Gainsboro"  
+                                                  AutoGenerateColumns="True"
+                                                                                                                                                                                HorizontalScrollBarVisibility="Auto"
+                                                              VerticalScrollBarVisibility="Auto"
+                                                              EnableColumnVirtualization="True"
+                                                              EnableRowVirtualization="True"
+                                                  AlternationCount="2"
+                                                  SelectionUnit="Cell"
+                                                  ColumnWidth="Auto">
+                                            </DataGrid>
+                                            <Border Background="{StaticResource ApirsGrayBrush}"
+                                        Opacity="0.60"
+                                        Visibility="{Binding Path=CorrelationHelper.IsComputing, 
+                                                    Converter={StaticResource BooleanToVisibilityConverter}, 
+                                                    NotifyOnSourceUpdated=True}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                                                <ProgressBar IsIndeterminate="True"
+                                                 HorizontalAlignment="Left"
+                                                 VerticalAlignment="Top"
+                                                 Margin="20"
+                                                 Width="100"/>
+                                            </Border>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Pearson correlation matrix">
+                        <Grid>
+                            <TabControl>
+                                <TabItem Header="Matrix">
+                                    <Grid VerticalAlignment="Stretch"
+                                                                          Background="{StaticResource ForegroundLightBrush}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <DataGrid ItemsSource="{Binding Path=CorrelationHelper.PearsonCorrelationMatrix,
+                                                                Mode=OneWay, 
+                                                                NotifyOnSourceUpdated=True, 
+                                                                UpdateSourceTrigger=PropertyChanged}"
+                                                                          Grid.Row="1"
+                                                              HorizontalScrollBarVisibility="Auto"
+                                                              VerticalScrollBarVisibility="Auto"
+                                                              EnableColumnVirtualization="True"
+                                                              EnableRowVirtualization="True"
+                                                  AlternatingRowBackground="Gainsboro"  
+                                                  AutoGenerateColumns="True"
+                                                  AlternationCount="2"
+                                                  SelectionUnit="Cell"
+                                                  ColumnWidth="Auto">
+                                        </DataGrid>
+                                        <Border Background="{StaticResource ApirsGrayBrush}"
+                                        Opacity="0.60"
+                                        Visibility="{Binding Path=CorrelationHelper.IsComputing, 
+                                                    Converter={StaticResource BooleanToVisibilityConverter}, 
+                                                    NotifyOnSourceUpdated=True}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                                            <ProgressBar IsIndeterminate="True"
+                                                 HorizontalAlignment="Left"
+                                                 VerticalAlignment="Top"
+                                                 Margin="20"
+                                                 Width="100"/>
+                                        </Border>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Plot">
+                                    <Grid DataContext="{Binding CorrelationHelper}">
+                                        <ContentControl
+                                                                            cal:View.Model="{Binding PearsonBubbleChartViewModel}"/>
+                                    </Grid>
+                                </TabItem>
+                            </TabControl>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Spearman correlation matrix">
+                        <Grid>
+                            <TabControl>
+                                <TabItem Header="Matrix">
+                                    <Grid VerticalAlignment="Stretch"
+                                                                          Background="{StaticResource ForegroundLightBrush}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <DataGrid ItemsSource="{Binding Path=CorrelationHelper.SpearmanCorrelationMatrix,
+                                                                Mode=OneWay, 
+                                                                NotifyOnSourceUpdated=True, 
+                                                                UpdateSourceTrigger=PropertyChanged}"
+                                                                          Grid.Row="1"
+                                                  AlternatingRowBackground="Gainsboro"  
+                                                  AutoGenerateColumns="True"
+                                                                                                                            HorizontalScrollBarVisibility="Auto"
+                                                              VerticalScrollBarVisibility="Auto"
+                                                              EnableColumnVirtualization="True"
+                                                              EnableRowVirtualization="True"
+                                                  AlternationCount="2"
+                                                  SelectionUnit="Cell"
+                                                  ColumnWidth="Auto">
+                                        </DataGrid>
+                                        <Border Background="{StaticResource ApirsGrayBrush}"
+                                        Opacity="0.60"
+                                        Visibility="{Binding Path=CorrelationHelper.IsComputing, 
+                                                    Converter={StaticResource BooleanToVisibilityConverter}, 
+                                                    NotifyOnSourceUpdated=True}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                                            <ProgressBar IsIndeterminate="True"
+                                                 HorizontalAlignment="Left"
+                                                 VerticalAlignment="Top"
+                                                 Margin="20"
+                                                 Width="100"/>
+                                        </Border>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Plot">
+                                    <Grid DataContext="{Binding CorrelationHelper}">
+                                        <ContentControl
+                                                   cal:View.Model="{Binding SpearmanBubbleChartViewModel}"/>
+                                    </Grid>
+                                </TabItem>
+                            </TabControl>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

@@ -1,0 +1,235 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GeoReVi">
+
+    <Color x:Key="BackgroundLight">#efefef</Color>
+    <SolidColorBrush x:Key="BackgroundLightBrush" Color="{StaticResource BackgroundLight}"/>
+
+    <Color x:Key="BackgroundVeryLight">#fafafa</Color>
+    <SolidColorBrush x:Key="BackgroundVeryLightBrush" Color="{StaticResource BackgroundVeryLight}"/>
+
+    <Color x:Key="ForegroundMain">#686868</Color>
+    <SolidColorBrush x:Key="ForegroundMainBrush" Color="{StaticResource ForegroundMain}"/>
+
+    <Color x:Key="ForegroundVeryDark">#000000</Color>
+    <SolidColorBrush x:Key="ForegroundVeryDarkBrush" Color="{StaticResource ForegroundVeryDark}"/>
+
+    <!--Original: #2f4f4f #183133 #465A5B #1C1C1C #303a49-->
+    <Color x:Key="BackgroundDarkSlateGray">#ededed</Color>
+    <SolidColorBrush x:Key="BackgroundDarkSlateGrayBrush" Color="{StaticResource BackgroundDarkSlateGray}"/>
+
+    <Color x:Key="ForegroundLight">#ffffff</Color>
+    <SolidColorBrush x:Key="ForegroundLightBrush" Color="{StaticResource ForegroundLight}"/>
+
+    <Color x:Key="ForegroundDark">#bdbdbd</Color>
+    <SolidColorBrush x:Key="ForegroundDarkBrush" Color="{StaticResource ForegroundDark}"/>
+
+    <Color x:Key="WordBlue">#3099c5</Color>
+    <SolidColorBrush x:Key="WordBlueBrush" Color="{StaticResource WordBlue}"/>
+
+    <Color x:Key="ApirsBlue">#08298A</Color>
+    <SolidColorBrush x:Key="ApirsBlueBrush" Color="{StaticResource ApirsBlue}"/>
+
+    <!--Original: #FF333333-->
+    <!--Original: #303030-->
+    <!--Original:#C7C7C7-->
+    <Color x:Key="ApirsGray">#DCDCDC</Color>
+    <SolidColorBrush x:Key="ApirsGrayBrush" Color="{StaticResource ApirsGray}"/>
+
+    <Color x:Key="ApirsMediumGray">#303030</Color>
+    <SolidColorBrush x:Key="ApirsMediumGrayBrush" Color="{StaticResource ApirsMediumGray}"/>
+
+    <Color x:Key="ApirsYellow">#ffff00</Color>
+    <SolidColorBrush x:Key="ApirsYellowBrush" Color="{StaticResource ApirsYellow}"/>
+
+    <Color x:Key="ApirsRed">#ff4747</Color>
+    <SolidColorBrush x:Key="ApirsRedBrush" Color="{StaticResource ApirsRed}"/>
+
+    <Color x:Key="ApirsOrange">#ffa800</Color>
+    <SolidColorBrush x:Key="ApirsOrangeBrush" Color="{StaticResource ApirsOrange}"/>
+
+    <Color x:Key="ApirsGreen">#00FF00</Color>
+    <SolidColorBrush x:Key="ApirsGreenBrush" Color="{StaticResource ApirsGreen}"/>
+
+    <Color x:Key="ApirsLightBlue">#e6ffff</Color>
+    <SolidColorBrush x:Key="ApirsLightBlueBrush" Color="{StaticResource ApirsLightBlue}"/>
+
+    <Color x:Key="ApirsLightGray">#FAFAFA</Color>
+    <SolidColorBrush x:Key="ApirsLightGrayBrush" Color="{StaticResource ApirsLightGray}"/>
+
+    <!--Control colors.-->
+    <Color x:Key="WindowColor">#FFE8EDF9</Color>
+    <Color x:Key="ContentAreaColorLight">#FFC5CBF9</Color>
+    <Color x:Key="ContentAreaColorDark">#FF7381F9</Color>
+
+    <Color x:Key="DisabledControlLightColor">#FFE8EDF9</Color>
+    <Color x:Key="DisabledControlDarkColor">#FFC5CBF9</Color>
+    <Color x:Key="DisabledForegroundColor">#FF888888</Color>
+
+    <Color x:Key="SelectedBackgroundColor">#FFC5CBF9</Color>
+    <Color x:Key="SelectedUnfocusedColor">#FFDDDDDD</Color>
+
+    <Color x:Key="ControlLightColor">White</Color>
+    <Color x:Key="ControlMediumColor">#FF7381F9</Color>
+    <Color x:Key="ControlDarkColor">#FF211AA9</Color>
+
+    <Color x:Key="ControlMouseOverColor">#FF3843C4</Color>
+    <Color x:Key="ControlPressedColor">#FF211AA9</Color>
+
+
+    <Color x:Key="GlyphColor">#FF444444</Color>
+    <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
+
+    <!--Border colors-->
+    <Color x:Key="BorderLightColor">#FFCCCCCC</Color>
+    <Color x:Key="BorderMediumColor">#FF888888</Color>
+    <Color x:Key="BorderDarkColor">#FF444444</Color>
+
+    <Color x:Key="PressedBorderLightColor">#FF888888</Color>
+    <Color x:Key="PressedBorderDarkColor">#FF444444</Color>
+
+    <Color x:Key="DisabledBorderLightColor">#FFAAAAAA</Color>
+    <Color x:Key="DisabledBorderDarkColor">#FF888888</Color>
+
+    <Color x:Key="DefaultBorderBrushDarkColor">Black</Color>
+
+    <!--Control-specific resources.-->
+    <Color x:Key="HeaderTopColor">#FFC5CBF9</Color>
+    <Color x:Key="DatagridCurrentCellBorderColor">Black</Color>
+    <Color x:Key="SliderTrackDarkColor">#FFC5CBF9</Color>
+
+    <Color x:Key="NavButtonFrameColor">#FF3843C4</Color>
+
+    <LinearGradientBrush x:Key="MenuPopupBrush"
+                     EndPoint="0.5,1"
+                     StartPoint="0.5,0">
+        <GradientStop Color="{DynamicResource ControlLightColor}"
+                Offset="0" />
+        <GradientStop Color="{DynamicResource ControlMediumColor}"
+                Offset="0.5" />
+        <GradientStop Color="{DynamicResource ControlLightColor}"
+                Offset="1" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill"
+                     StartPoint="0,0"
+                     EndPoint="1,0">
+        <LinearGradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="#000000FF"
+                    Offset="0" />
+                <GradientStop Color="#600000FF"
+                    Offset="0.4" />
+                <GradientStop Color="#600000FF"
+                    Offset="0.6" />
+                <GradientStop Color="#000000FF"
+                    Offset="1" />
+            </GradientStopCollection>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <ImageBrush x:Key="Gcg" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Gcg.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Gcm" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Gcm.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Ghg" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Ghg.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Gpg" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Gpg.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+    
+    <ImageBrush x:Key="Gpm" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Gpm.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+    
+    <ImageBrush x:Key="Ghm" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Ghm.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Sm" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Sm.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+    
+    <ImageBrush x:Key="Sc" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Sc.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Sh" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Sh.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Sp" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Sp.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="St" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\St.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+    
+    <ImageBrush x:Key="Sr" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Sr.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,60,60" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Fc" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Fc.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,50,50" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Fh" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Fh.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,50,50" 
+                ViewportUnits="Absolute"/>
+
+    <ImageBrush x:Key="Fr" 
+                ImageSource="/GeoReVi;component\Media\Brushes\LithologicalSections\Fr.png"
+                Stretch="Fill"
+                TileMode="Tile" 
+                Viewport="0,0,50,50" 
+                ViewportUnits="Absolute"/>
+</ResourceDictionary>

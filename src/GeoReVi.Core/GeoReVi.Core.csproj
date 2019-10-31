@@ -1,0 +1,530 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3FA3837F-01BD-46CC-B7C8-67873E15374B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GeoReVi</RootNamespace>
+    <AssemblyName>GeoReVi.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Accord, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.3.8.2-alpha\lib\net46\Accord.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.2-alpha\lib\net46\Accord.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Math.Core, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Math.3.8.2-alpha\lib\net46\Accord.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Accord.Statistics, Version=3.8.2.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Accord.Statistics.3.8.2-alpha\lib\net46\Accord.Statistics.dll</HintPath>
+    </Reference>
+    <Reference Include="BingMapsRESTToolkit, Version=1.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BingMapsRESTToolkit.1.1.4\lib\net45\BingMapsRESTToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="BitMiracle.LibTiff.NET, Version=2.4.633.0, Culture=neutral, PublicKeyToken=53879b3e20e7a7d6, processorArchitecture=MSIL">
+      <HintPath>..\packages\BitMiracle.LibTiff.NET.2.4.633\lib\net40\BitMiracle.LibTiff.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Caliburn.Micro.Platform.Core, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Cyotek.Drawing.BitmapFont, Version=1.0.0.0, Culture=neutral, PublicKeyToken=58daa28b0b2de221, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cyotek.Drawing.BitmapFont.1.3.4\lib\net46\Cyotek.Drawing.BitmapFont.dll</HintPath>
+    </Reference>
+    <Reference Include="DotSpatial.Data, Version=1.9.0.0, Culture=neutral, PublicKeyToken=c29dbf30e059ca9d, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotSpatial.Data.1.9\lib\net40-Client\DotSpatial.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="DotSpatial.Mono, Version=1.9.0.0, Culture=neutral, PublicKeyToken=425ba4de41127026, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotSpatial.Mono.1.9\lib\net40-Client\DotSpatial.Mono.dll</HintPath>
+    </Reference>
+    <Reference Include="DotSpatial.Projections, Version=1.9.0.0, Culture=neutral, PublicKeyToken=272632bddd08a38b, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotSpatial.Projections.1.9\lib\net40-Client\DotSpatial.Projections.dll</HintPath>
+    </Reference>
+    <Reference Include="DotSpatial.Serialization, Version=1.9.0.0, Culture=neutral, PublicKeyToken=441f200f827611e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotSpatial.Serialization.1.9\lib\net40-Client\DotSpatial.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="DotSpatial.Topology, Version=1.9.0.0, Culture=neutral, PublicKeyToken=a66b5e9434ca3671, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotSpatial.Topology.1.9\lib\net40-Client\DotSpatial.Topology.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.3.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="GeoAPI.CoordinateSystems, Version=1.7.5.0, Culture=neutral, PublicKeyToken=a1a0da7def465678, processorArchitecture=MSIL">
+      <HintPath>..\packages\GeoAPI.CoordinateSystems.1.7.5\lib\net45\GeoAPI.CoordinateSystems.dll</HintPath>
+    </Reference>
+    <Reference Include="geometry3Sharp, Version=1.0.324.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\geometry3Sharp.1.0.324\lib\net45\geometry3Sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="HelixToolkit, Version=2.9.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
+      <HintPath>..\packages\HelixToolkit.2.9.0\lib\netstandard1.1\HelixToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="HelixToolkit.Wpf, Version=2.9.0.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
+      <HintPath>..\packages\HelixToolkit.Wpf.2.9.0\lib\net45\HelixToolkit.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Kml2Sql.Mapping, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kml2Sql.2.1.0\lib\net45\Kml2Sql.Mapping.dll</HintPath>
+    </Reference>
+    <Reference Include="LiteDB, Version=4.1.3.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.4.1.3\lib\net40\LiteDB.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=4.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.9.0\lib\net461\MathNet.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="MIConvexHull, Version=1.1.19.928, Culture=neutral, PublicKeyToken=2644b6f8be52c998, processorArchitecture=MSIL">
+      <HintPath>..\packages\MIConvexHull.1.1.19.928\lib\netstandard2.0\MIConvexHull.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.8.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.8.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.3.0.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.3.0.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Maps.MapControl.WPF, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Maps.MapControl.WPF.1.0.0.3\lib\net40-Client\Microsoft.Maps.MapControl.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.1016.290\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-WindowsAPICodePack-Core.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.3.3, Culture=neutral, PublicKeyToken=8985beaab7ea3f04, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft-WindowsAPICodePack-Shell.1.1.3.3\lib\net452\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.3\lib\net45\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreLinq, Version=3.2.0.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\packages\morelinq.3.2.0\lib\net451\MoreLinq.dll</HintPath>
+    </Reference>
+    <Reference Include="NetTopologySuite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=f580a05016ebada1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NetTopologySuite.2.0.0\lib\netstandard2.0\NetTopologySuite.dll</HintPath>
+    </Reference>
+    <Reference Include="NetTopologySuite.CoordinateSystems, Version=1.15.3.0, Culture=neutral, PublicKeyToken=f580a05016ebada1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NetTopologySuite.CoordinateSystems.1.15.3\lib\net45\NetTopologySuite.CoordinateSystems.dll</HintPath>
+    </Reference>
+    <Reference Include="NetTopologySuite.Diagnostics.Tracing, Version=0.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NetTopologySuite.Diagnostics.Tracing.0.0.3\lib\net45\NetTopologySuite.Diagnostics.Tracing.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3-beta2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp, Version=1.51.5185.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.51.5185-beta\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.51.5185.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.51.5185-beta\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ProjNET, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a1f5bdcd9c6f5740, processorArchitecture=MSIL">
+      <HintPath>..\packages\ProjNET.2.0.0\lib\netstandard2.0\ProjNET.dll</HintPath>
+    </Reference>
+    <Reference Include="Rh.DateRange.Picker, Version=0.9.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rh.DateRange.Picker.0.9.1.0\lib\net40\Rh.DateRange.Picker.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpKml.Core, Version=5.0.1.0, Culture=neutral, PublicKeyToken=9bb853c026a5c0ac, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpKml.Core.5.0.1\lib\net45\SharpKml.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.core, Version=2.0.2.640, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.core.2.0.2-pre20191003102319\lib\netstandard2.0\SQLitePCLRaw.core.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.provider.e_sqlite3, Version=1.1.14.520, Culture=neutral, PublicKeyToken=9c301db686d0bd12, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.provider.e_sqlite3.net45.1.1.14\lib\net45\SQLitePCLRaw.provider.e_sqlite3.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Device" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.0-preview5.19224.8\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.6.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Dataflow.4.10.0\lib\netstandard2.0\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\CommandHelper.cs" />
+    <Compile Include="Commands\Expressions\ExpressionHelpers.cs" />
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Data\DirectionEnum.cs" />
+    <Compile Include="Data\Repository\ApirsRepository.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Helper\AsyncHelper\AsyncAwaiter.cs" />
+    <Compile Include="Helper\AsyncHelper\DispatchService.cs" />
+    <Compile Include="Helper\Collection\CollectionHelper.cs" />
+    <Compile Include="Helper\Collection\NumberFilterOperation.cs" />
+    <Compile Include="Helper\Collection\Interfaces\INumberFilterOperation.cs" />
+    <Compile Include="Helper\Collection\ItemsChangeObservableCollection.cs" />
+    <Compile Include="Helper\Collection\QueryOperator.cs" />
+    <Compile Include="Helper\Collection\TextFilterOperation.cs" />
+    <Compile Include="Helper\ColorHelper\ColorHelper.cs" />
+    <Compile Include="Helper\ConnectionHelper\ConnectionHelper.cs" />
+    <Compile Include="Helper\Cryptography\CryptographyHelper.cs" />
+    <Compile Include="Helper\DataValidation\DataValidation.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\BoundaryCondition.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\BoundaryConditionType.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\ConstantField.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\NumericalSolver.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\PhysicalProblem.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\Solver.cs" />
+    <Compile Include="Helper\EnumHelper\EnumHelper.cs" />
+    <Compile Include="Helper\Export\ExportHelper.cs" />
+    <Compile Include="Helper\FileHandler\FileHelper.cs" />
+    <Compile Include="Helper\FileHandler\SerializerHelper.cs" />
+    <Compile Include="Helper\Functions\Number.cs" />
+    <Compile Include="Helper\Functions\Polynomial.cs" />
+    <Compile Include="Helper\Functions\PolynomialFunction.cs" />
+    <Compile Include="Helper\GeometryHelper\AbstractClasses\A1DGeometry.cs" />
+    <Compile Include="Helper\GeometryHelper\AbstractClasses\BasePropertyChanged.cs" />
+    <Compile Include="Helper\GeometryHelper\CoordinateTransformation\CoordinateTransformationHelper.cs" />
+    <Compile Include="Helper\GeometryHelper\CoordinateTransformation\SRIDReader.cs" />
+    <Compile Include="Helper\GeometryHelper\DataContracts\OpenElevationResult.cs" />
+    <Compile Include="Helper\GeometryHelper\Dimensionality.cs" />
+    <Compile Include="Helper\GeometryHelper\Hulls\BoundaryType.cs" />
+    <Compile Include="Helper\GeometryHelper\Hulls\ConvexHull.cs" />
+    <Compile Include="Helper\GeometryHelper\Slice3D.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Cell.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\CellType.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Face.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\FaceType.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Helper\CellSerializer.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Helper\GeometryBuilder.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Helper\TriangulationCellHelper.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Hexahedron.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\LocationValue.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Mesh.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\MeshCellType.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\MeshDisplayType.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Quadrilateral.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\SpatialOperationType.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Tetrahedon.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\Triangle.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\CategorizationMethod.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\DiscretizationMethod.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\Drift.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\GeographyHelper.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\GeostatisticalAnalysis.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\InterpolationFeature.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\InterpolationMethod.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\SpatialDiscretizationHelper.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\SpatialInterpolationHelper.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\TargetVariable.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\VariogramEnum.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\VariogramHelper.cs" />
+    <Compile Include="Helper\Math\Interfaces\ICell.cs" />
+    <Compile Include="Helper\Math\Interfaces\IGeostatisticalAnalysis.cs" />
+    <Compile Include="Helper\Math\Interfaces\IMachineLearningAnalysis.cs" />
+    <Compile Include="Helper\Math\MachineLearningHelper\MachineLearningAnalysis.cs" />
+    <Compile Include="Helper\Math\MachineLearningHelper\SupportVectorMachineHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\ClusteringHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\DataSetType.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\MissingDataTreatment.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\SammonProjectionHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\MeshStatisticsHelper.cs" />
+    <Compile Include="Helper\Math\XY.cs" />
+    <Compile Include="Helper\Paralellism\ParalellismHelper.cs" />
+    <Compile Include="IoC\FileManager\FileManager.cs" />
+    <Compile Include="Helper\Grouping\Generics\GenericPair.cs" />
+    <Compile Include="Helper\Grouping\GroupingHelper.cs" />
+    <Compile Include="Helper\Images\CanvasPainter.cs" />
+    <Compile Include="Helper\Images\ImageCapturer.cs" />
+    <Compile Include="Helper\Images\ImageHelper.cs" />
+    <Compile Include="Helper\Images\Params.cs" />
+    <Compile Include="Helper\Images\XamlToPngConverter.cs" />
+    <Compile Include="Helper\LinqHelper\LinqHelper.cs" />
+    <Compile Include="Helper\MapHelper\MapHelper.cs" />
+    <Compile Include="Helper\MapHelper\Map\LayerModel.cs" />
+    <Compile Include="Helper\MapHelper\Map\LocalTileSource.cs" />
+    <Compile Include="Helper\MapHelper\PaintManager.cs" />
+    <Compile Include="Helper\Math\ArrayHelper.cs" />
+    <Compile Include="Helper\Math\Interfaces\IGeometry.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\CompositionalHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\DistributionHelper.cs" />
+    <Compile Include="Helper\Math\Interfaces\IMultidimensionalDataSetHolder.cs" />
+    <Compile Include="Helper\Math\Interfaces\IUnivariateDataSetHolder.cs" />
+    <Compile Include="Helper\Math\Interfaces\IStatisticalAnalysis.cs" />
+    <Compile Include="Helper\Math\Interfaces\ILocationValue.cs" />
+    <Compile Include="Helper\Math\MathExtensions.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\MultiVariateAnalysis.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\NormalizationHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\BasicUnivariateStatisticalMeasuresHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\ConvexHull.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\EmpiricalDistributionHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\PrincipalComponentMethod.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\UnivariateDistributionTestHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\UnivariateHeterogeneityMeasuresHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\PrincipalComponentHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\CorrelationHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\RegressionHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\TernaryHelper.cs" />
+    <Compile Include="Helper\Navigation\Navigation.cs" />
+    <Compile Include="Helper\OSInteractionHelper\OSInteractionHelper.cs" />
+    <Compile Include="Helper\ServerInteraction\ServerInteractionHelper.cs" />
+    <Compile Include="Helper\StringEncryption\IHavePassword.cs" />
+    <Compile Include="Helper\StringEncryption\SecurityStringHelper.cs" />
+    <Compile Include="Helper\StringEncryption\StringCipherHelper.cs" />
+    <Compile Include="Helper\UnitHelper\UnitHelper.cs" />
+    <Compile Include="IoC\Interfaces\IFileManager.cs" />
+    <Compile Include="IoC\Interfaces\ILogFactory.cs" />
+    <Compile Include="IoC\Interfaces\ILogger.cs" />
+    <Compile Include="IoC\Logging\Implementation\BaseLogFactory.cs" />
+    <Compile Include="IoC\Logging\Implementation\ConsoleLogger.cs" />
+    <Compile Include="IoC\Logging\Implementation\DebugLogger.cs" />
+    <Compile Include="IoC\Logging\Implementation\FileLogger.cs" />
+    <Compile Include="IoC\Logging\LogFactoryLevel.cs" />
+    <Compile Include="IoC\Logging\LogLevel.cs" />
+    <Compile Include="Messages\ChangeUserMessage.cs" />
+    <Compile Include="Messages\ChangeViewModelMessage.cs" />
+    <Compile Include="Messages\ExportControlMessage.cs" />
+    <Compile Include="Messages\FilterByLocationMessage.cs" />
+    <Compile Include="Messages\IsLoadingMessage.cs" />
+    <Compile Include="Messages\MessageBoxMessage.cs" />
+    <Compile Include="Messages\OpenDataWindowMessage.cs" />
+    <Compile Include="Messages\SendUserMessageMessage.cs" />
+    <Compile Include="Messages\ShortCutMessage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServerTypes\Loader.cs" />
+    <Compile Include="ValueConverter\AliasDbColumnConverter.cs" />
+    <Compile Include="ValueConverter\BaseValueConverter.cs" />
+    <Compile Include="ValueConverter\GrainSizeToIntConverter.cs" />
+    <Compile Include="ValueConverter\IntToColorConverter.cs" />
+    <Compile Include="ValueConverter\StringToFaciesTileConverter.cs" />
+    <Compile Include="ValueConverter\UserMessageValueConverter.cs" />
+    <Compile Include="ViewModels\Authentication\HomeViewModel.cs" />
+    <Compile Include="ViewModels\Authentication\LoginViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Image.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\SymbolType.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BarChartViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BoxWhiskerChartViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\ChartViewModelBase.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\MeshStatisticsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Data\DatasetManagementAndVisualizationViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\Gridline.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\Label.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\Layer.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\LineAndScatterChartViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\LithologicalLayer.cs" />
+    <Compile Include="ViewModels\Controls\Files\FilesListViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\HelixChart3DViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\SectionChartViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\SideMenuViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\TernaryChartViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\VariogramChartViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\SammonProjectionViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Data\FilterDataSetViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Data\ImportLocationValuesViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Data\LoadParameterDataViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\ImportForms\ImportProcedureViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\LithologicalSection\LithologicalSectionViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\ArchitecturalElements\ArchitecturalElementsDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\BiochemicalDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\IgneousDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\LithologyDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\MetamorphicDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\SiliciclasticDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\VolcanicDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Lithologies\LithologiesWrapViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Data\MultivariateDataViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Maps\Maps\MapStyle.cs" />
+    <Compile Include="ViewModels\DataForms\Maps\MapViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Maps\MapViewWrapViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Measurements\AnalyticalInstrumentDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Measurements\FieldMeasurementDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Measurements\LabMeasurementDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Measurements\MeasurementWrapViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\ObjectsOfInvestigation\DrillingDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\ObjectsOfInvestigation\ObjectDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\ObjectsOfInvestigation\OutcropDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\ObjectsOfInvestigation\TransectDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Projects\PersonsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Projects\ProjectsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\RockSamples\CuboidDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\RockSamples\HandpieceDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\RockSamples\PlugDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\RockSamples\PowderDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\RockSamples\RockSampleDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\RockSamples\ThinSectionDetailsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\ClusteringViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\CorrelationHelperViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\HeterogeneityStatisticsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\Helper\NanValueTreatment.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\PrincipalComponentAnalysisViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\RegressionHelperViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Stratigraphy\BasinDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Stratigraphy\LithostratigraphyDetailsViewModel.cs" />
+    <Compile Include="ViewModels\DataForms\Users\UserViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\WPFMessageBox\MessageBoxViewButton.cs" />
+    <Compile Include="ViewModels\Dialogs\WPFMessageBox\MessageBoxViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\WPFMessageBox\MessageBoxViewResult.cs" />
+    <Compile Include="ViewModels\Dialogs\WPFMessageBox\MessageBoxViewType.cs" />
+    <Compile Include="ViewModels\Filter\GenericListFilterViewModel.cs" />
+    <Compile Include="ViewModels\Generic\GenericViewModel.cs" />
+    <Compile Include="ViewModels\Information\AboutViewModel.cs" />
+    <Compile Include="ViewModels\Logging\LogViewModel.cs" />
+    <Compile Include="ViewModels\RegisterViewModel.cs" />
+    <Compile Include="ViewModels\ShellViewModel.cs" />
+    <Compile Include="ViewModels\Windows\AdditionalShellViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\BarChartObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\BoxPlotChartObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\Chart3DDisplayType.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\Chart3DObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\ChartObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\Color\ColorARGB.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\Color\Extensions\DrawingsExtensions.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\LineChartObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\LithoLogChartObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\TernaryChartObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\VariogramChartObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\BarPolygon.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\BarSeries.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\BoxPlotSeries.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\BoxPlotStatistics.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\BoxWhiskerPlot.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Chart3DHelper.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\ColormapBrush.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\ColorMapHelper.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\LineSeries.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Series3D.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\MatrixSeries.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\SectionLayerSeries.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Symbols.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\Legend.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="GeoReVi.Core.csproj.vsspell" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeoReVi.Data\GeoReVi.Data.csproj">
+      <Project>{96a8c3b0-07ed-49c6-b03e-b7fdcd01903f}</Project>
+      <Name>GeoReVi.Data</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\DataFiles\" />
+    <Folder Include="Helper\Math\FiniteElementMethod\ODESolver\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Verwenden Sie die Wiederherstellung von NuGet-Paketen, um die fehlenden Dateien herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets'))" />
+    <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets'))" />
+    <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
+    <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
+    <Error Condition="!Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Accord.3.8.2-alpha\build\Accord.targets'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.3.0\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
+  <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
+  <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
+  <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.14\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
+  <Import Project="..\packages\Accord.3.8.2-alpha\build\Accord.targets" Condition="Exists('..\packages\Accord.3.8.2-alpha\build\Accord.targets')" />
+  <Import Project="..\packages\EntityFramework.6.3.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.3.0\build\EntityFramework.targets')" />
+</Project>

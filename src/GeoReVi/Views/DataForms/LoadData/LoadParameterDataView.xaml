@@ -1,0 +1,790 @@
+﻿<UserControl x:Class="GeoReVi.LoadParameterDataView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:rh="http://schemas.rollinghours.com/wpf"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             x:Name="LoadParameterDataViewControl"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="400">
+    <UserControl.Resources>
+        <ContextMenu x:Key="ColumnChooserMenu" 
+                     x:Shared="False"
+                     DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+            <MenuItem Header="Remove column">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <cal:ActionMessage MethodName="RemoveColumn">
+                        </cal:ActionMessage>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </MenuItem>
+                
+        </ContextMenu>
+        <Style x:Key="ColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="ContextMenu" Value="{StaticResource ColumnChooserMenu}" />
+        </Style>
+    </UserControl.Resources>
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <Grid  x:Name="DataGrid"
+                   MaxHeight="600">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <WrapPanel Grid.ColumnSpan="2"
+                           Grid.Row="0">
+                    <DockPanel Margin="10,0">
+                        <fa:ImageAwesome Icon="Braille"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Select from all objects in the list"/>
+                        <CheckBox IsChecked="{Binding Path=All, Mode=TwoWay}"
+                                                                          HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"/>
+                    </DockPanel>
+                    <DockPanel Margin="10,0">
+                        <fa:ImageAwesome Icon="Globe"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Use global reference system"/>
+                        <CheckBox IsChecked="{Binding Path=Global, Mode=TwoWay}"
+                                                                          HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"/>
+                    </DockPanel>
+                        <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+                    <DockPanel Margin="10,0">
+                        <TextBlock Text="Source EPSG:" 
+                                   Margin="10, 0"
+                                   VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDSource, Mode=TwoWay}"
+                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="Target EPSG:" 
+                                   Margin="10, 0"
+                                   VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDTarget, Mode=TwoWay}"
+                                 VerticalAlignment="Center"/>
+                        <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Convert"
+                                cal:Message.Attach="ConvertCoordinates"/>
+                    </DockPanel>
+                    <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+                    <DockPanel Margin="10,0">
+                        <fa:ImageAwesome Icon="Calendar"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Filter by date range"/>
+                        <CheckBox IsChecked="{Binding Path=FilterByDate, Mode=TwoWay}"
+                                                                          HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"/>
+                        <DockPanel Visibility="{Binding Path=FilterByDate, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="From" VerticalAlignment="Center"/>
+                            <DatePicker HorizontalAlignment="Right" 
+                                                    Width="129"
+                                        Height="25"
+                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
+                            <DatePicker.SelectedDate>
+                                <Binding Path="From"
+                                                                 Mode="TwoWay"
+                                                                 NotifyOnValidationError="True"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 ValidatesOnExceptions="True">
+                                </Binding>
+                            </DatePicker.SelectedDate>
+                            </DatePicker>
+                            <TextBox Text="{Binding Path=To, StringFormat='{}{0:hh\\:mm\\:ss tt}'}"/>
+                            <TextBlock Text="To" VerticalAlignment="Center"/>
+                            <DatePicker HorizontalAlignment="Right" 
+                                                    Width="129"
+                                        Height="25"
+                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
+                                <DatePicker.SelectedDate>
+                                    <Binding Path="To"
+                                                                 Mode="TwoWay"
+                                                                 NotifyOnValidationError="True"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 ValidatesOnExceptions="True">
+                                    </Binding>
+                                </DatePicker.SelectedDate>
+                            </DatePicker>
+                            <TextBox Text="{Binding Path=From, StringFormat='{}{1:hh\\:mm\\:ss tt}'}"/>
+                        </DockPanel>
+                    </DockPanel>
+                    <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+                    <DockPanel Margin="10,0">
+                        <fa:ImageAwesome Icon="ObjectGroup"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Group by"/>
+                        <ComboBox  SelectedIndex="0"
+                                                                                   MinWidth="100"
+                                                                            Text="{Binding Path=GroupBy,
+                                                                                    Mode=TwoWay}">
+                            <ComboBoxItem Content="Nothing"/>
+                            <ComboBoxItem Content="Sample type"/>
+                            <ComboBoxItem Content="Object of investigation"/>
+                            <ComboBoxItem Content="Lithostratigraphy"/>
+                            <ComboBoxItem Content="Chronostratigraphy"/>
+                            <ComboBoxItem Content="Facies"/>
+                            <ComboBoxItem Content="Architectural element"/>
+                            <ComboBoxItem Content="Depositional environment"/>
+                            <ComboBoxItem Content="Petrography"/>
+                        </ComboBox>
+                    </DockPanel>
+                    <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+                    <DockPanel>
+                        <local:DropDownButton HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Style="{StaticResource BaseStyle}"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Margin="5,0">
+                            <local:DropDownButton.Menu>
+                                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+                                    <MenuItem Header="Remove dataset"
+                                              cal:Message.Attach="[Event Click] = [Action RemoveDataSet]"/>
+                                    <MenuItem Header="Import mesh"
+                                              cal:Message.Attach="[Event Click] = [Action ImportMesh]"/>
+                                    <MenuItem Header="Export mesh"
+                                              cal:Message.Attach="[Event Click] = [Action ExportMesh]"/>
+                                    <Separator/>
+                                </ContextMenu>
+                            </local:DropDownButton.Menu>
+                            <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                                              Text="Mesh action"
+                                              Foreground="{StaticResource WordBlueBrush}"
+                                              FontSize="{StaticResource FontSizeVerySmall}"/>
+                        </local:DropDownButton>
+                        <local:DropDownButton HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Style="{StaticResource BaseStyle}"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Margin="5,0">
+                            <local:DropDownButton.Menu>
+                                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+                                    <MenuItem Header="Log10 transformation"
+                                              cal:Message.Attach="[Event Click] = [Action LogarithmicTransformation]"/>
+                                    <MenuItem Header="10^ transformation"
+                                              cal:Message.Attach="[Event Click] = [Action ExponentialTransformation]"/>
+                                    <MenuItem Header="Z-score transformation"
+                                              cal:Message.Attach="[Event Click] = [Action ZScoreTransformation]"/>
+                                    <MenuItem Header="Normalization"
+                                              cal:Message.Attach="[Event Click] = [Action Normalization]"/>
+                                    <Separator HorizontalAlignment="Stretch"
+                                                       Height="2"/>
+                                    <MenuItem Header="Group by name"
+                                              cal:Message.Attach="[Event Click] = [Action GroupByName]"/>
+                                    <Separator/>
+                                </ContextMenu>
+                            </local:DropDownButton.Menu>
+                            <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                                              Text="Transformation"
+                                              Foreground="{StaticResource WordBlueBrush}"
+                                              FontSize="{StaticResource FontSizeVerySmall}"/>
+                        </local:DropDownButton>
+                    </DockPanel>
+                </WrapPanel>
+                <TabControl Grid.Row="2"
+                            Grid.Column="1">
+                    <TabItem Header="Data sets">
+                        <TabControl ItemsSource="{Binding MeasPoints}" 
+
+                            SelectedIndex="0"
+                            SelectedItem="{Binding Path=SelectedMeasPoint, Mode=TwoWay}">
+                            <TabControl.ItemContainerStyle>
+                                <Style TargetType="TabItem" BasedOn="{StaticResource LeftSideTabItem}">
+                                </Style>
+                            </TabControl.ItemContainerStyle>
+                            <TabControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border>
+                                        <TextBlock Text="{Binding Name, Mode=OneWay}"
+                                           Tag="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                   Height="20">
+                                        </TextBlock>
+                                    </Border>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate>
+
+                            <!-- Change ContentTemplate to control main content -->
+                            <TabControl.ContentTemplate>
+                                <DataTemplate>
+                                    <Grid Background="{StaticResource ForegroundLightBrush}">
+                                        <DataGrid ItemsSource="{Binding Data,
+                                                                Mode=OneWay, 
+                                                                NotifyOnSourceUpdated=True, 
+                                                                UpdateSourceTrigger=PropertyChanged}"
+                                              RowHeaderWidth="20"
+                                                  AlternatingRowBackground="Gainsboro" 
+                                              HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Auto"
+                                              EnableColumnVirtualization="True"
+                                              EnableRowVirtualization="True"
+                                                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                                                  AutoGenerateColumns="True"
+                                              ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+                                                  AlternationCount="2"
+                                                  SelectionUnit="CellOrRowHeader"
+                                              SelectionMode="Extended"
+                                                  ColumnWidth="Auto"
+                                              VirtualizingPanel.IsVirtualizing="True">
+                                        </DataGrid>
+                                    </Grid>
+                                </DataTemplate>
+                            </TabControl.ContentTemplate>
+                        </TabControl>
+                    </TabItem>
+                    <TabItem Header="Parameter Statistics">
+                        <StackPanel>
+                            <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="CreateBasicStatisticsHelper"
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Content="Compute"
+                                    HorizontalAlignment="Left"
+                                    Margin="5"/>
+                            <ContentControl cal:View.Model="{Binding HeterogeneityStatisticsViewModel}"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Mesh Statistics">
+                        <StackPanel>
+                            <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="CreateMeshStatisticsHelper"
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Content="Compute"
+                                    HorizontalAlignment="Left"
+                                    Margin="5"/>
+                            <ContentControl cal:View.Model="{Binding MeshStatisticsViewModel}"/>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
+                <Grid Grid.Column="0"
+                      Grid.Row="1">
+                    <Expander Template="{StaticResource HorizontalExpanderTemp}"
+                                                      ExpandDirection="Left"
+                                                      IsExpanded="False">
+                        <TabControl TabStripPlacement="Left"
+                                                      Width="400">
+                            <TabItem Header="Data operations"
+                                     Style="{StaticResource LeftSideTabItem}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Auto"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                    <Border Background="{StaticResource ForegroundLightBrush}">
+                                        <Grid>
+                                            <StackPanel MinWidth="30">
+                                                <Expander ExpandDirection="Down"
+                                              Header="Display"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                        <TextBlock Text="Change name"
+                                                                    FontWeight="DemiBold"/>
+                                                        <DockPanel>
+                                                            <Button Content="Save"
+                                                                    Margin="5,0"
+                                                                    Style="{StaticResource HyperlinkButton}"
+                                                                    FontSize="{StaticResource FontSizeVerySmall}">
+                                                                <i:Interaction.Triggers>
+                                                                    <i:EventTrigger EventName="Click">
+                                                                        <cal:ActionMessage MethodName="UpdateHeader" >
+                                                                            <cal:Parameter Value="{Binding ElementName=KeyTextBox, Path=Text}"/>
+                                                                        </cal:ActionMessage>
+                                                                    </i:EventTrigger>
+                                                                </i:Interaction.Triggers>
+                                                            </Button>
+                                                            <Grid>
+                                                                <TextBox x:Name="KeyTextBox" Width="250"  VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5"/>
+                                                                <TextBlock IsHitTestVisible="False" Text="New name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="{x:Type TextBlock}">
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox}" Value="">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </Grid>
+                                                        </DockPanel>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Separator>
+                                                    
+                                                </Separator>
+                                                <StackPanel Margin="6">
+                                                    <TextBlock Text="Source data sets"
+                                                                           FontWeight="DemiBold"/>
+                                                    <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=MeasPoints}"
+                                                              SelectionMode="Multiple"
+                                                  BorderBrush="Transparent">
+                                                        <i:Interaction.Behaviors>
+                                                            <local:SelectedMeasPointsBehaviour
+                                                    SelectedItemCollection="{Binding Path=SpatialInterpolationHelper.SelectedMeasPoints, Mode=TwoWay}">
+                                                            </local:SelectedMeasPointsBehaviour>
+                                                        </i:Interaction.Behaviors>
+                                                        <ListView.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                                            </DataTemplate>
+                                                        </ListView.ItemTemplate>
+                                                    </ListView>
+                                                </StackPanel>
+                                                <Expander ExpandDirection="Down"
+                                              Header="Spatial operations"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                        <StackPanel Margin="6">
+                                                            <TextBlock Text="Operation"
+                                                                       FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.SpatialOperationType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.SpatialOperationType, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                        </StackPanel>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="ComputeOperation"
+                                                                HorizontalAlignment="Left"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Compute operation"/>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="ComputeThickness"
+                                                                HorizontalAlignment="Left"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Compute thickness map"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Expander ExpandDirection="Down"
+                                              Header="Discretization"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Method"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6">
+                                                                <TextBlock Text="Discretization method"
+                                                                       FontWeight="DemiBold"/>
+                                                                <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.DiscretizationMethod, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.DiscretizationMethod, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                <TextBlock Text="Boundary type"
+                                                                       FontWeight="DemiBold"/>
+                                                                <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.BoundaryType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.BoundaryType, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                <DockPanel>
+                                                                    <TextBlock Text="Include original data points"
+                                                                           FontWeight="DemiBold"
+                                                                       VerticalAlignment="Center"/>
+                                                                    <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.IncludeOriginalDataPoints, Mode=TwoWay}"
+                                                                              HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"/>
+                                                                </DockPanel>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Domain"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6"
+                                                                        Visibility="{Binding IsRectangularGrid, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}">
+                                                                <TextBlock Text="Start point x direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.StartX, Mode=TwoWay}"/>
+                                                                <TextBlock Text="End point x direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.EndX, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Start point y direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.StartY, Mode=TwoWay}"/>
+                                                                <TextBlock Text="End point y direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.EndY, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Start point z direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.StartZ, Mode=TwoWay}"/>
+                                                                <TextBlock Text="End point z direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.EndZ, Mode=TwoWay}"/>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Step width"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6">
+                                                                <TextBlock Text="Bins x direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.BinsX, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Bins y direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.BinsY, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Bins z direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.BinsZ, Mode=TwoWay}"/>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="ComputeDiscretization"
+                                                                HorizontalAlignment="Left"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Compute discretization"/>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                                                cal:Message.Attach="GetElevation"
+                                                                HorizontalAlignment="Left"
+                                                                FontSize="{StaticResource FontSizeVerySmall}"
+                                                                Content="Assign SRTM values"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Separator>
+
+                                                </Separator>
+                                                <StackPanel Margin="6">
+                                                    <TextBlock Text="Target data sets"
+                                                                           FontWeight="DemiBold"/>
+                                                    <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=MeasPoints}"
+                                                                      SelectionMode="Single"
+                                                  BorderBrush="Transparent">
+                                                        <i:Interaction.Behaviors>
+                                                            <local:SelectedMeasPointsBehaviour
+                                                    SelectedItemCollection="{Binding Path=SpatialInterpolationHelper.SelectedInterpolationMeasPoints, Mode=TwoWay}">
+                                                            </local:SelectedMeasPointsBehaviour>
+                                                        </i:Interaction.Behaviors>
+                                                        <ListView.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                                            </DataTemplate>
+                                                        </ListView.ItemTemplate>
+                                                    </ListView>
+                                                </StackPanel>
+                                                <Expander ExpandDirection="Down"
+                                              Header="Interpolation"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                       
+                                                        <TextBlock Text="Interpolation feature"
+                                                                           FontWeight="DemiBold"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.InterpolationFeature, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.InterpolationFeature, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                        <TextBlock Text="Interpolation method"
+                                                                       FontWeight="DemiBold"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.InterpolationMethod, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.InterpolationMethod, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                        <TextBlock Text="Iterations"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=SpatialInterpolationHelper.NumberOfSwaps, Mode=TwoWay}"/>
+
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Neighborhood"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6">
+                                                                <TextBlock Text="Neighborhood x direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.SearchRadiusX, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Neighborhood y direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.SearchRadiusY, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Neighborhood z direction"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.SearchRadiusZ, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Maximum count of neighbors"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.MaximumNeighborCount, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Power parameter"
+                                                                           Visibility="{Binding Path=SpatialInterpolationHelper.IsIDW, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Power, Mode=TwoWay}"
+                                                                         Visibility="{Binding Path=SpatialInterpolationHelper.IsIDW, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                                        />
+                                                                <DockPanel>
+                                                                    <TextBlock Text="Transform to original distribution range?"
+                                                                           FontWeight="DemiBold"
+                                                                       VerticalAlignment="Center"/>
+                                                                    <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.TransformToOriginalDistribution, Mode=TwoWay}"
+                                                                              HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"/>
+                                                                </DockPanel>
+                                                                <DockPanel>
+                                                                    <TextBlock Text="Should target vertex value fit source grid name?"
+                                                                           FontWeight="DemiBold"
+                                                                       VerticalAlignment="Center"/>
+                                                                    <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.ShouldTargetVertexFitSourceGridName, Mode=TwoWay}"
+                                                                              HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"/>
+                                                                </DockPanel>
+                                                                <DockPanel>
+                                                                    <TextBlock Text="Include error variance"
+                                                                           FontWeight="DemiBold"
+                                                                       VerticalAlignment="Center"/>
+                                                                    <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.IncludeErrorVariance, Mode=TwoWay}"
+                                                                              HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"/>
+                                                                </DockPanel>
+                                                                <TextBlock Text="Error variance"
+                                                                           Visibility="{Binding Path=SpatialInterpolationHelper.IncludeErrorVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.ErrorVariance, Mode=TwoWay}"
+                                                                         Visibility="{Binding Path=SpatialInterpolationHelper.IncludeErrorVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                                        />
+                                                                <TextBlock Text="Cross validation points to remove"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.CrossValidationRemovePointCount, Mode=TwoWay}"/>
+
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Variogram model"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6">
+                                                                <TextBlock Text="Nugget"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Nugget, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Sill"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Sill, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Range"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Range, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Model"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Model, Mode=TwoWay}"/>
+
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Universal kriging"
+                                             Visibility="{Binding Path=SpatialInterpolationHelper.IsUniversalKriging, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6">
+                                                                <DockPanel>
+                                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="AddPolynomial"
+                                                                 cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Add"/>
+                                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="RemovePolynomial"
+                                                                 cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Remove"/>    
+                                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="ComputeResiduals"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Calculate residuals"/>
+                                                                    </DockPanel>
+                                                                <ListView Margin="10"
+                                                                          ItemsSource="{Binding Path=SpatialInterpolationHelper.SpatialFunction}"
+                                                                          SelectionMode="Single"
+                                                                          SelectedItem="{Binding Path=SpatialInterpolationHelper.SelectedPolynomial}"
+                                                                          BorderBrush="Transparent">
+                                                                    <ListView.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <DockPanel>
+                                                                                <ListView Margin="1,10"
+                                                                          ItemsSource="{Binding Path=Coefficients}"
+                                                                          SelectionMode="Single"
+                                                                          BorderBrush="Transparent">
+                                                                                    <ListView.ItemTemplate>
+                                                                                        <DataTemplate>
+                                                                                            <TextBox Text="{Binding Path=Num}"
+                                                                                                     Margin="0"/>
+                                                                                        </DataTemplate>
+                                                                                    </ListView.ItemTemplate>
+                                                                                </ListView>
+                                                                                <ListView Margin="1,10"
+                                                                          SelectionMode="Single"
+                                                                          BorderBrush="Transparent">
+                                                                                    <ListViewItem>
+                                                                                        <TextBox Text="x"
+                                                                                                 Margin="0"
+                                                                                                 IsEnabled="False"/>
+                                                                                    </ListViewItem>
+                                                                                    <ListViewItem>
+                                                                                        <TextBox Text="y"
+                                                                                                 Margin="0"
+                                                                                                 IsEnabled="False"/>
+                                                                                    </ListViewItem>
+                                                                                    <ListViewItem>
+                                                                                        <TextBox Text="z"
+                                                                                                 Margin="0"
+                                                                                                 IsEnabled="False"/>
+                                                                                    </ListViewItem>
+                                                                                </ListView>
+                                                                                <ListView Margin="1,10"
+                                                                          ItemsSource="{Binding Path=Exponents}"
+                                                                          SelectionMode="Single"
+                                                                          BorderBrush="Transparent">
+                                                                                    <ListView.ItemTemplate>
+                                                                                        <DataTemplate>
+                                                                                            <TextBox Text="{Binding Path=Num}"
+                                                                                                     Margin="0"
+                                                                                                     FontSize="8"
+                                                                                                     VerticalContentAlignment="Top"/>
+                                                                                        </DataTemplate>
+                                                                                    </ListView.ItemTemplate>
+                                                                                </ListView>
+                                                                            </DockPanel>
+                                                                           
+                                                                        </DataTemplate>
+                                                                    </ListView.ItemTemplate>
+                                                                </ListView>
+
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Results"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6">
+                                                                <TextBlock Text="Interpolated points"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.DiscretizedLocationValues.Count, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
+                                                                <TextBlock Text="RMSE"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.RMSE, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
+                                                                <TextBlock Text="MAE"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.MAE, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                                <Button Style="{StaticResource HyperlinkButton}"
+                                                    cal:Message.Attach="ComputeInterpolation"
+                                                                    FontSize="{StaticResource FontSizeVerySmall}"
+                                                    Content="Compute interpolation"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Expander ExpandDirection="Down"
+                                              Header="Categorization"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                        <Expander ExpandDirection="Down"
+                                              Header="Method"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                            <StackPanel Margin="6">
+                                                                <TextBlock Text="Categorization method"
+                                                                       FontWeight="DemiBold"/>
+                                                                <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.CategorizationMethod, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.CategorizationMethod, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                <Button Style="{StaticResource HyperlinkButton}"
+                                                    cal:Message.Attach="ComputeCategorization"
+                                                                    FontSize="{StaticResource FontSizeVerySmall}"
+                                                    Content="Compute categorization"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                            </StackPanel>
+                                            <Grid Background="Gray"
+                      Opacity="0.4"
+                      Visibility="{Binding Path=SpatialInterpolationHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
+                                        </Grid>
+
+                                    </Border>
+                                </ScrollViewer>
+                            </TabItem>
+                        </TabControl>
+                    </Expander>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

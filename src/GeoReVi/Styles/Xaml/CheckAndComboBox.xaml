@@ -1,0 +1,375 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GeoReVi"
+                    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                    xmlns:cal="http://www.caliburnproject.org"
+>
+    
+    <!--The normal brush for comboboxes-->
+    <LinearGradientBrush x:Key="NormalBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientBrush.GradientStops>
+            <GradientStopCollection>
+                <GradientStop Color="{StaticResource ApirsMediumGray}" Offset="0.0"/>
+                <GradientStop Color="{StaticResource ApirsMediumGray}" Offset="1.0"/>
+            </GradientStopCollection>
+        </GradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource ApirsLightGray}" />
+    
+    <!--Control template for toggle button-->
+    <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="ToggleButton">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border x:Name="Border" 
+                    Grid.ColumnSpan="2" 
+                    CornerRadius="2"
+                      Background="{StaticResource NormalBrush}"
+                      BorderThickness="1" />
+            <Border 
+              Grid.Column="0"
+              CornerRadius="2,0,0,2" 
+              Margin="1" 
+              Background="{StaticResource ForegroundLightBrush}" 
+              BorderThickness="0,0,1,0" />
+            <Path 
+              x:Name="Arrow"
+              Grid.Column="1"
+              Fill="{StaticResource ForegroundLightBrush}"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Data="M 0 0 L 4 4 L 8 0 Z"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="ToggleButton.IsMouseOver" Value="true">
+                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundDarkSlateGrayBrush}" />
+            </Trigger>
+            <Trigger Property="ToggleButton.IsChecked" Value="true">
+                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundDarkSlateGrayBrush}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!--Text box for combo boxes-->
+    <ControlTemplate x:Key="ComboBoxTextBox" TargetType="TextBox">
+        <Border x:Name="PART_ContentHost" 
+                Focusable="False" 
+                Background="{TemplateBinding Background}" 
+                CornerRadius="5"/>
+        
+    </ControlTemplate>
+
+    <!--Checkbox "on/off" style-->
+    <Style x:Key="OnOffCheckBoxStyle" TargetType="{x:Type CheckBox}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="OnChecking">
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="slider" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="25"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="OnUnchecking">
+                            <DoubleAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="slider" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                                <SplineDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <ThicknessAnimationUsingKeyFrames BeginTime="00:00:00" Storyboard.TargetName="slider" Storyboard.TargetProperty="(FrameworkElement.Margin)">
+                                <SplineThicknessKeyFrame KeyTime="00:00:00.3000000" Value="1,1,1,1"/>
+                            </ThicknessAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+
+                    <DockPanel x:Name="dockPanel">
+                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                          Content="{TemplateBinding Content}" 
+                                          ContentStringFormat="{TemplateBinding ContentStringFormat}" 
+                                          ContentTemplate="{TemplateBinding ContentTemplate}" RecognizesAccessKey="True" VerticalAlignment="Center"/>
+                            <Grid Margin="5,5,0,5" Width="50" Background="{StaticResource BackgroundVeryLightBrush}">
+                                <Border BorderBrush="{StaticResource ForegroundVeryDarkBrush}"
+                                        BorderThickness="0.4"
+                                        CornerRadius="3">
+                                </Border>
+                                <TextBlock Text="On" 
+                                       FontWeight="Bold"
+                                       Foreground="Green"
+                                       TextWrapping="Wrap" 
+                                       FontSize="12"
+                                       HorizontalAlignment="Right" 
+                                       Margin="0,0,3,0"/>
+                                <TextBlock HorizontalAlignment="Left" 
+                                       Margin="2,0,0,0" 
+                                       FontSize="12" 
+                                       FontWeight="Bold"
+                                       Foreground="Red"
+                                       Text="Off" 
+                                       TextWrapping="Wrap"/>
+                                <Border HorizontalAlignment="Left" 
+                                    x:Name="slider" 
+                                    Width="23" 
+                                    BorderThickness="1,1,1,1" 
+                                    CornerRadius="3,3,3,3" 
+                                    RenderTransformOrigin="0.5,0.5" 
+                                    Margin="1,1,1,1">
+                                    <Border.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                            <SkewTransform AngleX="0" AngleY="0"/>
+                                            <RotateTransform Angle="0"/>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </TransformGroup>
+                                    </Border.RenderTransform>
+                                    <Border.BorderBrush>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                                            <GradientStop Color="Black" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.BorderBrush>
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                            <GradientStop Color="{StaticResource BackgroundDarkSlateGray}" Offset="1"/>
+                                            <GradientStop Color="{StaticResource BackgroundVeryLight}" Offset="0"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </Grid>
+                    </DockPanel>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="False">
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource OnUnchecking}" x:Name="OnUnchecking_BeginStoryboard"/>
+                            </Trigger.ExitActions>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource OnChecking}" x:Name="OnChecking_BeginStoryboard"/>
+                            </Trigger.EnterActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!---Dropdown checkbox style-->
+    <Style TargetType="{x:Type CheckBox}" x:Key="CollapseCheckBoxStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image x:Name="checkboxImage" 
+                               Source="/APIRS;component\Media\Icons\Navigation\NotCollapsed.png" 
+                               Width="12"/>
+                        <ContentPresenter/>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="checkboxImage" Property="Source" Value="/APIRS;component\Media\Icons\Navigation\Collapsed.png"/>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                                <Condition Property="IsChecked" Value="False"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="checkboxImage" Property="Width" Value="14"/>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style for comboboxes-->
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{x:Null}">
+        <Setter Property="Text" Value="Select"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ApirsGrayBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{StaticResource ForegroundLightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundVeryDarkBrush}"/>
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="MinWidth" Value="100"/>
+        <Setter Property="MaxWidth" Value="250"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeVerySmall}"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+            <ControlTemplate TargetType="ComboBox">
+                <Grid>
+                    <ToggleButton 
+                                 Name="ToggleButton" 
+                                 Template="{StaticResource ComboBoxToggleButton}" 
+                                 Grid.Column="2" 
+                                 Focusable="false"
+                                 IsChecked="{Binding Path=IsDropDownOpen,
+                                            Mode=TwoWay,
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                 ClickMode="Press">
+                    </ToggleButton>
+                    <ContentPresenter
+                                Name="ContentSite"
+                                IsHitTestVisible="False" 
+                                Content="{TemplateBinding SelectionBoxItem}" 
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="3,3,23,3"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left" />
+                    <TextBox x:Name="PART_EditableTextBox"
+                                 Style="{x:Null}" 
+                                 Template="{StaticResource ComboBoxTextBox}" 
+                                 HorizontalAlignment="Left" 
+                                 VerticalAlignment="Center" 
+                                 Margin="3,3,23,3"
+                                 Focusable="True" 
+                                 Background="Transparent"
+                                 Visibility="Hidden"
+                                 IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                    <Popup 
+                            Name="Popup"
+                            Placement="Bottom"
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            AllowsTransparency="True" 
+                            Focusable="False"
+                            PopupAnimation="Fade">
+                        <Grid 
+                              Name="DropDown"
+                              SnapsToDevicePixels="True"                
+                              MinWidth="{TemplateBinding ActualWidth}"
+                              MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                            <Border 
+                                x:Name="DropDownBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                CornerRadius="8"/>
+                            <ScrollViewer Margin="4,6,4,6" 
+                                          SnapsToDevicePixels="True">
+                                <StackPanel IsItemsHost="True" 
+                                            KeyboardNavigation.DirectionalNavigation="Contained" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Popup>
+                </Grid>
+            </ControlTemplate>
+        </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+        </Style.Triggers>
+    </Style>
+
+    <!---Style for comboboxes with add button-->
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{x:Null}" x:Key="ComboboxWithAddButton">
+        <Setter Property="Text" Value="Select"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ApirsGrayBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Background" Value="{StaticResource ForegroundLightBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundVeryDarkBrush}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeVerySmall}"/>
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="MinWidth" Value="150"/>
+        <Setter Property="MaxWidth" Value="250"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="Margin" Value="1"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton 
+                                 Name="ToggleButton" 
+                                 Template="{StaticResource ComboBoxToggleButton}" 
+                                 Grid.Column="2" 
+                                 Focusable="false"
+                                 IsChecked="{Binding Path=IsDropDownOpen,
+                                            Mode=TwoWay,
+                                            RelativeSource={RelativeSource TemplatedParent}}"
+                                 ClickMode="Press">
+                        </ToggleButton>
+                        <ContentPresenter
+                                Name="ContentSite"
+                                IsHitTestVisible="False" 
+                                Content="{TemplateBinding SelectionBoxItem}" 
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" 
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="3,3,23,3"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left" />
+                        <TextBox x:Name="PART_EditableTextBox"
+                                 Style="{x:Null}" 
+                                 Template="{StaticResource ComboBoxTextBox}" 
+                                 HorizontalAlignment="Left" 
+                                 VerticalAlignment="Center" 
+                                 Margin="3,3,23,3"
+                                 Focusable="True" 
+                                 Background="Transparent"
+                                 Visibility="Hidden"
+                                 IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                        <Popup 
+                            Name="Popup"
+                            Placement="Bottom"
+                            IsOpen="{TemplateBinding IsDropDownOpen}"
+                            AllowsTransparency="True" 
+                            Focusable="False"
+                            PopupAnimation="Fade">
+                            <Grid 
+                              Name="DropDown"
+                              SnapsToDevicePixels="True"                
+                              MinWidth="{TemplateBinding ActualWidth}"
+                              MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                <Border 
+                                x:Name="DropDownBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                CornerRadius="8"/>
+                                    <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"></RowDefinition>
+                                        <RowDefinition Height="*"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                        <Button Margin="3" 
+                                                MaxHeight="35"
+                                                FontFamily="{StaticResource FontAwesome}"
+                                                Style="{StaticResource MainButton}"
+                                                Content="Add object &#xf055;"
+                                                FontSize="{StaticResource FontSizeSmall}"
+                                                cal:Action.Target="{Binding Path=DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="Click">
+                                                <cal:ActionMessage MethodName="AddItem">
+                                                    <cal:Parameter Value="{Binding Path=Name,
+                                                                        Mode=OneWay,
+                                                                        RelativeSource={RelativeSource TemplatedParent}}"/>
+                                                </cal:ActionMessage>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </Button>
+                                        <ScrollViewer Margin="4,6,4,6" 
+                                                      SnapsToDevicePixels="True"
+                                                      Grid.Row="1">
+                                        <StackPanel IsItemsHost="True" 
+                                                KeyboardNavigation.DirectionalNavigation="Contained" />
+                                        </ScrollViewer>
+                                </Grid>
+                            </Grid>
+                        </Popup>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+        </Style.Triggers>
+    </Style>
+    
+</ResourceDictionary>

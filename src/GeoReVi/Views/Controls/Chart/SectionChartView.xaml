@@ -1,0 +1,305 @@
+﻿<UserControl x:Class="GeoReVi.SectionChartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="400">
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  MaxHeight="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                                AncestorType={x:Type Border}},Path=ActualHeight}"
+                                 Margin="2,2"
+                                 VerticalAlignment="Top">
+                <Grid x:Name="HistogramGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <DockPanel Grid.Column="1"
+                               Grid.Row="0">
+                        <ToolBarTray HorizontalAlignment="Stretch"
+                                          DockPanel.Dock="Top"
+                                         Orientation="Horizontal">
+                            <ToolBar Background="Transparent"
+                                         HorizontalContentAlignment="Left">
+                                <DockPanel Margin="0,0"
+                                               HorizontalAlignment="Left">
+                                    <CheckBox IsChecked="{Binding LiLo.ShallRender, Mode=TwoWay}"
+                                              Margin="5"
+                                                  ToolTip="Draw chart"
+                                              VerticalAlignment="Center"/>
+                                    <fa:ImageAwesome Icon="PencilSquareOutline"
+                                                         Height="15"
+                                                         Margin="2,0"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,10"
+                                               HorizontalAlignment="Stretch">
+                                    <fa:ImageAwesome Icon="ArrowsH"
+                                                         Width="20"                                                         
+                                                         Margin="4,0"/>
+                                    <Slider HorizontalAlignment="Left" 
+                                            Width="40"
+                                            Maximum="800"
+                                            ClipToBounds="True"
+                                            Minimum="400"
+                                            Value="500"
+                                            Margin="0,3"
+                                            VerticalAlignment="Center"
+                                            x:Name="ChartWidthSlider"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Text="{Binding ElementName=ChartWidthSlider, Path=Value, StringFormat=N2}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+                                    <Label Content="px"
+                                                   Style="{StaticResource inputLabel}"/>
+
+                                </DockPanel>
+                                <DockPanel Margin="0,0">
+                                    <fa:ImageAwesome Icon="ArrowsV"
+                                                         Height="20"
+                                                         Margin="4,0"/>
+                                    <Slider Width="40"
+                                            Maximum="10000"
+                                            HorizontalAlignment="Left"
+                                            ClipToBounds="True"
+                                            Minimum="400"
+                                            Margin="0,3"
+                                            VerticalAlignment="Center"
+                                            Name="ChartHeightSlider"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBox Text="{Binding ElementName=ChartHeightSlider, Path=Value, StringFormat=N2}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Width="50"
+                                                 Margin="0"/>
+                                    <Label Content="px"
+                                               Style="{StaticResource inputLabel}"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding Path=Scale, 
+                                                              NotifyOnSourceUpdated=True}"
+                                               FontSize="{StaticResource FontSizeSmall}"
+                                               FontFamily="{StaticResource LatoRegular}"
+                                                       FontWeight="DemiBold"
+                                               Margin="10"/>
+                            </ToolBar>
+                        </ToolBarTray>
+                    </DockPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                      HorizontalScrollBarVisibility="Auto"
+                                                      MaxHeight="700"
+                                                      MaxWidth="500"
+                                                      VerticalAlignment="Top"
+                                                      Grid.Column="1"
+                                                      Grid.Row="1">
+                        <DockPanel>
+                            <local:SectionChartControl
+                                                  Width="{Binding ElementName=ChartWidthSlider, 
+                                                                  Path=Value, 
+                                                                  Mode=OneWay,
+                                                                  NotifyOnSourceUpdated=True, 
+                                                                  UpdateSourceTrigger=PropertyChanged, 
+                                                                  FallbackValue=500}"
+                                                   Height="{Binding ElementName=ChartHeightSlider, 
+                                                        Path=Value, 
+                                                        Mode=OneWay,
+                                                        NotifyOnSourceUpdated=True, 
+                                                        UpdateSourceTrigger=PropertyChanged, 
+                                                        FallbackValue=500}"
+                                     Background="Transparent"
+                                     SectionDataCollection="{Binding Path=LiLo.DataCollection}"
+                                     x:Name="LithologicalSection"
+                                    Xmin="{Binding Path=LiLo.Xmin, FallbackValue=0}"
+                                     Xmax="{Binding Path=LiLo.Xmax, FallbackValue=1}"
+                                    Ymin="{Binding Path=LiLo.Ymin, FallbackValue=-1}"
+                                    Ymax="{Binding Path=LiLo.Ymax, FallbackValue=1}"
+                                    XLabel="{Binding Path=LiLo.XLabel}"
+                                    YLabel="{Binding Path=LiLo.YLabel}"
+                                    XTick="{Binding Path=LiLo.XTick}"
+                                    YTick="{Binding Path=LiLo.YTick}"
+                                    Title="{Binding Path=LiLo.Title}"
+                                    MetaInformation="{Binding Path=LiLo.MetaInformation}"
+                                            IsXGrid="{Binding Path=LiLo.IsXGrid}"
+                                            IsYGrid="{Binding Path=LiLo.IsYGrid}"
+                                    BarType="LithologicalSection"
+                                     IsLegend="{Binding Path=LiLo.HasLegend}"
+                                    ShallRender="{Binding Path=LiLo.ShallRender, FallbackValue=true}"
+                                MaxWidth="800"/>
+                            <ItemsControl ItemsSource="{Binding Logs}" Margin="20">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl cal:Bind.Model="{Binding /}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </DockPanel>
+                    </ScrollViewer>
+                    <Grid Grid.Column="0"
+                                          Grid.RowSpan="2">
+                        <Expander Template="{StaticResource HorizontalExpanderTemp}"
+                                                      ExpandDirection="Left"
+                                                      IsExpanded="False">
+                            <TabControl TabStripPlacement="Left"
+                                                      Width="150">
+                                <TabItem Header="Axes"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      MaxHeight="460"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                        <Border Background="{StaticResource BackgroundVeryLightBrush}">
+                                            <StackPanel MinWidth="30">
+                                                <Expander ExpandDirection="Down"
+                                                                          Header="X axis"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                    <StackPanel>
+                                                        <TextBlock Text="X max"
+                                                                       FontWeight="DemiBold"
+                                                                                   Margin="0,5,0,0"/>
+                                                        <TextBox Text="{Binding LiLo.Xmax, Mode=TwoWay}"/>
+                                                        <TextBlock Text="X min"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding LiLo.Xmin, Mode=TwoWay}"/>
+                                                        <TextBlock Text="X tick"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding LiLo.XTick, Mode=TwoWay}"/>
+
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Expander ExpandDirection="Down"
+                                                                          Header="Y axis"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                    <StackPanel>
+                                                        <TextBlock Text="Y max"
+                                                                       FontWeight="DemiBold"
+                                                                                   Margin="0,5,0,0"/>
+                                                        <TextBox Text="{Binding LiLo.Ymax, Mode=TwoWay}"/>
+                                                        <TextBlock Text="Y min"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding LiLo.Ymin, Mode=TwoWay}"/>
+                                                        <TextBlock Text="Y tick"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding LiLo.YTick, Mode=TwoWay}"/>
+
+                                                    </StackPanel>
+                                                </Expander>
+                                            </StackPanel>
+                                        </Border>
+                                    </ScrollViewer>
+                                </TabItem>
+                                <TabItem Header="Styles"
+                                                             Style="{StaticResource LeftSideTabItem}">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      MaxHeight="460"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                        <Border Background="{StaticResource BackgroundVeryLightBrush}">
+                                            <StackPanel MinWidth="30">
+                                                <Expander ExpandDirection="Down"
+                                                                          Header="Layer"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                    <StackPanel Margin="5">
+                                                        <TextBlock Text="Border thickness"
+                                                                       FontWeight="DemiBold"
+                                                                                   Margin="0,5,0,0"/>
+                                                        <TextBox Text="{Binding LiLo.Sls.BorderThickness, Mode=TwoWay}"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Expander ExpandDirection="Down"
+                                                                          Header="Gridlines"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                    <StackPanel Margin="5">
+                                                        <TextBlock Text="Gridline pattern"
+                                                                       FontWeight="DemiBold"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=LiLo.GridlinePattern, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=LiLo.GridlinePattern, Mode=OneWayToSource}"
+                                                                              SelectedIndex="0"/>
+                                                        <DockPanel Margin="0,5">
+                                                            <TextBlock Text="Vertical grid"
+                                                                           FontWeight="DemiBold"/>
+                                                            <CheckBox IsChecked="{Binding LiLo.IsXGrid, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                        </DockPanel>
+                                                        <DockPanel Margin="0,5">
+                                                            <TextBlock Text="Horizontal grid"
+                                                                           FontWeight="DemiBold"/>
+                                                            <CheckBox IsChecked="{Binding LiLo.IsYGrid, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                        </DockPanel>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Expander ExpandDirection="Down"
+                                                                          Header="Legend"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                    <StackPanel  Margin="5">
+                                                        <DockPanel>
+                                                            <TextBlock Text="Has legend"
+                                                                           FontWeight="DemiBold"/>
+                                                            <CheckBox IsChecked="{Binding LiLo.HasLegend, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                        </DockPanel>
+                                                        <TextBlock Text="Legend position"
+                                                                       FontWeight="DemiBold"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=LiLo.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=LiLo.LegendPosition, Mode=OneWayToSource}"
+                                                                              SelectedIndex="0"/>
+
+                                                    </StackPanel>
+                                                </Expander>
+                                            </StackPanel>
+                                        </Border>
+                                    </ScrollViewer>
+                                </TabItem>
+                            </TabControl>
+                        </Expander>
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>

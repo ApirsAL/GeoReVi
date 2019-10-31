@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GeoReVi">
+
+    <!--Default style for list views-->
+    <Style TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource {x:Type GridViewColumnHeader}}">
+        <Setter Property="FontFamily" Value="{StaticResource LatoRegular}"/>
+        <Setter Property="FontWeight" Value="DemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundVeryDarkBrush}"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundDarkSlateGrayBrush}"/>
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,1559 @@
+﻿<UserControl x:Class="GeoReVi.FieldMeasurementDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+              xmlns:map="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             Height="Auto" Width="Auto" >
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                  Storyboard.TargetProperty="Opacity"
+                  From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="groupedObjects" Source="{Binding ObjectsOfInvestigation}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="ooiBasin"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+        <CollectionViewSource x:Key="groupedMeasurements" Source="{Binding FieldMeasurements, 
+                                                                  NotifyOnSourceUpdated=True,
+                                                                    Mode=TwoWay,
+                                                                    UpdateSourceTrigger=PropertyChanged}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="measParameter"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </UserControl.Resources>
+    <Border Background="Transparent">
+        <Grid MinWidth="1200">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"
+                               MaxHeight="50"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!---Navigation panel-->
+            <Border     Grid.ColumnSpan="3"
+                        Grid.Row="0"
+                        Background="{StaticResource ApirsGrayBrush}"
+                        BorderBrush="{StaticResource ForegroundDarkBrush}"
+                        BorderThickness="1">
+                <DockPanel>
+                    <ToolBarTray DockPanel.Dock="Top">
+                        <ToolBar>
+                            <Button Tag="First" 
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeBackward}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="First">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <Button Tag="Previous"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeStepBackward}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Previous">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Object "
+                                   Style="{StaticResource NavigationTextBlock}"/>
+                                <TextBox Text="{Binding SelectedObjectIndex, Mode=TwoWay}"
+                                 Style="{StaticResource inputTextBox}"
+                                 Width="Auto"
+                                 VerticalContentAlignment="Center"
+                                 Padding="2"/>
+                                <TextBlock Text=" of "
+                                   Style="{StaticResource NavigationTextBlock}"/>
+                                <TextBlock Text="{Binding CountObjects, Mode=OneWay}"
+                                   Style="{StaticResource NavigationTextBlock}"/>
+                            </StackPanel>
+                            <Button Tag="Next"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeStepForward}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Next">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <Button Tag="Last"
+                                               Style="{StaticResource IconButton}"
+                                               Content="{StaticResource FontAwesomeForward}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Last">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </ToolBar>
+                        <ToolBar>
+                            <Button  x:Name="btnDetails"
+                                     Tag="Details"
+                                     Style="{StaticResource IconButton}"
+                                     Content="{StaticResource FontAwesomeDetails}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="AddDetails">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </ToolBar>
+                        <ToolBar Background="Transparent">
+                            <Button x:Name="btnUpdate"
+                                    Tag="Save record"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeSave}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Update">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                            <Button x:Name="btnDelete"
+                                    Tag="Delete record"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeTrash}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Delete">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </ToolBar>
+                        <ToolBar Background="Transparent">
+                            <Button Tag="Refresh"
+                                    Style="{StaticResource IconButton}"
+                                    Content="{StaticResource FontAwesomeRefresh}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="Refresh">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </ToolBar>
+                        <ToolBar>
+                            <Button x:Name="btnMap"
+                                Content="{StaticResource FontAwesomeCogIcon}"
+                                    Style="{StaticResource IconButton}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <cal:ActionMessage MethodName="MapMeasurementToFaciesFromSection">
+                                        </cal:ActionMessage>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Button.ToolTip>
+                                    <StackPanel Width="100">
+                                        <TextBlock Text="Map measurements of this object to facies types from my litholog"
+                                               TextWrapping="WrapWithOverflow"/>
+
+                                    </StackPanel>
+                                </Button.ToolTip>
+                            </Button>
+                        </ToolBar>
+                    </ToolBarTray>
+                </DockPanel>
+            </Border>
+            <!---Navigation pain-->
+            <Border BorderBrush="LightGray"
+                     BorderThickness="1"
+                     Background="{StaticResource BackgroundVeryLightBrush}"
+                     Grid.Column="0"
+                    Grid.Row="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <Border Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                                CornerRadius="8,8,0,0"
+                                Margin="0,0,0,5">
+                            <DockPanel>
+                                <ComboBox Name="OOICombo" 
+                                          FontSize="{StaticResource FontSizeSmall}"
+                                          FontWeight="DemiBold"
+                                          HorizontalAlignment="Stretch"
+                                          IsEditable="False"
+                                          MinWidth="250"
+                                          MaxWidth="350"
+                                          Text="{Binding Path=Type, Mode=TwoWay, NotifyOnSourceUpdated=True, FallbackValue='No value'}"
+                                          IsSynchronizedWithCurrentItem="True"
+                                          Margin="10,5">
+                                    <ComboBoxItem Content="Outcrop"/>
+                                    <ComboBoxItem Content="Drilling"/>
+                                    <ComboBoxItem Content="Transect"/>
+                                    <ComboBoxItem Content="Water"/>
+                                </ComboBox>
+                               
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                    <Grid Grid.Row="1">
+                        <ContentControl cal:View.Model="{Binding FilterDataSetViewModel}"/>
+                        <Button Tag="Filter" 
+                            Content="{StaticResource FontAwesomeFilter}"
+                            Style="{StaticResource IconButton}"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                            cal:Message.Attach="[Event Click] = [Action Filter]">
+                        </Button>
+                    </Grid>
+                    <StackPanel Grid.Row="2">
+                        <Expander Style="{StaticResource BaseStyle}"
+                              Grid.Row="2"
+                              Header="Import functionality"
+                                  FontWeight="DemiBold"
+                                  FontSize="{StaticResource FontSizeSmall}"
+                              Template="{StaticResource StretchyExpanderTemp}"
+                              ExpandDirection="Up">
+                            <Border Margin="10,16,10,16"
+                                AllowDrop="True"
+                                CornerRadius="8"
+                                Background="{StaticResource WordBlueBrush}"
+                                BorderThickness="10"
+                                Width="200"
+                                Height="200"
+                                cal:Message.Attach="[Event Drop] = [Action ImportFile($eventArgs)];">
+                                <Border.BorderBrush>
+                                    <DrawingBrush Viewport="0,0,20,20" 
+                                          ViewportUnits="Absolute" 
+                                          TileMode="Tile">
+                                        <DrawingBrush.Drawing>
+                                            <DrawingGroup>
+                                                <GeometryDrawing Brush="White">
+                                                    <GeometryDrawing.Geometry>
+                                                        <GeometryGroup>
+                                                            <RectangleGeometry Rect="0,0,50,50" />
+                                                            <RectangleGeometry Rect="50,50,50,50" />
+                                                        </GeometryGroup>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                            </DrawingGroup>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Border.BorderBrush>
+                                <StackPanel HorizontalAlignment="Center"
+                                   VerticalAlignment="Center">
+                                    <TextBlock Text="Import data set&#x0a;(Drag and drop)"
+                                   FontWeight="SemiBold"
+                                   Foreground="{StaticResource ForegroundLightBrush}"
+                                   FontFamily="{StaticResource LatoBold}"
+                                   FontSize="{StaticResource FontSizeRegular}"/>
+                                    <Image Source="/GeoReVi;component\Media\Icons\Symbols\info.png"
+                                   Width="16"
+                                   Height="Auto"
+                                   Stretch="Uniform">
+                                        <Image.ToolTip>
+                                            <StackPanel Width="100">
+                                                <TextBlock Text=".csv or .xlsx allowed"
+                                                   TextWrapping="WrapWithOverflow"/>
+                                            </StackPanel>
+                                        </Image.ToolTip>
+                                    </Image>
+                                    <Label Content="Import type"
+                                               Style="{StaticResource inputAddLabel}"/>
+                                    <ComboBox  SelectedIndex="0"
+                                                Text="{Binding Path=ImportType,
+                                                        Mode=OneWayToSource,
+                                                        UpdateSourceTrigger=PropertyChanged,
+                                                        NotifyOnSourceUpdated=True, 
+                                                        FallbackValue='No specific'}">
+                                        <ComboBoxItem Content="No specific"/>
+                                        <ComboBoxItem Content="Magnetic susceptibility"/>
+                                        <ComboBoxItem Content="Rock quality designation index"/>
+                                        <ComboBoxItem Content="Sonic log"/>
+                                        <ComboBoxItem Content="Spectral gamma ray"/>
+                                        <ComboBoxItem Content="Structure orientation"/>
+                                        <ComboBoxItem Content="Temperature"/>
+                                        <ComboBoxItem Content="Total gamma ray"/>
+                                    </ComboBox>
+                                </StackPanel>
+                            </Border>
+                        </Expander>
+                    </StackPanel>
+                    <ListView x:Name="RockSampleDetailsList"
+                              Margin="3"
+                              ItemsSource="{Binding Source={StaticResource groupedObjects}}"
+                              SelectedItem="{Binding SelectedObject}"
+                              ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                              AlternationCount="2"
+                              Grid.Row="3">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate>
+                                                    <Expander IsExpanded="False"
+                                                              Style="{StaticResource BaseStyle}"
+                                                              Template="{StaticResource StretchyExpanderTemp}">
+                                                        <Expander.Header>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <TextBlock Text="{Binding Name}" 
+                                                                           FontWeight="DemiBold" 
+                                                                           FontSize="14" 
+                                                                           VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding ItemCount}" 
+                                                                           FontSize="11" 
+                                                                           Foreground="Gray"
+                                                                           FontWeight="Bold" 
+                                                                           FontStyle="Italic" 
+                                                                           Margin="5,0,0,0" 
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </Expander.Header>
+                                                        <ItemsPresenter />
+                                                    </Expander>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+                        <ListView.View>
+                            <GridView x:Name="RockSampleGridViewList">
+                                <GridViewColumn x:Name="IdGvc"
+                                                            Header="Object Id">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=ooiIdPk}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="LabelGvc"
+                                                            Header="Name">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=ooiName}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn x:Name="TypeGvc"
+                                                            Header="Type">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=ooiType}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </Border>
+            <GridSplitter Grid.Column="1"
+                          Grid.Row="1"
+                          Width="2"
+                          Background="{StaticResource ApirsMediumGrayBrush}"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Center"
+                          ShowsPreview="True"
+                          />
+            <!---Updating rock sample informations-->
+            <Border x:Name="MainBorder"
+                    Grid.Row="1" 
+                    Grid.Column="2"
+                    BorderBrush="{StaticResource ForegroundDarkBrush}"
+                    Background="{StaticResource BackgroundVeryLightBrush}"
+                    BorderThickness="0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="UpdateRockSampleGrid" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Stretch"
+                          MinWidth="1000">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Border Grid.ColumnSpan="3"
+                            Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                            HorizontalAlignment="Stretch"
+                            Grid.Row="0">
+                            <StackPanel Orientation="Horizontal">
+                                <DockPanel>
+                                    <TextBlock Text="Measurement details"
+                                               Margin="20,5,20,5"
+                                               Style="{StaticResource HeaderTextInput}"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+                        <!---Field measurements related to the object-->
+                        <Border Background="{StaticResource BackgroundVeryLightBrush}"
+                             CornerRadius="8"
+                             Grid.Column="0"
+                            Grid.Row="1"
+                            Margin="15"
+                            BorderBrush="{StaticResource ApirsGrayBrush}"
+                            BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"
+                                               />
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Border Height="auto"
+                                    Grid.Row="0"
+                                    Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                                    CornerRadius="8,8,0,0">
+                                    <DockPanel>
+                                        <TextBlock Text="Object measurements"
+                                           Style="{StaticResource HeaderTextInput}"
+                                           FontSize="{StaticResource FontSizeRegular}"
+                                               Margin="15,5"
+                                           HorizontalAlignment="Center"/>
+                                        <Button Style="{StaticResource IconButton}"
+                                                Content="{StaticResource FontAwesomePlus}"
+                                                HorizontalAlignment="Right"
+                                                Tag="New measurement" >
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                    <cal:ActionMessage MethodName="Add">
+                                                    </cal:ActionMessage>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </Button>
+                                        <Button Style="{StaticResource IconButton}"
+                                                Content="{StaticResource FontAwesomeMinus}"
+                                                HorizontalAlignment="Right"
+                                                Tag="Delete selected" >
+                                            <i:Interaction.Triggers>
+                                                <i:EventTrigger EventName="Click">
+                                                    <cal:ActionMessage MethodName="Delete">
+                                                    </cal:ActionMessage>
+                                                </i:EventTrigger>
+                                            </i:Interaction.Triggers>
+                                        </Button>
+                                    </DockPanel>
+                                </Border>
+                                <ListView  Margin="3"
+                                       x:Name="FieldMeasurementsListView"
+                                       ItemsSource="{Binding Source={StaticResource groupedMeasurements}}"
+                                       SelectedItem="{Binding SelectedFieldMeasurement}"
+                                        Grid.Row="1"
+                                        MaxHeight="300"     
+                                       ItemContainerStyle="{StaticResource ListViewItemStyle}"
+                                        AlternationCount="2"
+                                       VerticalAlignment="Top">
+                                    <i:Interaction.Behaviors>
+                                        <local:SelectedMeasurementsBehaviour
+                                                SelectedItemCollection="{Binding SelectedFieldMeasurements}">
+                                        </local:SelectedMeasurementsBehaviour>
+                                    </i:Interaction.Behaviors>
+                                    <ListView.ContextMenu>
+                                        <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+                                            <MenuItem Header="Save"
+                                                          cal:Message.Attach="[Event Click] = [Action Update]">
+                                                <MenuItem.Icon>
+                                                    <TextBlock FontFamily="{StaticResource FontAwesome}"
+                                                                   Text="&#xf0c7;"
+                                                                   Foreground="Black"
+                                                                   Tag="Save data set"
+                                                                   HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Add measurement"
+                                                          cal:Message.Attach="[Event Click] = [Action Add]">
+                                                <MenuItem.Icon>
+                                                    <TextBlock FontFamily="{StaticResource FontAwesome}"
+                                                                   Text="&#xf055;"
+                                                                   Foreground="Green"
+                                                                   Tag="Add measurement"
+                                                                   HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Delete selected">
+                                                <MenuItem.Icon>
+                                                    <TextBlock FontFamily="{StaticResource FontAwesome}"
+                                                                    Text="&#xf146;"
+                                                                   Foreground="Red"
+                                                                    Tag="Delete selected mesurements"
+                                                                   HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="Delete">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </MenuItem>
+                                            <Separator/>
+                                        </ContextMenu>
+                                    </ListView.ContextMenu>
+                                    <ListView.GroupStyle>
+                                        <GroupStyle>
+                                            <GroupStyle.ContainerStyle>
+                                                <Style TargetType="{x:Type GroupItem}">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate>
+                                                                <Expander IsExpanded="False"
+                                                              Style="{StaticResource BaseStyle}"
+                                                              Template="{StaticResource StretchyExpanderTemp}">
+                                                                    <Expander.Header>
+                                                                        <StackPanel Orientation="Horizontal">
+                                                                            <TextBlock Text="{Binding Name}" 
+                                                                           FontWeight="DemiBold" 
+                                                                           FontSize="14" 
+                                                                           VerticalAlignment="Center" />
+                                                                            <TextBlock Text="{Binding ItemCount}" 
+                                                                           FontSize="11" 
+                                                                           Foreground="Gray"
+                                                                           FontWeight="Bold" 
+                                                                           FontStyle="Italic" 
+                                                                           Margin="5,0,0,0" 
+                                                                           VerticalAlignment="Center" />
+                                                                        </StackPanel>
+                                                                    </Expander.Header>
+                                                                    <ItemsPresenter />
+                                                                </Expander>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </GroupStyle.ContainerStyle>
+                                        </GroupStyle>
+                                    </ListView.GroupStyle>
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Header="Meas. Id">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <TextBlock TextAlignment="Right"
+                                                                   Text="{Binding Path=measIdPk}" 
+                                                                   Style="{StaticResource GridViewColumnTextStyle}"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Parameter">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=measParameter}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                               MinWidth="150"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Height [m]">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=measLocalCoordinateZ}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                               MinWidth="150"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Header="Date">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=labmeDate}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                               HorizontalAlignment="Left"
+                                                               MinWidth="150"/>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                </ListView>
+                                <DockPanel Grid.Row="2">
+                                    <Border Background="{StaticResource ApirsMediumGrayBrush}"
+                                                            Padding="5,0">
+                                        <DockPanel>
+                                            <ComboBox IsEditable="False"
+                                      ItemsSource="{Binding Path=FilterProperties, Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValue="{Binding Path=SelectedFilterProperty, Mode=TwoWay, NotifyOnValidationError=True, ValidatesOnExceptions=true}"
+                                      DisplayMemberPath="alAlias" 
+                                      IsTextSearchEnabled="True"
+                                      IsSynchronizedWithCurrentItem="True" Margin="0,3,3,3" />
+                                            <TextBlock Text="Contains"
+                                                                       Foreground="White"
+                                                                   Style="{StaticResource GridViewColumnTextStyle}"
+                                                                   VerticalAlignment="Center"/>
+                                            <TextBox Text="{Binding FilterText, Mode=TwoWay}"
+                                                                 Style="{StaticResource inputTextBox}"
+                                                                 MinWidth="50"
+                                                                 Width="70"/>
+                                        </DockPanel>
+                                    </Border>
+                                    <Border Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                                                            Padding="5,0">
+                                        <DockPanel>
+                                            <ComboBox IsEditable="False"
+                                              ItemsSource="{Binding Path=Properties, Mode=OneWay,UpdateSourceTrigger=PropertyChanged}"
+                                              SelectedValue="{Binding Path=SelectedProperty, Mode=TwoWay, NotifyOnValidationError=True, ValidatesOnExceptions=true}"
+                                              DisplayMemberPath="alAlias" 
+                                              IsTextSearchEnabled="True"
+                                              IsSynchronizedWithCurrentItem="True" Margin="0,3,3,3" />
+                                        </DockPanel>
+                                    </Border>
+                                </DockPanel>
+                            </Grid>
+                        </Border>
+                        <!--General information-->
+                        <TabControl Grid.Column="2"
+                                     Grid.Row="1"
+                                     >
+                            <TabItem Header="Measurement information">
+                                <GroupBox Grid.Column="1"
+                          Grid.Row="1"
+                          Margin="15"
+                          Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                          >
+                                    <GroupBox.Header>General information</GroupBox.Header>
+                                    <StackPanel HorizontalAlignment="Left">
+                                        <DockPanel>
+                                            <Label Content="Measurement ID:" 
+                                   Style="{StaticResource inputLabel}" Margin="3,5,0,5" />
+                                            <TextBox HorizontalAlignment="Right"
+                                     IsEnabled="False"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedFieldMeasurement.measIdPk, Mode=TwoWay, 
+                                        NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Object of investigation:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Grid.Column="0" 
+                                   Grid.Row="19" Margin="3,4,0,4"/>
+                                            <TextBox IsEnabled="False"
+                                     HorizontalAlignment="Right"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedObject.ooiName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Project:"
+                                Style="{StaticResource inputLabel}"
+                                 Margin="3,4,0,4"/>
+                                            <ComboBox IsEditable="False"
+                                      ItemsSource="{Binding Path=Projects, Mode=OneTime,UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValuePath="prjIdPk"
+                                      SelectedValue="{Binding Path=SelectedFieldMeasurement.measprjIdFk, Mode=TwoWay, NotifyOnValidationError=True, ValidatesOnExceptions=true}"
+                                      DisplayMemberPath="prjName" 
+                                      Text="{Binding Path=SelectedFieldMeasurement.measProject, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                                      IsTextSearchEnabled="True"
+                                      IsSynchronizedWithCurrentItem="True" Margin="0,3,3,3" />
+
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Type:"
+                                        Style="{StaticResource inputLabel}"
+                                        Margin="3,5,0,5"/>
+                                            <ComboBox x:Name="sampTypeTextBox" 
+                                          IsEditable="False"
+                                          SelectedValue="{Binding Path=SelectedFieldMeasurement.measParameter, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                          SelectedValuePath="Content"
+                                          Text="{Binding Path=SelectedFieldMeasurement.measParameter, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                          IsSynchronizedWithCurrentItem="True">
+                                                <ComboBoxItem Content="Total Gamma Ray"/>
+                                                <ComboBoxItem Content="Spectral Gamma Ray"/>
+                                                <ComboBoxItem Content="Magnetic Susceptibility"/>
+                                                <ComboBoxItem Content="Structure Orientation"/>
+                                                <ComboBoxItem Content="Temperature"/>
+                                                <ComboBoxItem Content="Rock Quality Designation Index"/>
+                                                <ComboBoxItem Content="Sonic Log"/>
+                                            </ComboBox>
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Measurement date:" 
+                                       Style="{StaticResource inputLabel}" Margin="3,3,0,3"/>
+                                            <DatePicker HorizontalAlignment="Right" 
+                                            Width="129"
+                                            Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
+                                                <DatePicker.SelectedDate>
+                                                    <Binding Path="SelectedFieldMeasurement.measUploadDate"
+                                                         Mode="TwoWay"
+                                                         NotifyOnValidationError="True"
+                                                         UpdateSourceTrigger="PropertyChanged"
+                                                         ValidatesOnExceptions="True">
+                                                    </Binding>
+                                                </DatePicker.SelectedDate>
+                                            </DatePicker>
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Analytical instrument:"
+                                        Style="{StaticResource inputLabel}"
+                                             Margin="3,4,0,4"/>
+                                            <ComboBox IsEditable="False"
+                                          Name="AnalyticalInstrument"
+                                          Style="{StaticResource ComboboxWithAddButton}"
+                                                  ItemsSource="{Binding Path=AnalyticalInstrument, Mode=OneTime,UpdateSourceTrigger=PropertyChanged}"
+                                                  SelectedValuePath="mdIdPk"
+                                                  SelectedValue="{Binding Path=SelectedFieldMeasurement.measAnalyticalDeviceId, Mode=TwoWay, NotifyOnValidationError=True, ValidatesOnExceptions=true}"
+                                                  DisplayMemberPath="mdName" 
+                                                  Text="{Binding Path=SelectedFieldMeasurement.measDevice, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                                                  IsTextSearchEnabled="True"
+                                                  IsSynchronizedWithCurrentItem="True" Margin="0,3,3,3" />
+
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Confidential:" 
+                                        Style="{StaticResource inputLabel}" 
+                                       Margin="3,3,0,3"/>
+                                            <CheckBox Content=""
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          IsChecked="{Binding Path=SelectedFieldMeasurement.measConfidential, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
+                                          />
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Date:" 
+                                        Style="{StaticResource inputLabel}" 
+                                       Margin="3,3,0,3"/>
+                                            <DatePicker Text="{Binding Path=SelectedFieldMeasurement.measDate, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                                        </DockPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="Spatial information">
+                                <GroupBox Margin="15"
+                              Height="Auto">
+                                    <GroupBox.Header>Spatial information</GroupBox.Header>
+                                    <StackPanel Margin="2">
+                                        <StackPanel>
+                                            <DockPanel>
+                                                <Label Content="Latitude:" 
+                                       Style="{StaticResource inputLabel}" Margin="3,4,0,4"/>
+                                                <TextBox Text="{Binding Path=SelectedFieldMeasurement.measLatitude, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, StringFormat='{}{0:0.00000}'}" 
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Margin="0,3,3,3"/>
+
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Longitude:" 
+                                                Style="{StaticResource inputLabel}"
+                                                 Margin="3,4,0,4"/>
+                                                <TextBox Text="{Binding Path=SelectedFieldMeasurement.measLongitude, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, StringFormat='{}{0:0.00000}'}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Margin="0,3,3,3"/>
+
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Altitude:" 
+                                                Style="{StaticResource inputLabel}"
+                                                 Margin="3,4,0,4"/>
+                                                <TextBox Text="{Binding Path=SelectedFieldMeasurement.measElevation, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, StringFormat='{}{0:0.00000}'}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Margin="0,3,3,3"/>
+
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Direction:" 
+                                                Style="{StaticResource inputLabel}"
+                                                 Margin="3,4,0,4"/>
+                                                <TextBox Text="{Binding Path=SelectedFieldMeasurement.measDirection, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Margin="0,3,3,3"/>
+
+                                            </DockPanel>
+                                            <TextBlock Text="Local coordinates [m]" 
+                                               Style="{StaticResource NavigationTextBlock}"
+                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                               FontSize="{StaticResource FontSizeRegular}"
+                                               Margin="20,20,20,5"/>
+                                            <StackPanel Orientation="Horizontal">
+                                                <StackPanel Margin="20,0">
+                                                    <Label Content="X" 
+                                                Style="{StaticResource inputLabel}"
+                                                 Margin="3,4,0,4"/>
+                                                    <TextBox Text="{Binding Path=SelectedFieldMeasurement.measLocalCoordinateX, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Margin="0,3,3,3"
+                                                     Width="60"/>
+
+                                                </StackPanel>
+                                                <StackPanel Margin="20,0">
+                                                    <Label Content="Y:" 
+                                                Style="{StaticResource inputLabel}"
+                                                 Margin="3,4,0,4"/>
+                                                    <TextBox Text="{Binding Path=SelectedFieldMeasurement.measLocalCoordinateY, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Margin="0,3,3,3"
+                                                     Width="60"/>
+
+                                                </StackPanel>
+                                                <StackPanel Margin="20,0">
+                                                    <Label Content="Z:" 
+                                                Style="{StaticResource inputLabel}"
+                                                 Margin="3,4,0,4"/>
+                                                    <TextBox Text="{Binding Path=SelectedFieldMeasurement.measLocalCoordinateZ, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 Margin="0,3,3,3"
+                                                 Width="60"/>
+
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="Lithology">
+                                <GroupBox Margin="15"
+                              Height="Auto">
+                                    <GroupBox.Header>Lithology</GroupBox.Header>
+                                    <StackPanel Margin="2">
+                                        <StackPanel>
+                                            <DockPanel>
+                                                <Label Content="Facies type:" 
+                                               Grid.Column="0" 
+                                               Grid.Row="4" 
+                                               Style="{StaticResource inputLabel}" Margin="3,5,0,5"/>
+                                                <ComboBox x:Name="sampFaciesFkTextBox" 
+                                                  IsEditable="False"
+                                                  ItemsSource="{Binding Path=Facies, Mode=OneWay}"
+                                                  SelectedValuePath="facIdPk"
+                                                  SelectedValue="{Binding Path=SelectedFieldMeasurement.measFaciesIdFk, Mode=TwoWay, NotifyOnValidationError=True}"
+                                                  Text="{Binding Path=SelectedFieldMeasurement.measFacies, Mode=OneTime}"
+                                                  IsTextSearchEnabled="True"
+                                                  IsSynchronizedWithCurrentItem="False"
+                                                  Margin="0,3,3,3">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding StringFormat="{}{0}: {1} | {2}">
+                                                                        <Binding Path="facCode"/>
+                                                                        <Binding Path="facType"/>
+                                                                        <Binding Path="facChronostratigraphy"/>
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Architectural element:" 
+                                               Grid.Column="0" 
+                                               Grid.Row="4" 
+                                               Style="{StaticResource inputLabel}" Margin="3,5,0,5"/>
+                                                <ComboBox IsEditable="False"
+                                                  ItemsSource="{Binding Path=ArchitecturalElements, Mode=OneWay}"
+                                                  SelectedValuePath="aeIdPk"
+                                                  SelectedValue="{Binding Path=SelectedFieldMeasurement.measArchitecturalElementIdFk, Mode=TwoWay, NotifyOnValidationError=True}"
+                                                  DisplayMemberPath="aeLabelEnglish"
+                                                  IsTextSearchEnabled="True"
+                                                  IsSynchronizedWithCurrentItem="False"
+                                                  Margin="0,3,3,3">
+                                                </ComboBox>
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Lithostratigraphy:" 
+                                       Style="{StaticResource inputLabel}"
+                                       Margin="3,4,0,4"/>
+                                                <ComboBox Name="Lithostratigraphy"
+                                                  Style="{StaticResource ComboboxWithAddButton}"
+                                          IsEditable="False"
+                                          ItemsSource="{Binding Path=Lithostratigraphy, Mode=OneTime,UpdateSourceTrigger=PropertyChanged}"
+                                          DisplayMemberPath="grName" 
+                                          IsTextSearchEnabled="True"
+                                          IsSynchronizedWithCurrentItem="True"
+                                         Text="{Binding Path=SelectedFieldMeasurement.measLithogratigraphy, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3">
+                                                    <ComboBox.ToolTip>
+                                                        <ToolTip DataContext="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}">
+                                                            <Border Background="{StaticResource ApirsGrayBrush}">
+                                                                <StackPanel MaxWidth="300"
+                                                                    Margin="5">
+                                                                    <TextBlock Text="Hierarchy:" 
+                                                                       FontWeight="Bold"
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"/>
+                                                                    <TextBlock Text="{Binding Hierarchy}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                    <TextBlock Text="Lithology:" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       FontWeight="Bold"/>
+                                                                    <TextBlock Text="{Binding LithologicDescriptionShort}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                    <TextBlock Text="Top boundary:" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       FontWeight="Bold"/>
+                                                                    <TextBlock Text="{Binding TopBoundary}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                    <TextBlock Text="Base boundary:" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       FontWeight="Bold"/>
+                                                                    <TextBlock Text="{Binding BaseBoundary}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </ToolTip>
+                                                    </ComboBox.ToolTip>
+                                                    <ComboBox.ItemContainerStyle>
+                                                        <Style>
+                                                            <Setter Property="Control.DataContext" Value="{Binding Path=PlacementTarget, RelativeSource={RelativeSource Self}}" />
+                                                            <Setter Property="Control.ToolTip">
+                                                                <Setter.Value>
+                                                                    <Border Background="{StaticResource ApirsGrayBrush}">
+                                                                        <StackPanel MaxWidth="300"
+                                                                            Margin="5">
+                                                                            <TextBlock Text="Hierarchy:" 
+                                                                       FontWeight="Bold"
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"/>
+                                                                            <TextBlock Text="{Binding Hierarchy}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                            <TextBlock Text="Lithology:" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       FontWeight="Bold"/>
+                                                                            <TextBlock Text="{Binding LithologicDescriptionShort}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                            <TextBlock Text="Top boundary:" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       FontWeight="Bold"/>
+                                                                            <TextBlock Text="{Binding TopBoundary}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                            <TextBlock Text="Base boundary:" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       FontWeight="Bold"/>
+                                                                            <TextBlock Text="{Binding BaseBoundary}" 
+                                                                       Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                       TextWrapping="Wrap"/>
+                                                                        </StackPanel>
+                                                                    </Border>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Style>
+                                                    </ComboBox.ItemContainerStyle>
+                                                </ComboBox>
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Chronostratigraphy:" 
+                                           Style="{StaticResource inputLabel}" Margin="3,4,0,4"/>
+                                                <ComboBox x:Name="sampChronStratNameTextBox" 
+                                          IsEditable="False"
+                                          ItemsSource="{Binding Path=Chronostratigraphy, Mode=OneTime,UpdateSourceTrigger=PropertyChanged}"
+                                          DisplayMemberPath="eonName" 
+                                          IsTextSearchEnabled="True"
+                                          IsSynchronizedWithCurrentItem="True"
+                                          Text="{Binding Path=SelectedFieldMeasurement.measChronostratigraphy, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+
+                                            </DockPanel>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="Files">
+                                <GroupBox Header="Files">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <ScrollViewer>
+                                            <ListView ItemsSource="{Binding Path=FileStore, 
+                                                            Mode=OneWay, 
+                                                            NotifyOnSourceUpdated=True,
+                                                            IsAsync=True}"
+                                              SelectedItem="{Binding Path=SelectedFileStore}"
+                                              >
+                                                <ListView.View>
+                                                    <GridView>
+                                                        <GridViewColumn Header="File name">
+                                                            <GridViewColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock TextAlignment="Right"
+                                                               Text="{Binding Path=name, Mode=OneWay}" 
+                                                               Style="{StaticResource GridViewColumnTextStyle}"/>
+                                                                </DataTemplate>
+                                                            </GridViewColumn.CellTemplate>
+                                                        </GridViewColumn>
+                                                    </GridView>
+                                                </ListView.View>
+                                            </ListView>
+                                        </ScrollViewer>
+
+                                        <Border Background="{StaticResource BackgroundLightBrush}"
+                                        Opacity="0.6"
+                                        Visibility="{Binding Path=IsFileLoading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=False}">
+                                            <TextBlock HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Text="Loading..."
+                                               FontSize="{StaticResource FontSizeLarge}"/>
+                                        </Border>
+                                        <StackPanel Orientation="Horizontal"
+                                            Grid.Row="1"
+                                            Background="{StaticResource ButtonNormalBackground1}">
+                                            <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf053;"
+                                                Tag="Previous"
+                                            Margin="15,5">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="PreviousFile">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                            <TextBlock Text="File "
+                                       Style="{StaticResource NavigationTextBlock}"/>
+                                            <TextBox Text="{Binding SelectedFileFieldMeasurementIndex, Mode=TwoWay}"
+                                             Style="{StaticResource inputTextBox}"
+                                             Width="Auto"
+                                             VerticalContentAlignment="Center"
+                                             Padding="2"/>
+                                            <TextBlock Text=" of "
+                                       Style="{StaticResource NavigationTextBlock}"/>
+                                            <TextBlock Text="{Binding CountFilesFieldMeasurement, Mode=OneWay}"
+                                       Style="{StaticResource NavigationTextBlock}"/>
+                                            <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf054;"
+                                                Tag="Next"
+                                            Margin="15,5">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="NextFile">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                            <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf055;"
+                                                Tag="Add file"
+                                            Margin="15,5">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="UploadFile">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                            <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf146;"
+                                                Tag="Remove file"
+                                            Margin="15,5">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="DeleteFile">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                            <Button FontFamily="{StaticResource FontAwesome}"
+                                                Content="&#xf019;"
+                                                Tag="Download"
+                                                Margin="15,5">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="Click">
+                                                        <cal:ActionMessage MethodName="DownloadFile">
+                                                        </cal:ActionMessage>
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="Parameter">
+                                <StackPanel Grid.Column="2"
+                                    Grid.RowSpan="2"
+                                    Grid.Row="1"
+                                Margin="0,0,80,0">
+                                    <Border Visibility="{Binding Path=IsTotalGammaRay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="0,5,0,5">
+                                        <GroupBox Header="Total Gamma Ray">
+                                            <StackPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Total Counts [-]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=TotalGammaRay.tgrTotalCounts, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Value [CPS]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=TotalGammaRay.tgrValueCPS, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Value [API]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=TotalGammaRay.tgrValueAPI, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Accuracy [%]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=TotalGammaRay.tgrAccuracy, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Measuring time [s]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=TotalGammaRay.tgrMeasuringTime, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                <Run Text="Notes&#xA;(Measured material, remarks, etc.)"
+                                                     ></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=TotalGammaRay.tgrNotes, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 MinHeight="100"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </Border>
+                                    <Border Visibility="{Binding Path=IsSpectralGammaRay, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="0,5,0,5">
+                                        <GroupBox Header="Spectral Gamma Ray">
+                                            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Auto">
+                                                <StackPanel>
+                                                    <DockPanel>
+                                                        <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                            <TextBlock>
+                                                <Run>Total Counts [-]</Run>
+                                                            </TextBlock>
+                                                        </Label>
+                                                        <TextBox Text="{Binding Path=SpectralGammaRay.sgTotalCounts, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                            <TextBlock>
+                                                <Run>Total Radiation [API]</Run>
+                                                            </TextBlock>
+                                                        </Label>
+                                                        <TextBox Text="{Binding Path=SpectralGammaRay.sgAPI, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                    </DockPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <DockPanel>
+                                                            <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" Width="110">
+                                                                <TextBlock>
+                                                    <Run>Potassium [cps]</Run>
+                                                                </TextBlock>
+                                                            </Label>
+                                                            <TextBox Text="{Binding Path=SpectralGammaRay.sgPotassiumCPS, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                             Style="{StaticResource inputTextBox}"
+                                                             Width="70"/>
+                                                        </DockPanel>
+                                                        <DockPanel HorizontalAlignment="Right">
+                                                            <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" Width="110">
+                                                                <TextBlock>
+                                                    <Run>Potassium [%]</Run>
+                                                                </TextBlock>
+                                                            </Label>
+                                                            <TextBox Text="{Binding Path=SpectralGammaRay.sgPotassiumPercent, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                             Style="{StaticResource inputTextBox}"
+                                                             Width="70"/>
+                                                        </DockPanel>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <DockPanel>
+                                                            <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" Width="110">
+                                                                <TextBlock>
+                                                    <Run>Uranium [cps]</Run>
+                                                                </TextBlock>
+                                                            </Label>
+                                                            <TextBox Text="{Binding Path=SpectralGammaRay.sgUraniumCPS, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                             Style="{StaticResource inputTextBox}"
+                                                             Width="70"/>
+                                                        </DockPanel>
+                                                        <DockPanel HorizontalAlignment="Right">
+                                                            <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" Width="110">
+                                                                <TextBlock>
+                                                    <Run>Uranium [ppm]</Run>
+                                                                </TextBlock>
+                                                            </Label>
+                                                            <TextBox Text="{Binding Path=SpectralGammaRay.sgUraniumPPM, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                             Style="{StaticResource inputTextBox}"
+                                                             Width="70"/>
+                                                        </DockPanel>
+                                                    </StackPanel>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <DockPanel>
+                                                            <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" Width="110">
+                                                                <TextBlock>
+                                                    <Run>Thorium [cps]</Run>
+                                                                </TextBlock>
+                                                            </Label>
+                                                            <TextBox Text="{Binding Path=SpectralGammaRay.sgThoriumCPS, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                             Style="{StaticResource inputTextBox}"
+                                                             Width="70"/>
+                                                        </DockPanel>
+                                                        <DockPanel HorizontalAlignment="Right">
+                                                            <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" Width="110">
+                                                                <TextBlock>
+                                                    <Run>Thorium [ppm]</Run>
+                                                                </TextBlock>
+                                                            </Label>
+                                                            <TextBox Text="{Binding Path=SpectralGammaRay.sgThoriumPPM, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                             Style="{StaticResource inputTextBox}"
+                                                             Width="70"/>
+                                                        </DockPanel>
+                                                    </StackPanel>
+                                                    <DockPanel>
+                                                        <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                            <TextBlock>
+                                                <Run>Accuracy [%]</Run>
+                                                            </TextBlock>
+                                                        </Label>
+                                                        <TextBox Text="{Binding Path=SpectralGammaRay.sgAccuracy, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                            <TextBlock>
+                                                <Run>Measuring time [s]</Run>
+                                                            </TextBlock>
+                                                        </Label>
+                                                        <TextBox Text="{Binding Path=SpectralGammaRay.sgMeasuringTime, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                    </DockPanel>
+                                                    <DockPanel>
+                                                        <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                            <TextBlock>
+                                                <Run Text="Notes&#xA;(Measured material, remarks, etc.)"
+                                                     ></Run>
+                                                            </TextBlock>
+                                                        </Label>
+                                                        <TextBox Text="{Binding Path=SpectralGammaRay.sgNotes, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 MinHeight="100"
+                                                 VerticalContentAlignment="Top"/>
+                                                    </DockPanel>
+                                                </StackPanel>
+                                            </ScrollViewer>
+                                        </GroupBox>
+                                    </Border>
+                                    <Border Visibility="{Binding Path=IsMagneticSusceptibility, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="0,5,0,5">
+                                        <GroupBox Header="Magnetic Susceptibility">
+                                            <StackPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Value [10</Run>
+                                                <Run Typography.Variants="Superscript">-6</Run>
+                                                <Run>SI]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=MagneticSusceptibility.susValue, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Accuracy [10</Run>
+                                                <Run Typography.Variants="Superscript">-6</Run>
+                                                <Run>SI]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=MagneticSusceptibility.susAccuracy, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                <Run Text="Notes&#xA;(Measured material, remarks, etc.)"
+                                                     ></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=MagneticSusceptibility.susNotes, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 MinHeight="100"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </Border>
+                                    <Border Visibility="{Binding Path=IsStructureOrientation, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="0,5,0,5">
+                                        <GroupBox Header="Structure Orientation">
+                                            <StackPanel HorizontalAlignment="Left">
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Dip direction [°]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=StructureOrientation.soDipDirection, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Dip angle [°]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=StructureOrientation.soDipAngle, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                <Run>Accuracy [%]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=StructureOrientation.soAccuracy, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Content="Geometrical structure:"
+                                            Style="{StaticResource inputLabel}"
+                                            Margin="3,5,0,5"/>
+                                                    <ComboBox IsEditable="False"
+                                              SelectedValue="{Binding Path=StructureOrientation.soMeasuredGeometricalStructure, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                              SelectedValuePath="Content"
+                                              Text="{Binding Path=StructureOrientation.soMeasuredGeometricalStructure, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                              IsSynchronizedWithCurrentItem="True">
+                                                        <ComboBoxItem Content="Lineament"/>
+                                                        <ComboBoxItem Content="Plane"/>
+                                                    </ComboBox>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Content="Geological structure:"
+                                            Style="{StaticResource inputLabel}"
+                                            Margin="3,5,0,5"/>
+                                                    <ComboBox IsEditable="False"
+                                              SelectedValue="{Binding Path=StructureOrientation.soMeasuredGeologicalStructure, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                                              SelectedValuePath="Content"
+                                              Text="{Binding Path=StructureOrientation.soMeasuredGeologicalStructure, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true,UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}" Margin="0,3,3,3"
+                                              IsSynchronizedWithCurrentItem="True">
+                                                        <ComboBoxItem Content="Mineral elongation axis"/>
+                                                        <ComboBoxItem Content="Harness axis"/>
+                                                        <ComboBoxItem Content="Fold axis"/>
+                                                        <ComboBoxItem Content="Palaeo flow axis"/>
+                                                        <ComboBoxItem Content="Joint plane"/>
+                                                        <ComboBoxItem Content="Fault plane"/>
+                                                        <ComboBoxItem Content="Bedding plane"/>
+                                                        <ComboBoxItem Content="Stratification plane"/>
+                                                        <ComboBoxItem Content="Shell surface plane"/>
+                                                    </ComboBox>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                <Run Text="Notes&#xA;(Measured material, remarks, etc.)"
+                                                     ></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=StructureOrientation.soNotes, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 MinHeight="100"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </Border>
+                                    <Border Visibility="{Binding Path=IsTemperature, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="0,5,0,5">
+                                        <GroupBox Header="Temperature">
+                                            <StackPanel HorizontalAlignment="Left">
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                            <Run>Value [°C]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=Temperature.btValue, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                            <Run>Measurement time [s]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=Temperature.btMeasurementTime, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                <Run Text="Device velocity [m/s]"
+                                                     ></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=Temperature.btDeviceVelocity, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </Border>
+                                    <Border Visibility="{Binding Path=IsRQD, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=True, Mode=OneWay, NotifyOnSourceUpdated=True}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Margin="0,5,0,5">
+                                        <GroupBox Header="Rock quality designation index">
+                                            <StackPanel HorizontalAlignment="Left">
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                            <Run>Value [-]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdValue, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
+                                                        <TextBlock>
+                                                            <Run>Measurement time [s]</Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdType, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                            <Run Text="Z from [m]"></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdZfrom, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                            <Run Text="Z to [m]"></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdZto, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                            <Run Text="X from [m]"></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdXfrom, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                            <Run Text="X to [m]"></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdXto, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                            <Run Text="Y from [m]"></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdYfrom, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                                <DockPanel>
+                                                    <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5" VerticalAlignment="Top">
+                                                        <TextBlock>
+                                                            <Run Text="Y to [m]"></Run>
+                                                        </TextBlock>
+                                                    </Label>
+                                                    <TextBox Text="{Binding Path=RockQualityDesignationIndex.rqdYto, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                                 Style="{StaticResource inputTextBox}"
+                                                 VerticalContentAlignment="Top"/>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </Border>
+
+                                </StackPanel>
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

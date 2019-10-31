@@ -1,0 +1,189 @@
+﻿<UserControl x:Class="GeoReVi.ViewPanel3D"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="1000">
+
+    <UserControl.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="slider">
+            <Setter Property="Slider.Orientation" Value="Vertical" />
+            <Setter Property="Slider.Height" Value="130.0" />
+            <Setter Property="Slider.HorizontalAlignment" Value="Center" />
+            <Setter Property="Slider.VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="Gray" 
+          HorizontalAlignment="Stretch"
+          MinWidth="1000">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+        <Viewport3D Name="viewport"  
+                    Grid.Row="0" 
+                    Grid.Column="0"
+                    HorizontalAlignment="Stretch">
+            <Viewport3D.Camera>
+                <PerspectiveCamera x:Name="camera" 
+                                   FarPlaneDistance="10"
+                                    NearPlaneDistance="0" 
+                                    LookDirection="{Binding RelativeSource={RelativeSource Self}, Path=Position, Converter={StaticResource LookBackValueConverter}}"
+                                    UpDirection="0,1,0"
+                                    Position="0,0,2.5" 
+                                    FieldOfView="45">
+                    <PerspectiveCamera.Transform>
+                        <Transform3DGroup>
+                            <!--<RotateTransform3D>
+                                    <RotateTransform3D.Rotation>
+                                        <AxisAngleRotation3D 
+                                    Axis="1.0, 0.0, 0.0" 
+                                    Angle="{Binding ElementName=sliderX, Path=Value}"/>
+                                    </RotateTransform3D.Rotation>
+                                </RotateTransform3D>
+                                <RotateTransform3D>
+                                    <RotateTransform3D.Rotation>
+                                        <AxisAngleRotation3D 
+                                    Axis="0.0, 1.0, 0.0" 
+                                    Angle="{Binding ElementName=sliderY, Path=Value}"/>
+                                    </RotateTransform3D.Rotation>
+                                </RotateTransform3D>
+                                <RotateTransform3D>
+                                    <RotateTransform3D.Rotation>
+                                        <AxisAngleRotation3D 
+                                    Axis="0.0, 0.0, 1.0" 
+                                    Angle="{Binding ElementName=sliderZ, Path=Value}"/>
+                                    </RotateTransform3D.Rotation>
+                                </RotateTransform3D>-->
+                            <TranslateTransform3D 
+                                    OffsetX="{Binding ElementName=transSliderX, Path=Value}"
+                                    OffsetY="{Binding ElementName=transSliderY, Path=Value}"
+                                    OffsetZ="{Binding ElementName=transSliderZ, Path=Value}"/>
+                            <!--<ScaleTransform3D 
+                                    ScaleX="0.8"
+                                    ScaleY="0.8"
+                                    ScaleZ="0.8"/>-->
+                        </Transform3DGroup>
+                    </PerspectiveCamera.Transform>
+                </PerspectiveCamera>
+            </Viewport3D.Camera>
+            <ModelVisual3D>
+
+            </ModelVisual3D>
+            <ModelVisual3D x:Name="model">
+                <ModelVisual3D.Content>
+                    <Model3DGroup x:Name="group">
+                        <AmbientLight Color="DarkGray"/>
+                        <DirectionalLight Color="DarkGray" 
+                                          Direction="10,10,5"/>
+                    </Model3DGroup>
+                </ModelVisual3D.Content>
+            </ModelVisual3D>
+        </Viewport3D>
+
+        <!--Model view translation-->
+        <!--<StackPanel Grid.Column="1" 
+                    Width="200" 
+                    Background="LightGray">
+            <GroupBox Header="Rotation" 
+                      Margin="4.0"
+                      MinWidth="100"
+                      Width="auto">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="X" 
+                               Grid.Column="0" 
+                               Grid.Row="0"/>
+                    <TextBlock Text="Y" 
+                               Grid.Column="1" 
+                               Grid.Row="0"/>
+                    <TextBlock Text="Z" 
+                               Grid.Column="2" 
+                               Grid.Row="0"/>
+                    <Slider x:Name="sliderX" 
+                            Grid.Column="0" 
+                            Grid.Row="1"
+                            Minimum="0.0"
+                            Maximum="360.0" 
+                            Value="230"
+                            Style="{StaticResource slider}">
+                        <Slider.ToolTip>
+                            <TextBlock Text="Rotate around X-Axis"/>
+                        </Slider.ToolTip>
+                    </Slider>
+                    <Slider x:Name="sliderY" 
+                            Grid.Column="1" Grid.Row="1" Minimum="-180.0" Maximum="180.0" Style="{StaticResource slider}">
+                        <Slider.ToolTip>
+                            <TextBlock Text="Rotate around Y-Axis"/>
+                        </Slider.ToolTip>
+                    </Slider>
+                    <Slider x:Name="sliderZ" Grid.Column="2" Grid.Row="1" Minimum="-180.0" Maximum="180.0" Style="{StaticResource slider}">
+                        <Slider.ToolTip>
+                            <TextBlock Text="Rotate around Z-Axis"/>
+                        </Slider.ToolTip>
+                    </Slider>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Translate" 
+                      Margin="4.0"
+                      MinWidth="100"
+                      Width="auto">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="X" Grid.Column="0" Grid.Row="0"/>
+                    <TextBlock Text="Y" Grid.Column="1" Grid.Row="0"/>
+                    <TextBlock Text="Z" Grid.Column="2" Grid.Row="0"/>
+                    <Slider x:Name="transSliderX" Grid.Column="0" Grid.Row="1" Minimum="-10" Maximum="10" Style="{StaticResource slider}">
+                        <Slider.ToolTip>
+                            <TextBlock Text="Translate along the X-Axis"/>
+                        </Slider.ToolTip>
+                    </Slider>
+                    <Slider x:Name="transSliderY" Grid.Column="1" Grid.Row="1" Minimum="-10" Maximum="10" Style="{StaticResource slider}">
+                        <Slider.ToolTip>
+                            <TextBlock Text="Translate along the Y-Axis"/>
+                        </Slider.ToolTip>
+                    </Slider>
+                    <Slider x:Name="transSliderZ" Grid.Column="2" Grid.Row="1" Minimum="-10" Maximum="10" Style="{StaticResource slider}">
+                        <Slider.ToolTip>
+                            <TextBlock Text="Translate along the Z-Axis"/>
+                        </Slider.ToolTip>
+                    </Slider>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Zoom" 
+                      Margin="4.0"
+                      MinWidth="100"
+                      Width="auto">
+                <Slider x:Name="sliderZoom" 
+                        IsDirectionReversed="True" 
+                        Minimum="0.01" 
+                        Maximum="1" 
+                        Value="0.8" 
+                        Style="{StaticResource slider}" />
+            </GroupBox>
+        </StackPanel>-->
+    </Grid>
+</UserControl>

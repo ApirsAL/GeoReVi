@@ -1,0 +1,223 @@
+﻿<UserControl x:Class="GeoReVi.SammonProjectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+ xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+             xmlns:local="clr-namespace:GeoReVi"
+             mc:Ignorable="d" 
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             d:DesignHeight="450" d:DesignWidth="400">
+    <UserControl.Template>
+        <ControlTemplate TargetType="UserControl">
+            <Grid DataContext="{Binding SammonProjectionHelper}">
+                <TabControl>
+                    <TabItem Header="Parameters"
+                             Height="30">
+                        <Grid>
+                            <StackPanel MaxWidth="400"
+                                        HorizontalAlignment="Left">
+                                <DockPanel>
+                                    <TextBlock Text="Maximum iterations"
+                                               FontWeight="DemiBold"
+                                               Margin="5,0"
+                                               VerticalAlignment="Center"/>
+                                    <TextBox Text="{Binding MaxIteration, Mode=TwoWay}"
+                                             HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBlock Text="NaN value handling"
+                                              FontWeight="DemiBold"
+                                               Margin="5,0"
+                                               VerticalAlignment="Center"/>
+                                    <ComboBox HorizontalAlignment="Right" 
+                                              VerticalAlignment="Center" 
+                                              MinWidth="60"
+                                              ItemsSource="{Binding Path=AnalysisMethod, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="Description"
+                                              IsSynchronizedWithCurrentItem="True"
+                                              SelectedValue="{Binding Path=AnalysisMethod, Mode=TwoWay}"
+                                              SelectedIndex="0"/>
+                                </DockPanel>
+                                <Button Style="{StaticResource MainButton}"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                        Content="Compute"
+                        ToolTip="Compute"
+                        cal:Message.Attach="Compute"
+                        HorizontalAlignment="Left">
+
+                                </Button>
+                                <TextBlock Text="Included data sets"
+                                           FontWeight="Bold"/>
+                                <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=DataSet}"
+                                                              SelectionMode="Multiple"
+                                                  BorderBrush="Transparent">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                                <Button Style="{StaticResource MainButton}"
+                                        FontSize="{StaticResource FontSizeSmall}"
+                        Content="Clear"
+                        ToolTip="Clear data sets"
+                        cal:Message.Attach="ClearDataSets"
+                        HorizontalAlignment="Left">
+
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Used data matrix">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <DataGrid ItemsSource="{Binding Path=Merge,
+                                                                Mode=OneWay, 
+                                                                NotifyOnSourceUpdated=True, 
+                                                                UpdateSourceTrigger=PropertyChanged}"
+                                                                          Grid.Row="1"
+                                                  AlternatingRowBackground="Gainsboro"  
+                                                                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                                                  AutoGenerateColumns="True"
+                                                                                                                                                                                HorizontalScrollBarVisibility="Auto"
+                                                              VerticalScrollBarVisibility="Auto"
+                                                              EnableColumnVirtualization="True"
+                                                              EnableRowVirtualization="True"
+                                                  AlternationCount="2"
+                                                  SelectionUnit="Cell"
+                                                  ColumnWidth="Auto">
+                            </DataGrid>
+                            <Border Background="{StaticResource ApirsGrayBrush}"
+                                        Opacity="0.60"
+                                        Visibility="{Binding Path=IsComputing, 
+                                                    Converter={StaticResource BooleanToVisibilityConverter}, 
+                                                    NotifyOnSourceUpdated=True}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch">
+                                <ProgressBar IsIndeterminate="True"
+                                                 HorizontalAlignment="Left"
+                                                 VerticalAlignment="Top"
+                                                 Margin="20"
+                                                 Width="100"/>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Style="{StaticResource IconTabItem}" 
+                                         FontFamily="{StaticResource FontAwesome}"
+                                         Header="{StaticResource FontAwesomeTable}" 
+                                         Height="30"
+                                         HorizontalAlignment="Stretch">
+                        <TabControl ItemsSource="{Binding DataSet}"
+                                    Grid.Row="1">
+                            <TabControl.ItemContainerStyle>
+                                <Style TargetType="TabItem" BasedOn="{StaticResource LeftSideTabItem}">
+                                </Style>
+                            </TabControl.ItemContainerStyle>
+                            <TabControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border>
+                                        <TextBlock Text="{Binding Name}">
+                                        </TextBlock>
+                                    </Border>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate>
+
+                            <!-- Change ContentTemplate to control main content -->
+                            <TabControl.ContentTemplate>
+                                <DataTemplate>
+                                       <Grid VerticalAlignment="Stretch"
+                                               Background="{StaticResource ForegroundLightBrush}">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="auto"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Text="Original data table"
+                                                       Grid.Row="0"
+                                                       Style="{StaticResource HeaderText}"/>
+                                            <DataGrid ItemsSource="{Binding Data,
+                                                                    Mode=OneWay, 
+                                                                    NotifyOnSourceUpdated=True, 
+                                                                    UpdateSourceTrigger=PropertyChanged}"
+                                                      AlternatingRowBackground="Gainsboro"  
+                                                      AutoGenerateColumns="True"
+                                                      AlternationCount="2"
+                                                      HorizontalScrollBarVisibility="Auto"
+                                                              VerticalScrollBarVisibility="Auto"
+                                                              EnableColumnVirtualization="True"
+                                                              EnableRowVirtualization="True"
+                                                      SelectionUnit="Cell"
+                                                      ColumnWidth="Auto">
+                                            </DataGrid>
+                                        </Grid>
+                                </DataTemplate>
+                            </TabControl.ContentTemplate>
+                        </TabControl>
+                    </TabItem>
+                    <TabItem Style="{StaticResource IconTabItem}" 
+                             FontFamily="{StaticResource FontAwesome}"
+                             Header="{StaticResource FontAwesomeCalculator}" 
+                             Height="30"
+                             HorizontalAlignment="Stretch">
+                        <Grid>
+                            <TabControl>
+                                <TabItem Header="Projected values">
+                                    <DataGrid ItemsSource="{Binding ProjectedValuesView,
+                                                                        Mode=OneWay, 
+                                                                        NotifyOnSourceUpdated=True, 
+                                                                        UpdateSourceTrigger=PropertyChanged}"
+                                                          AlternatingRowBackground="Gainsboro"  
+                                                          AutoGenerateColumns="True"
+                                                          AlternationCount="2"
+                                                          HorizontalScrollBarVisibility="Auto"
+                                                              VerticalScrollBarVisibility="Auto"
+                                                              EnableColumnVirtualization="True"
+                                                              EnableRowVirtualization="True"
+                                                          SelectionUnit="Cell"
+                                                          ColumnWidth="Auto">
+                                    </DataGrid>
+                                </TabItem>
+                            </TabControl>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Style="{StaticResource IconTabItem}"
+                             Header="{StaticResource FontAwesomeScatterChart}"
+                             Height="30">
+                        <Grid>
+                            <ContentControl cal:View.Model="{Binding LineChartViewModel}"/>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+                <Button Style="{StaticResource IconButton}"
+                        Content="{StaticResource FontAwesomeDownload}"
+                        ToolTip="Compute Sammon Projection"
+                        cal:Message.Attach="Compute"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top">
+
+                </Button>
+                <Grid Background="Gray"
+                          Opacity="0.4"
+                         Visibility="{Binding Path=IsComputing, 
+                                                    Converter={StaticResource BooleanToVisibilityConverter}, 
+                                                    NotifyOnSourceUpdated=True}"/>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Template>
+</UserControl>
+

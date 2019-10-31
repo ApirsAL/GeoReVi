@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="GeoReVi.ColorPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" Height="40" Width="200" Name="uccolorpicker"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ObjectDataProvider MethodName="GetType" 
+    ObjectType="{x:Type sys:Type}" x:Key="colorsTypeOdp">
+                <ObjectDataProvider.MethodParameters>
+                    <sys:String>System.Windows.Media.Colors, PresentationCore,
+            Version=3.0.0.0, Culture=neutral, 
+            PublicKeyToken=31bf3856ad364e35</sys:String>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider ObjectInstance="{StaticResource colorsTypeOdp}"  
+    MethodName="GetProperties" x:Key="colorPropertiesOdp">
+            </ObjectDataProvider>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <ComboBox Name="superCombo" 
+                  ItemsSource="{Binding Source={StaticResource colorPropertiesOdp}}" 
+                  SelectedValuePath="Name"  
+                  SelectedValue="{Binding ElementName=uccolorpicker, Path=SelectedColor, Mode=TwoWay}"
+                  SelectedIndex="7"
+                  HorizontalContentAlignment="Left"
+                  SelectionChanged="superCombo_SelectionChanged">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="20" Height="20" Margin="5" Background="{Binding Name}"/>
+                        <TextBlock  Text="{Binding Name}" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </Grid>
+</UserControl>

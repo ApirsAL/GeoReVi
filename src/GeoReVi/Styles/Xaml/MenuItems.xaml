@@ -1,0 +1,457 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:GeoReVi">
+
+    <ResourceDictionary.MergedDictionaries>
+        <!---Order is important here, because ressources can reference to each other
+                e.g. if a button gets loaded before the color, the color attribute of the button can't find
+                the color due to the missing dictionary-->
+        <ResourceDictionary Source="Colors.xaml" />
+        <ResourceDictionary Source="Fonts.xaml" />
+        <ResourceDictionary>
+            <local:BackgroundConverter x:Key="BackgroundConverter"/>
+        </ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+
+    <!---Styling the basic menu-->
+    <Style x:Key="{x:Type Menu}"
+       TargetType="{x:Type Menu}">
+        <Setter Property="OverridesDefaultStyle"
+          Value="True" />
+        <Setter Property="SnapsToDevicePixels"
+          Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Menu}">
+                    <Border BorderThickness="1"
+                            BorderBrush="Transparent"
+                            Background="{StaticResource ApirsMediumGrayBrush}">
+                        <StackPanel ClipToBounds="True"
+                                    Orientation="Horizontal"
+                                    VerticalAlignment="Stretch"
+                                    IsItemsHost="True" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style for the default menu item-->
+    <Style TargetType="{x:Type MenuItem}" BasedOn="{x:Null}" x:Key="BaseStyleMenuItem">
+        <Setter Property="Background" Value="{StaticResource ApirsMediumGrayBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ForegroundLightBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource LatoRegular}"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Margin" Value="3,0"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MenuItem}">
+                    <Grid SnapsToDevicePixels="True"
+                          VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Border Padding="5,2,5,2"
+                                Background="Transparent"
+                                VerticalAlignment="Stretch"
+                                Height="20">
+                            <DockPanel>
+                                <ContentPresenter x:Name="Icon" 
+                                                  ContentSource="Icon" 
+                                                  Margin="0"
+                                                  Width="auto"
+                                                  Height="12"
+                                                  HorizontalAlignment="Center"
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                                  VerticalAlignment="Center"/>
+                                <Path x:Name="GlyphPanel" 
+                                      Fill="{TemplateBinding Foreground}" 
+                                      FlowDirection="LeftToRight" 
+                                      Margin="0" 
+                                      Visibility="Collapsed" 
+                                      VerticalAlignment="Stretch"/>
+                                <ContentPresenter x:Name="content" 
+                                                  ContentSource="Header" 
+                                                  VerticalAlignment="Center"
+                                                  Margin="{TemplateBinding Margin}" 
+                                                  RecognizesAccessKey="True" 
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </DockPanel>
+                        </Border>
+                        <Popup x:Name="PART_Popup" 
+                               AllowsTransparency="true" 
+                               Focusable="false" 
+                               HorizontalOffset="1"
+                               IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
+                               PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" 
+                               Placement="Bottom" 
+                               VerticalOffset="-1">
+
+                            <Border BorderThickness="1" 
+                                    BorderBrush="DarkGray" 
+                                    Background="{TemplateBinding Background}">
+                                <ScrollViewer x:Name="SubMenuScrollViewer" 
+                                              CanContentScroll="true" 
+                                              Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                                    <Grid RenderOptions.ClearTypeHint="Enabled">
+                                        <ItemsPresenter x:Name="ItemsPresenter" 
+                                                        KeyboardNavigation.DirectionalNavigation="Cycle" 
+                                                        Grid.IsSharedSizeScope="true" 
+                                                        Margin="2"
+                                                        HorizontalAlignment="Left"
+                                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                                        KeyboardNavigation.TabNavigation="Cycle"/>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="TextBlock.FontWeight" Value="Bold" TargetName="content"/>
+                            <Setter Property="TextBlock.Background" Value="{StaticResource BackgroundLightBrush}" TargetName="content"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style for groupboxes-->
+    <Style TargetType="{x:Type GroupBox}">
+        <Setter Property="BorderBrush" Value="{StaticResource ApirsMediumGrayBrush}"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="MinWidth" Value="300"/>
+        <Setter Property="HeaderTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" 
+                               FontWeight="Bold"
+                               FontFamily="{StaticResource LatoBold}"
+                               FontSize="15"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style for groupboxes-->
+    <Style TargetType="{x:Type GroupBox}" x:Key="NewEntryGroupBox">
+        <Setter Property="BorderBrush" Value="{StaticResource ApirsBlueBrush}"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="HeaderTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" 
+                               FontWeight="Bold"
+                               FontFamily="{StaticResource LatoBold}"
+                               FontSize="{StaticResource FontSizeRegular}"
+                               Foreground="{StaticResource ForegroundLightBrush}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type GroupBox}" x:Key="CollapsGroupBox">
+        <Setter Property="HeaderTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding}" 
+                                   FontWeight="Bold"
+                                   FontFamily="{StaticResource LatoBold}"
+                                   FontSize="{StaticResource FontSizeMedium}"
+                                   Foreground="{StaticResource ApirsGrayBrush}"/>
+                        <CheckBox Style="{StaticResource CollapseCheckBoxStyle}"
+                                  Margin="10,0,0,0"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="CheckBox.Unchecked">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="Height" Duration="0:0:.2"  To="50" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+            <EventTrigger RoutedEvent="CheckBox.Checked">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <DoubleAnimation Storyboard.TargetProperty="Height" Duration="0:0:.2"  />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!---Style for default tab items-->
+    <Style TargetType="{x:Type TabItem}">
+        <Setter Property="Background" Value="{StaticResource BackgroundDarkSlateGrayBrush}"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Grid>
+                        <Border 
+                                Name="Border"
+                                Margin="0,0,-4,0" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="Black"
+                                Panel.ZIndex="2"
+                                Padding="3"
+                                BorderThickness="0.5,0.5,0.5,0" 
+                                CornerRadius="0,6,0,0" >
+                            <ContentPresenter x:Name="ContentSite"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                ContentSource="Header"
+                                                Margin="4,0,4,0"
+                                                RecognizesAccessKey="True"
+                                                TextElement.Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                TextElement.FontWeight="Normal"
+                                              TextElement.FontSize="{StaticResource FontSizeSmall}"
+                                              TextElement.FontFamily="Segoe UI"/>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="100" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource WordBlueBrush}" />
+                            <Setter Property="TextElement.Foreground" TargetName="ContentSite" Value="{StaticResource ForegroundLightBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundDarkSlateGrayBrush}" />
+                            <Setter Property="TextElement.Foreground" TargetName="ContentSite" Value="{StaticResource ForegroundVeryDarkBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style for icon tab item-->
+    <Style TargetType="{x:Type TabItem}" x:Key="IconTabItem">
+        <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Width" Value="60" />
+        <Setter Property="Margin" Value="0,0,0,-2"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Grid>
+                        <Border 
+                                Name="Border"
+                                Margin="0" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="Black"
+                                Panel.ZIndex="2"
+                                Padding="3"
+                                BorderThickness="0.5" 
+                                CornerRadius="0" >
+                            <ContentPresenter x:Name="ContentSite"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                ContentSource="Header"
+                                                Margin="2,0,2,0"
+                                                RecognizesAccessKey="True">
+                                <ContentPresenter.ContentTemplate>
+                                    <DataTemplate x:Name="IconFontAwesome">
+                                        <TextBlock Text="{Binding}"
+                                                   Name="Icon"
+                                                   FontFamily="{StaticResource FontAwesome}"
+                                                   FontSize="{StaticResource FontSizeRegular}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource ForegroundVeryDarkBrush}"/>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                                                <Setter Property="Foreground" TargetName="Icon" Value="{StaticResource ForegroundVeryDarkBrush}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
+                                                <Setter Property="Foreground" TargetName="Icon" Value="{StaticResource ForegroundVeryDarkBrush}" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ContentPresenter.ContentTemplate>
+                            </ContentPresenter>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="100" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ForegroundLightBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundVeryLightBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style for icon tab item-->
+    <Style TargetType="{x:Type TabItem}" x:Key="IconTabItemDark">
+        <Setter Property="Background" Value="{StaticResource ApirsMediumGrayBrush}"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="Height" Value="35"/>
+        <Setter Property="Width" Value="50" />
+        <Setter Property="Margin" Value="0,0,0,-2"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Grid>
+                        <Border 
+                                Name="Border"
+                                Margin="0" 
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="Black"
+                                Panel.ZIndex="2"
+                                Padding="3"
+                                BorderThickness="0" 
+                                CornerRadius="0" >
+                            <ContentPresenter x:Name="ContentSite"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                ContentSource="Header"
+                                                Margin="2,0,2,0"
+                                                RecognizesAccessKey="True">
+                                <ContentPresenter.ContentTemplate>
+                                    <DataTemplate x:Name="IconFontAwesome">
+                                        <TextBlock Text="{Binding}"
+                                                   Name="Icon"
+                                                   FontFamily="{StaticResource FontAwesome}"
+                                                   FontSize="{StaticResource FontSizeRegular}"
+                                                   FontWeight="Bold"
+                                                   Foreground="{StaticResource ForegroundLightBrush}"/>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                                                <Setter Property="Foreground" TargetName="Icon" Value="{StaticResource ForegroundVeryDarkBrush}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False">
+                                                <Setter Property="Foreground" TargetName="Icon" Value="{StaticResource ForegroundVeryDarkBrush}" />
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ContentPresenter.ContentTemplate>
+                            </ContentPresenter>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Panel.ZIndex" Value="100" />
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource ForegroundLightBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundVeryLightBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!---Style for default tab items-->
+    <Style TargetType="{x:Type TabItem}" x:Key="SideBarTabItem" BasedOn="{StaticResource IconTabItem}">
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="Panel.ZIndex" Value="3"/>
+        <Setter Property="FontFamily" Value="{StaticResource LatoBold}"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Margin" Value="0,0,-2,0"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeSmall}"/>
+    </Style>
+
+    <DataTemplate x:Key="LeftSideTabItemTemplate">
+        <Grid>
+            <Border 
+                                Name="Border"
+                                Margin="0,0,0,-4" 
+                                BorderBrush="Black"
+                                Padding="3"
+                                BorderThickness="0" 
+                                CornerRadius="12,0,0,2" >
+                <ContentPresenter x:Name="ContentSite"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Content="Header"
+                                                Margin="0,4,0,4"
+                                                RecognizesAccessKey="True"
+                                                TextElement.Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                TextElement.FontWeight="DemiBold"
+                                              TextElement.FontSize="{StaticResource FontSizeSmall}"
+                                              TextElement.FontFamily="{StaticResource LatoBold}">
+                    <ContentPresenter.LayoutTransform>
+                        <RotateTransform Angle="270"/>
+                    </ContentPresenter.LayoutTransform>
+                </ContentPresenter>
+            </Border>
+        </Grid>
+    </DataTemplate>
+
+    <DataTemplate x:Key="LeftSideTabItemHeaderTemplate">
+        <ContentPresenter Content="{TemplateBinding Content}">
+            <ContentPresenter.LayoutTransform>
+                <RotateTransform Angle="270" />
+            </ContentPresenter.LayoutTransform>
+        </ContentPresenter>
+    </DataTemplate>
+
+    <ControlTemplate TargetType="{x:Type TabItem}" x:Key="LeftSideTabItemControlTemplate">
+        <Grid>
+            <Border Name="Border"
+                     Margin="0,0,0,-4" 
+                     Background="{TemplateBinding Background}"
+                     BorderBrush="Black"
+                     Padding="3"
+                                BorderThickness="1,1,1,1" 
+                                CornerRadius="12,0,0,2" >
+                <ContentPresenter x:Name="ContentSite"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                ContentSource="Header"
+                                                Margin="0,4,0,4"
+                                                RecognizesAccessKey="True"
+                                                TextElement.Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                TextElement.FontWeight="Normal"
+                                              TextElement.FontSize="{StaticResource FontSizeSmall}"
+                                              TextElement.FontFamily="Segoe UI">
+                </ContentPresenter>
+            </Border>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Panel.ZIndex" Value="100" />
+                <Setter TargetName="Border" Property="Background" Value="{StaticResource ForegroundLightBrush}" />
+                <Setter Property="TextElement.Foreground" TargetName="ContentSite" Value="{StaticResource ForegroundVeryDarkBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundVeryLightBrush}" />
+                <Setter Property="TextElement.Foreground" TargetName="ContentSite" Value="{StaticResource ForegroundVeryDarkBrush}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!---Style for default tab items-->
+    <Style TargetType="{x:Type TabItem}" x:Key="LeftSideTabItem">
+        <Setter Property="Background" Value="{StaticResource BackgroundDarkSlateGrayBrush}"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HeaderTemplate" Value="{StaticResource LeftSideTabItemHeaderTemplate}"/>
+        <Setter Property="Template" Value="{StaticResource LeftSideTabItemControlTemplate}">
+        </Setter>
+    </Style>
+
+    <!--Default style for listview items-->
+    <Style x:Key="ListViewItemStyle" TargetType="{x:Type ListViewItem}">
+        <Style.Triggers>
+            <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                <Setter Property="Background" Value="{StaticResource BackgroundLightBrush}"></Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

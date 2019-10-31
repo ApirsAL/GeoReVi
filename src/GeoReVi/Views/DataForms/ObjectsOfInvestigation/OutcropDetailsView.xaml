@@ -1,0 +1,262 @@
+﻿<UserControl x:Class="GeoReVi.OutcropDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GeoReVi"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             mc:Ignorable="d" 
+             Height="Auto"
+             Width="Auto">
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation
+                  Storyboard.TargetProperty="Opacity"
+                  From="0.0" To="1.0" Duration="0:0:0.3"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <!---Updating rock sample informations-->
+    <Border x:Name="MainBorder" 
+            CornerRadius="8"
+            Background="{StaticResource BackgroundVeryLightBrush}">
+        <Grid x:Name="UpdateRockSampleGrid" 
+                  HorizontalAlignment="Center" 
+                  Margin="2" 
+                  VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border     Grid.ColumnSpan="3"
+                        Grid.Row="0"
+                        CornerRadius="8,8,0,0"
+                        Background="{StaticResource BackgroundDarkSlateGrayBrush}"
+                        BorderBrush="{StaticResource ForegroundDarkBrush}"
+                        BorderThickness="1"
+                        Height="auto">
+                <Border.Effect>
+                    <DropShadowEffect Color="Gray" Opacity="0.5"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal" 
+                        Margin="2,2,2,0" 
+                        Height="auto" 
+                        VerticalAlignment="Top">
+                    <TextBlock Text="Outcrop details"
+                           Style="{StaticResource HeaderTextInput}"/>
+                    <!--<Button Content="Cancel" Name="btnCancel" Command="{StaticResource CancelCommand}" FontSize="11" Width="80" Style="{StaticResource MainButton}"/>-->
+                </StackPanel>
+            </Border>
+
+            <StackPanel Grid.Column="0"
+                        Grid.Row="2"
+                        Margin="15,15,15,15"
+                        Height="Auto">
+                <GroupBox >
+                    <GroupBox.Header>General information</GroupBox.Header>
+                    <StackPanel HorizontalAlignment="Left">
+                        <DockPanel>
+                            <Label Content="Outcrop ID:" 
+                                   Style="{StaticResource inputLabel}"/>
+                            <TextBox IsEnabled="False"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outIdPk, Mode=TwoWay, 
+                                        NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Name:" 
+                                   Style="{StaticResource inputLabel}"/>
+                            <TextBox     IsEnabled="False"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outLocalName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Outcrop area:" 
+                                   Style="{StaticResource inputLabel}"/>
+                            <Image Source="/APIRS;component\Media\Icons\Symbols\info.png"
+                                   Width="16"
+                                   Height="Auto"
+                                   Stretch="Uniform">
+                                <Image.ToolTip>
+                                    <StackPanel Width="100">
+                                        <TextBlock Text="An Outcrop area is an area with two or more outcrops with under 100 m distance."
+                                                   TextWrapping="WrapWithOverflow"/>
+
+                                    </StackPanel>
+                                </Image.ToolTip>
+                            </Image>
+                            <CheckBox Content="" Grid.Column="1" 
+                                       HorizontalAlignment="Left"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Path=SelectedOutcrop.outOutcropArea, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
+                                       Width="20"
+                                      Margin="10,0,0,0"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Active construction:" 
+                                   Style="{StaticResource inputLabel}"/>
+                            <CheckBox Content="" Grid.Column="1" 
+                                       HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Path=SelectedOutcrop.outActive, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
+                                       Width="20"/>
+                            <Label Content="Working permission:" 
+                                   Style="{StaticResource inputLabel}"/>
+                            <CheckBox Content="" Grid.Column="1" 
+                                       HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      IsChecked="{Binding Path=SelectedOutcrop.outWorkingPermission, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
+                                       Width="20"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Last visit:" 
+                                   Style="{StaticResource inputLabel}"/>
+                            <DatePicker SelectedDate="{Binding Path=SelectedOutcrop.outLastJourney, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" />
+                        </DockPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox >
+                    <GroupBox.Header>Outcrop information</GroupBox.Header>
+                    <StackPanel HorizontalAlignment="Left">
+                        <DockPanel>
+                            <Label Content="Last conditions:" 
+                                   Style="{StaticResource inputLabel}"/>
+                            <ComboBox Text="{Binding Path=SelectedOutcrop.outLastCondition, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3">
+                                <ComboBoxItem Content="Very well preserved"/>
+                                <ComboBoxItem Content="Well preserved/Mostly fresh rock"/>
+                                <ComboBoxItem Content="Strongly weathered"/>
+                                <ComboBoxItem Content="Renaturalized"/>
+                                <ComboBoxItem Content="Unknown"/>
+                            </ComboBox>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Description:" 
+                                   Style="{StaticResource inputLabel}"
+                                   VerticalAlignment="Top"
+                                   HorizontalAlignment="Stretch"/>
+                            <TextBox   HorizontalAlignment="Right"
+                                       MinHeight="100"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outDescription, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
+                        </DockPanel>
+
+                    </StackPanel>
+                </GroupBox>
+
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                          Grid.Row="2" Margin="0,0,0,20">
+                <GroupBox 
+                          Margin="15">
+                    <GroupBox.Header>Spatial reference</GroupBox.Header>
+                    <StackPanel>
+                        <DockPanel>
+                            <Label Content="Width [m]:"
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4" />
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outWidth, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Height [m]:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4" />
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outHeight, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="Area:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <Image Source="/APIRS;component\Media\Icons\Symbols\info.png"
+                                   Width="16"
+                                   Height="Auto"
+                                   Stretch="Uniform">
+                                <Image.ToolTip>
+                                    <StackPanel Width="100">
+                                        <TextBlock Text="The area, the outcrop is located (e.g. state, local region)."
+                                                   TextWrapping="WrapWithOverflow"/>
+
+                                    </StackPanel>
+                                </Image.ToolTip>
+                            </Image>
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outArea, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+                        <DockPanel>
+                            <Label Content="City:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <Image Source="/APIRS;component\Media\Icons\Symbols\info.png"
+                                   Width="16"
+                                   Height="Auto"
+                                   Stretch="Uniform">
+                                <Image.ToolTip>
+                                    <StackPanel Width="100">
+                                        <TextBlock Text="The city closest to the outcrop."
+                                                   TextWrapping="WrapWithOverflow"/>
+
+                                    </StackPanel>
+                                </Image.ToolTip>
+                            </Image>
+                            <TextBox Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outCity, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox 
+                          Margin="15">
+                    <GroupBox.Header>Miscellaneous</GroupBox.Header>
+                    <StackPanel>
+                        <DockPanel>
+                            <Label Content="Literature:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Margin="3,4,0,4"/>
+                            <TextBox  Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedOutcrop.outLiterature, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                        </DockPanel>
+
+                    </StackPanel>
+                </GroupBox>
+                <local:ImageButton x:Name="btnUpdate"
+                                       Tag="Update"
+                                   HorizontalAlignment="Right"
+                                       Margin="40,0,0,0"
+                            ImageSource="/GeoReVi;component\Media\Icons\Save.png">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Click">
+                            <cal:ActionMessage MethodName="Update">
+                            </cal:ActionMessage>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </local:ImageButton>
+            </StackPanel>
+            <GroupBox Header="Object orientation"
+                      Grid.Row="2"
+                      Grid.Column="2">
+                <Image Margin="10"
+                       Source="/GeoReVi;component\Media\Images\SubjectSpecific\OrientationOutcrop.png"
+                       MinWidth="400"
+                       MinHeight="300"
+                       MaxWidth="700"
+                       SnapsToDevicePixels="true"
+                       RenderOptions.BitmapScalingMode ="HighQuality"
+                       VerticalAlignment="Stretch"
+                       HorizontalAlignment="Stretch"
+                       Height="Auto"/>
+            </GroupBox>
+        </Grid>
+    </Border>
+</UserControl>
