@@ -176,6 +176,7 @@
                                    VerticalAlignment="Bottom"
                                     HorizontalAlignment="Center"
                                    Grid.ColumnSpan="3"
+                                   Padding="5,5,100,5"
                                    Grid.RowSpan="3">
                         </TextBlock>
                         <StackPanel Grid.Column="1"

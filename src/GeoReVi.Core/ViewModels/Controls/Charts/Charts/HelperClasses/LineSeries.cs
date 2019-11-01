@@ -58,25 +58,6 @@ namespace GeoReVi
             }
         }
 
-        //Point collection that build up the line series
-        private PointCollection linePointCollection = new PointCollection();
-        [XmlIgnore()]
-        public PointCollection LinePointCollection
-        {
-            get
-            {
-                return this.linePointCollection;
-            }
-            set
-            {
-                this.linePointCollection = value;
-                NotifyOfPropertyChange(() => LinePointCollection);
-            }
-        }
-
-        //Point collection that build up the line series
-        public BindableCollection<LocationTimeValue> LinePoints2 { get; set; }
-
         #region Transformation properties
 
         //Magnitude of translation in X direction
@@ -245,7 +226,6 @@ namespace GeoReVi
         public LineSeries()
         {
             LinePoints = new BindableCollection<LocationTimeValue>();
-            LinePoints2 = new BindableCollection<LocationTimeValue>();
             Hull = new List<LocationTimeValue>();
             Symbols = new Symbols<LineSeries>();
         }
@@ -257,7 +237,6 @@ namespace GeoReVi
         {
             _a = a;
             LinePoints = new BindableCollection<LocationTimeValue>();
-            LinePoints2 = new BindableCollection<LocationTimeValue>();
             Hull = new List<LocationTimeValue>();
             Symbols = new Symbols<LineSeries>(a);
         }

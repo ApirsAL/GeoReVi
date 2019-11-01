@@ -354,6 +354,26 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
+                                                <ItemsControl ItemsSource="{Binding Path=Outliers}"
+                                              VirtualizingPanel.IsVirtualizing="True" 
+                                              Grid.Column="0">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Canvas>
+                                                                <Ellipse Fill="Transparent"
+                                                                         Stroke="Black"
+                                                                         Stretch="Uniform"
+                                                                         Width="12"
+                                                                         Canvas.Left="{Binding X}"
+                                                                         Height="12"
+                                                                         Canvas.Top="{Binding Y}"
+                                                                         StrokeThickness="2">
+
+                                                                </Ellipse>
+                                                            </Canvas>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
@@ -451,6 +471,13 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                                                      VerticalAlignment="Top">
                                     <Border Background="{StaticResource ForegroundLightBrush}">
                                         <StackPanel>
+                                            <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="SubdivideAxes"
+                                                        cal:Bind.ModelWithoutContext="{Binding Lco}"
+                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Subdivide axes"
+                                    HorizontalAlignment="Left"
+                                    Margin="5"/>
                                             <Expander ExpandDirection="Down"
                                                                           Header="X axis"
                                                                           FontWeight="Bold"
@@ -633,42 +660,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                                 <StackPanel>
-                                                    <WrapPanel>
-                                                        <Button Style="{StaticResource IconButton}"
-                                                                                             Content="{StaticResource FontAwesomeStepBackward}"
-                                                                                             ToolTip="Index down">
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="Click">
-                                                                    <cal:ActionMessage MethodName="IndexDown">
-                                                                        <cal:Parameter Value="{Binding ElementName=BcoTabControl, Path=SelectedIndex}" />
-                                                                    </cal:ActionMessage>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                        </Button>
-                                                        <Button Style="{StaticResource IconButton}"
-                                                                                             Content="{StaticResource FontAwesomeStepForward}"
-                                                                                             ToolTip="Index up">
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="Click">
-                                                                    <cal:ActionMessage MethodName="IndexUp">
-                                                                        <cal:Parameter Value="{Binding ElementName=BcoTabControl, Path=SelectedIndex}" />
-                                                                    </cal:ActionMessage>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                        </Button>
-                                                        <Button Style="{StaticResource IconButton}"
-                                                                                             Content="{StaticResource FontAwesomeTrash}"
-                                                                                                Foreground="Red"
-                                                                                             ToolTip="Remove series from chart">
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="Click">
-                                                                    <cal:ActionMessage MethodName="Remove">
-                                                                        <cal:Parameter Value="{Binding ElementName=BcoTabControl, Path=SelectedIndex}" />
-                                                                    </cal:ActionMessage>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                        </Button>
-                                                    </WrapPanel>
                                                     <Expander ExpandDirection="Down"
                                                                           Header="Bars"
                                                                           FontWeight="Bold"

@@ -1,7 +1,6 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 
@@ -20,15 +19,6 @@ namespace GeoReVi
             set
             {
                 this.outliersRemoved = value;
-
-                if (DataCollection != null)
-                    if (DataCollection.Count != 0)
-                    {
-                        string xlabel = this.XLabel.ToString();
-                        CreateChart();
-                        this.XLabel = xlabel;
-                    }
-
                 NotifyOfPropertyChange(() => this.OutliersRemoved);
             }
         }
@@ -45,16 +35,6 @@ namespace GeoReVi
                     this.outlierRange = value;
                 else
                     this.outlierRange = 1;
-
-                if (DataCollection != null)
-                    if (DataCollection.Count != 0)
-                    {
-                        string xlabel = this.XLabel.ToString();
-                        CreateChart();
-                        this.XLabel = xlabel;
-                    }
-
-
 
                 NotifyOfPropertyChange(() => this.OutlierRange);
             }
@@ -175,6 +155,7 @@ namespace GeoReVi
                     AddTicksAndLabels();
                     AddWhiskers(Bp[i], i);
                     AddBox(Bp[i], i);
+                    AddOutliers(Bp[i], i);
 
                 }
                 catch
@@ -184,6 +165,25 @@ namespace GeoReVi
             }
 
             DataCollection.AddRange(Bp);
+        }
+
+        /// <summary>
+        /// Subdivides the axes
+        /// </summary>
+        public void SubdivideAxes()
+        {
+            try
+            {
+                Ymin = 0;
+                Ymax = DataCollection.Count();
+                Xmin = 0;
+                Xmax = DataSet.SelectMany(x => x.Vertices.Select(y => y.Value[0])).Max();
+            }
+            catch
+            {
+
+            }
+
         }
 
         /// <summary>
@@ -300,6 +300,35 @@ namespace GeoReVi
                 gl.Y2 = upper.Y - yDifference.Y;
 
                 bps.Wiskers.Add(gl);
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Adds whiskers to a series
+        /// </summary>
+        /// <param name="bps"></param>
+        public void AddOutliers(BoxPlotSeries bps, double y)
+        {
+            try
+            {
+                //Lower Wiskers
+                bps.Outliers.Clear();
+
+                y += 0.5 * YTick;
+
+                for(int i = 0; i<bps.BoxPlotStatisticsCollection.Outliers.Count();i++)
+                {
+                    if(bps.BoxPlotStatisticsCollection.Outliers[i] <= Xmax && bps.BoxPlotStatisticsCollection.Outliers[i] >= Xmin)
+                    {
+                        LocationTimeValue loc = NormalizePoint(new LocationTimeValue(bps.BoxPlotStatisticsCollection.Outliers[i], y));
+                        loc.Y -= 6;
+                        bps.Outliers.Add(loc);
+                    }
+                }
             }
             catch
             {

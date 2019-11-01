@@ -9,7 +9,6 @@ using System.IO;
 using Microsoft.Win32;
 using MoreLinq;
 using System.Net.Http;
-using System.Runtime.Serialization.Json;
 using System.Text;
 
 namespace GeoReVi
@@ -441,7 +440,7 @@ namespace GeoReVi
             if (count >= 0)
             {
                 double avg = SelectedMeasPoint.Data.AsEnumerable().Average(r => r.Field<double>(0));
-                double standardDeviation = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).StdDev();                double sum = SelectedMeasPoint.Data.AsEnumerable().Sum(r => (r.Field<double>(0) - avg) * (r.Field<double>(0) - avg));
+                double standardDeviation = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).StdDev();
 
                 for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
                 {
@@ -451,9 +450,9 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Applying a z transformation on the dataset
+        /// Applying a rescaling on the dataset
         /// </summary>
-        public void Normalization()
+        public void Rescaling()
         {
             int count = SelectedMeasPoint.Data.Rows.Count;
 
@@ -465,7 +464,45 @@ namespace GeoReVi
 
                 for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
                 {
-                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg) / (max-min);
+                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - min) / (max-min);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applying a mean normalization on the dataset
+        /// </summary>
+        public void MeanNormalization()
+        {
+            int count = SelectedMeasPoint.Data.Rows.Count;
+
+            if (count >= 0)
+            {
+                double avg = SelectedMeasPoint.Data.AsEnumerable().Average(r => r.Field<double>(0));
+                double max = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).Max();
+                double min = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).Min();
+
+                for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
+                {
+                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg) / (max - min);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applying a mean normalization on the dataset
+        /// </summary>
+        public void SubtractMean()
+        {
+            int count = SelectedMeasPoint.Data.Rows.Count;
+
+            if (count >= 0)
+            {
+                double avg = SelectedMeasPoint.Data.AsEnumerable().Average(r => r.Field<double>(0));
+
+                for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
+                {
+                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg);
                 }
             }
         }
@@ -677,6 +714,39 @@ namespace GeoReVi
 
             }
 
+        }
+
+        /// <summary>
+        /// Opens the coordinate systems table
+        /// </summary>
+        /// <returns></returns>
+        public async Task ShowCoordinateTable()
+        {
+            try
+            {
+                System.Diagnostics.Process.Start(@"Media\CoordinateSystems\SRID.csv");
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Making a shallow copy of the selected mesh
+        /// </summary>
+        /// <returns></returns>
+        public async Task CopyMesh()
+        {
+            try
+            {
+                MeasPoints.Add(new Mesh(SelectedMeasPoint));
+
+            }
+            catch
+            {
+
+            }
         }
 
         #endregion

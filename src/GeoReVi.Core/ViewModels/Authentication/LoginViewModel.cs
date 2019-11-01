@@ -64,7 +64,6 @@ namespace GeoReVi
             set
             {
                 this.isLoggedIn = value;
-                //NotifyOfPropertyChange(() => IsLoggedIn);
             }
         }
 

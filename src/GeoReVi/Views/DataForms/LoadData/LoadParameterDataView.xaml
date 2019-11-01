@@ -62,26 +62,10 @@
                                                                           HorizontalAlignment="Right"
                                   VerticalAlignment="Center"/>
                     </DockPanel>
-                        <Rectangle Height="25"
+                    <Rectangle Height="25"
                                    Width="1"
                                    Margin="5,0"
                                    Fill="Black"/>
-                    <DockPanel Margin="10,0">
-                        <TextBlock Text="Source EPSG:" 
-                                   Margin="10, 0"
-                                   VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDSource, Mode=TwoWay}"
-                                 VerticalAlignment="Center"/>
-                        <TextBlock Text="Target EPSG:" 
-                                   Margin="10, 0"
-                                   VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDTarget, Mode=TwoWay}"
-                                 VerticalAlignment="Center"/>
-                        <Button Style="{StaticResource HyperlinkButton}"
-                                FontSize="{StaticResource FontSizeVerySmall}"
-                                Content="Convert"
-                                cal:Message.Attach="ConvertCoordinates"/>
-                    </DockPanel>
                     <Rectangle Height="25"
                                    Width="1"
                                    Margin="5,0"
@@ -164,8 +148,10 @@
                                               Margin="5,0">
                             <local:DropDownButton.Menu>
                                 <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
-                                    <MenuItem Header="Remove dataset"
+                                    <MenuItem Header="Remove mesh"
                                               cal:Message.Attach="[Event Click] = [Action RemoveDataSet]"/>
+                                    <MenuItem Header="Copy mesh"
+                                              cal:Message.Attach="[Event Click] = [Action CopyMesh]"/>
                                     <MenuItem Header="Import mesh"
                                               cal:Message.Attach="[Event Click] = [Action ImportMesh]"/>
                                     <MenuItem Header="Export mesh"
@@ -192,8 +178,12 @@
                                               cal:Message.Attach="[Event Click] = [Action ExponentialTransformation]"/>
                                     <MenuItem Header="Z-score transformation"
                                               cal:Message.Attach="[Event Click] = [Action ZScoreTransformation]"/>
-                                    <MenuItem Header="Normalization"
-                                              cal:Message.Attach="[Event Click] = [Action Normalization]"/>
+                                    <MenuItem Header="Rescaling"
+                                              cal:Message.Attach="[Event Click] = [Action Rescaling]"/>
+                                    <MenuItem Header="Mean-Normalization"
+                                              cal:Message.Attach="[Event Click] = [Action MeanNormalization]"/>
+                                    <MenuItem Header="Subtract mean"
+                                              cal:Message.Attach="[Event Click] = [Action SubtractMean]"/>
                                     <Separator HorizontalAlignment="Stretch"
                                                        Height="2"/>
                                     <MenuItem Header="Group by name"
@@ -335,6 +325,37 @@
                                                                 </TextBlock>
                                                             </Grid>
                                                         </DockPanel>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Separator>
+                                                    
+                                                </Separator>
+                                                <Expander ExpandDirection="Down"
+                                              Header="Coordinate transformation"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                        <StackPanel>
+                                                            <TextBlock Text="Source EPSG:" 
+                                   Margin="10, 0"
+                                   VerticalAlignment="Center"/>
+                                                            <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDSource, Mode=TwoWay}"
+                                 VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Target EPSG:" 
+                                   Margin="10, 0"
+                                   VerticalAlignment="Center"/>
+                                                            <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDTarget, Mode=TwoWay}"
+                                 VerticalAlignment="Center"/>
+                                                            <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Convert"
+                                cal:Message.Attach="ConvertCoordinates"/>
+                                                            <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Convert"
+                                cal:Message.Attach="ShowCoordinateTable"/>
+                                                        </StackPanel>
                                                     </StackPanel>
                                                 </Expander>
                                                 <Separator>

@@ -457,6 +457,36 @@ namespace GeoReVi
 
             return rand;
         }
+
+        /// <summary>
+        /// Scales a distribution to a range
+        /// </summary>
+        /// <param name="originalDistribution"></param>
+        /// <param name="max"></param>
+        /// <param name="min"></param>
+        /// <returns></returns>
+        public static double[] ScaleToArea(double[] originalDistribution, double max, double min)
+        {
+            double[] ret = new double[originalDistribution.Length];
+
+            try
+            {
+                double zMax = originalDistribution.Max();
+                double zMin = originalDistribution.Min();
+                double zAverage = originalDistribution.Average();
+
+                for (int i = 0; i < originalDistribution.Length; i++)
+                {
+                    ret[i] = ((originalDistribution[i] - zMin) / (zMax - zMin)) * (max - min) + min;
+                }
+            }
+            catch
+            {
+
+            }
+
+            return ret;
+        }
     }
     /// <summary>
     /// Distribution types

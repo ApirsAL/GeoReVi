@@ -197,7 +197,8 @@
                             </ItemsControl>
                             <Grid HorizontalAlignment="Center">
                                 <TextBlock Text="{Binding Path=Lco.XLabel}"
-                                                   HorizontalAlignment="Center">
+                                                   HorizontalAlignment="Center"
+                                           Padding="5,5,100,5">
                                 </TextBlock>
 
                             </Grid>
@@ -317,7 +318,8 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                                 <ItemsControl ItemsSource="{Binding Path=Lco.DataCollection, NotifyOnSourceUpdated=True}"
-                                              VirtualizingPanel.IsVirtualizing="True">
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              x:Name="DataControl">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <Grid/>
@@ -331,27 +333,16 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                                         <Polyline  Stroke="{Binding LineColor}"
                                                                   StrokeThickness="{Binding LineThickness}">
                                                             <Polyline.Points>
-                                                                <MultiBinding Converter="{StaticResource LocationValueToPointCollectionConverter}">
-                                                                    <Binding Path="LinePoints" />
-                                                                    <Binding Path="Symbols.SymbolSize" />
+                                                                <MultiBinding Converter="{StaticResource LocationValueToPointCollectionConverter}" >
+                                                                    <Binding Path="LinePoints"/>
+                                                                    <Binding Path="Symbols.SymbolSize"/>
+                                                                    <Binding Path="LineThickness"/>
+                                                                    <Binding Path="LineColor"/>
+                                                                    <Binding Path="ItemsSource" ElementName="DataControl" Mode="OneWay" NotifyOnSourceUpdated="True"/>
                                                                 </MultiBinding>
                                                             </Polyline.Points>
                                                         </Polyline>
                                                     </Canvas>
-                                                    <ItemsControl ItemsSource="{Binding Path=LinePoints}"
-                                                              VirtualizingPanel.IsVirtualizing="True"
-                                                                  ScrollViewer.CanContentScroll="True">
-                                                        <ItemsControl.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <Canvas>
-                                                                    <Polyline Stroke="Black"
-                                                                                   StrokeThickness="1"
-                                                                                   HorizontalAlignment="Stretch"
-                                                                                   VerticalAlignment="Stretch"/>
-                                                                </Canvas>
-                                                            </DataTemplate>
-                                                        </ItemsControl.ItemTemplate>
-                                                    </ItemsControl>
                                                     <ItemsControl ItemsSource="{Binding Path=LinePoints}"
                                                                   >
                                                         <ItemsControl.ItemTemplate>

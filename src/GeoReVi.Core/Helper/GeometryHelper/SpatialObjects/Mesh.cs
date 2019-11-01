@@ -460,9 +460,9 @@ namespace GeoReVi
 
                 for (int i = 0; i < locs.Length; i++)
                 {
-                    grad.X += loc.X != locs[i].X ? (loc.Value[0] - locs[i].Value[0]) / Math.Abs(loc.X - locs[i].X) : 0;
-                    grad.Y += loc.Y != locs[i].Y ? (loc.Value[0] - locs[i].Value[0]) / Math.Abs(loc.Y - locs[i].Y) : 0;
-                    grad.Z += loc.Z != locs[i].Z ? (loc.Value[0] - locs[i].Value[0]) / Math.Abs(loc.Z - locs[i].Z) : 0;
+                    grad.X += loc.X != locs[i].X ? 1 / Math.Abs(loc.X - locs[i].X) : 0;
+                    grad.Y += loc.Y != locs[i].Y ? 1 / Math.Abs(loc.Y - locs[i].Y) : 0;
+                    grad.Z += loc.Z != locs[i].Z ? 1 / Math.Abs(loc.Z - locs[i].Z) : 0;
                 }
             }
             catch
@@ -488,29 +488,33 @@ namespace GeoReVi
                 int indexY = loc.MeshIndex[1];
                 int indexZ = loc.MeshIndex[2];
 
-                    retLocs.Add(locs[indexX - 1, indexY, indexZ]);
-                    retLocs.Add(locs[indexX, indexY - 1, indexZ]);
-                    retLocs.Add(locs[indexX, indexY, indexZ - 1]);
-                    retLocs.Add(locs[indexX + 1, indexY, indexZ]);
-                    retLocs.Add(locs[indexX, indexY + 1, indexZ]);
-                    retLocs.Add(locs[indexX, indexY, indexZ + 1]);
 
                 
                 //Checking if the correct count of points is returned
                 switch(Dimensionality)
                 {
                     case Dimensionality.TwoD:
+
+                        retLocs.Add(locs[indexX - 1, indexY, indexZ]);
+                        retLocs.Add(locs[indexX, indexY - 1, indexZ]);
+                        retLocs.Add(locs[indexX + 1, indexY, indexZ]);
+                        retLocs.Add(locs[indexX, indexY + 1, indexZ]);
+
                         if (retLocs.Count() > 4 && !loc.IsExterior)
                         {
                             retLocs = retLocs.OrderBy(x => x.GetEuclideanDistance(loc)).Take(4).ToList();
                         }
-                        else if (retLocs.Count() > 2 && loc.IsExterior)
-                        {
-                            retLocs = retLocs.OrderBy(x => x.GetEuclideanDistance(loc)).Take(2).ToList();
-                        }
                         break;
                     case Dimensionality.ThreeD:
-                        if(retLocs.Count() > 6 && !loc.IsExterior)
+
+                        retLocs.Add(locs[indexX - 1, indexY, indexZ]);
+                        retLocs.Add(locs[indexX, indexY - 1, indexZ]);
+                        retLocs.Add(locs[indexX, indexY, indexZ - 1]);
+                        retLocs.Add(locs[indexX + 1, indexY, indexZ]);
+                        retLocs.Add(locs[indexX, indexY + 1, indexZ]);
+                        retLocs.Add(locs[indexX, indexY, indexZ + 1]);
+
+                        if (retLocs.Count() > 6 && !loc.IsExterior)
                         {
                             retLocs = retLocs.OrderBy(x => x.GetEuclideanDistance(loc)).Take(6).ToList();
                         }

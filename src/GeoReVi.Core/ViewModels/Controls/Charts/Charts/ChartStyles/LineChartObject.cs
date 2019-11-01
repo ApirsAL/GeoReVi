@@ -623,6 +623,8 @@ namespace GeoReVi
 
                     points.OrderBy(x => x.Y);
 
+                    Ds[i].LinePoints.AddRange(points);
+
                     if (Ds[i].LinePoints.Count > 0)
                     {
                         Maxx = Ds[i].LinePoints.Max(x => DeNormalizePoint(x).X);
@@ -630,8 +632,6 @@ namespace GeoReVi
                         Maxy = Ds[i].LinePoints.Max(x => DeNormalizePoint(x).Y);
                         Miny = Ds[i].LinePoints.Min(x => DeNormalizePoint(x).Y);
                     }
-
-                    Ds[i].LinePoints.AddRange(points);
 
                     i += 1;
                 }

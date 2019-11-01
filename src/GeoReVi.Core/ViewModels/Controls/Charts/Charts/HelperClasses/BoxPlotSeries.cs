@@ -18,6 +18,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Outliers of the box plot series
+        /// </summary>
+        private BindableCollection<LocationTimeValue> outliers = new BindableCollection<LocationTimeValue>();
+        public BindableCollection<LocationTimeValue> Outliers
+        {
+            get => this.outliers;
+            set
+            {
+                this.outliers = value;
+                NotifyOfPropertyChange(() => Outliers);
+            }
+        }
+
+        /// <summary>
         /// X Gridlines of the chart object
         /// </summary>
         private BindableCollection<Gridline> whiskers = new BindableCollection<Gridline>();

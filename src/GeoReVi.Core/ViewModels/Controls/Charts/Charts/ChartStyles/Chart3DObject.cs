@@ -975,12 +975,23 @@ namespace GeoReVi
 
                                 try
                                 {
-                                    if (ls3D.Mesh.Vertices[i].IsExterior)
-                                        continue;
+                                    switch(ls3D.Mesh.Dimensionality)
+                                    {
+                                        case Dimensionality.ThreeD:
+                                            if (ls3D.Mesh.Vertices[i].IsExterior)
+                                                continue;
 
-                                    Point3D central = ls3D.Mesh.Vertices[i].ToPoint3D();
+                                            Point3D central = ls3D.Mesh.Vertices[i].ToPoint3D();
 
-                                    gradients.Add(new Tuple<Point3D, double[]>(central,ls3D.Mesh.CalculateGradientFunction(ls3D.Mesh.Vertices[i])));
+                                            gradients.Add(new Tuple<Point3D, double[]>(central,ls3D.Mesh.CalculateGradientFunction(ls3D.Mesh.Vertices[i])));
+                                            break;
+                                        case Dimensionality.TwoD:
+                                            Point3D central1 = ls3D.Mesh.Vertices[i].ToPoint3D();
+                                            Vector3D vec = ls3D.Mesh.CalculateGradient(ls3D.Mesh.Vertices[i]);
+                                            gradients.Add(new Tuple<Point3D, double[]>(central1, new double[3] { vec.X, vec.Y, vec.Z } ));
+                                            break;
+
+                                    }
 
                                 }
                                 catch
@@ -1286,7 +1297,7 @@ namespace GeoReVi
 
 
                             //Scaling
-                            ScaleTransform3D scaling = new ScaleTransform3D(new Vector3D(ls3D.Scale, ls3D.Scale, ls3D.Scale));
+                            ScaleTransform3D scaling = new ScaleTransform3D(new Vector3D(1, 1, ls3D.Scale));
 
                             //Adding transformations to the transformation group
                             transformations.Children.Add(scaling);

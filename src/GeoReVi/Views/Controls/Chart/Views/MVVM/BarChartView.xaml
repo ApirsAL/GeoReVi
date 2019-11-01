@@ -321,6 +321,17 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                     <DataTemplate>
                                         <Border>
                                             <Grid x:Name="DataCollectionControl">
+                                                <Canvas>
+                                                    <Polyline  Stroke="{Binding Path=LineSeriesBar.LineColor}"
+                                                      StrokeThickness="{Binding Path=LineSeriesBar.LineThickness}">
+                                                        <Polyline.Points>
+                                                            <MultiBinding Converter="{StaticResource LocationValueToPointCollectionConverter}">
+                                                                <Binding Path="LinePoints" />
+                                                                <Binding Path="BorderThickness" FallbackValue="0" />
+                                                            </MultiBinding>
+                                                        </Polyline.Points>
+                                                    </Polyline>
+                                                </Canvas>
                                                 <ItemsControl ItemsSource="{Binding Path=BarPoints}"
                                                               VirtualizingPanel.IsVirtualizing="True">
                                                     <ItemsControl.ItemTemplate>
@@ -342,10 +353,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Grid Width="100"
-                                      VerticalAlignment="Top"
-                                  HorizontalAlignment="Left">
-                                <ItemsControl ItemsSource="{Binding Path=Barco.DataCollection, NotifyOnSourceUpdated=True}"
+                            <ItemsControl ItemsSource="{Binding Path=Barco.DataCollection, NotifyOnSourceUpdated=True}"
                                               VirtualizingPanel.IsVirtualizing="True">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -376,7 +384,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
-                            </Grid>
                         </Grid>
                     </Border>
 
@@ -436,6 +443,13 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                                                      VerticalAlignment="Top">
                                     <Border Background="{StaticResource ForegroundLightBrush}">
                                         <StackPanel MinWidth="30">
+                                            <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="SubdivideAxes"
+                                                        cal:Bind.ModelWithoutContext="{Binding Lco}"
+                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Subdivide axes"
+                                    HorizontalAlignment="Left"
+                                    Margin="5"/>
                                             <Expander ExpandDirection="Down"
                                                                           Header="X axis"
                                                                           FontWeight="Bold"
@@ -626,42 +640,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                                 <StackPanel>
-                                                    <WrapPanel>
-                                                        <Button Style="{StaticResource IconButton}"
-                                                                                             Content="{StaticResource FontAwesomeStepBackward}"
-                                                                                             ToolTip="Index down">
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="Click">
-                                                                    <cal:ActionMessage MethodName="IndexDown">
-                                                                        <cal:Parameter Value="{Binding ElementName=BarcoTabControl, Path=SelectedIndex}" />
-                                                                    </cal:ActionMessage>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                        </Button>
-                                                        <Button Style="{StaticResource IconButton}"
-                                                                                             Content="{StaticResource FontAwesomeStepForward}"
-                                                                                             ToolTip="Index up">
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="Click">
-                                                                    <cal:ActionMessage MethodName="IndexUp">
-                                                                        <cal:Parameter Value="{Binding ElementName=BarcoTabControl, Path=SelectedIndex}" />
-                                                                    </cal:ActionMessage>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                        </Button>
-                                                        <Button Style="{StaticResource IconButton}"
-                                                                                             Content="{StaticResource FontAwesomeTrash}"
-                                                                                                Foreground="Red"
-                                                                                             ToolTip="Remove series from chart">
-                                                            <i:Interaction.Triggers>
-                                                                <i:EventTrigger EventName="Click">
-                                                                    <cal:ActionMessage MethodName="Remove">
-                                                                        <cal:Parameter Value="{Binding ElementName=BarcoTabControl, Path=SelectedIndex}" />
-                                                                    </cal:ActionMessage>
-                                                                </i:EventTrigger>
-                                                            </i:Interaction.Triggers>
-                                                        </Button>
-                                                    </WrapPanel>
                                                     <Expander ExpandDirection="Down"
                                                                           Header="Bars"
                                                                           FontWeight="Bold"
@@ -694,13 +672,13 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                                         </StackPanel>
                                                     </Expander>
                                                     <Expander ExpandDirection="Down"
-                                                                          Header="Histogram"
+                                                                          Header="Theoretical distribution"
                                                                           FontWeight="Bold"
                                                                           Template="{StaticResource StretchyExpanderTemp}"
                                                                           IsExpanded="False">
                                                         <StackPanel  Margin="5">
                                                             <DockPanel>
-                                                                <TextBlock Text="Create Histogram"
+                                                                <TextBlock Text="Show"
                                                                                                            FontWeight="Normal"/>
                                                                 <CheckBox IsChecked="{Binding Path=EDH.CalculateDistribution, Mode=TwoWay}"/>
                                                             </DockPanel>

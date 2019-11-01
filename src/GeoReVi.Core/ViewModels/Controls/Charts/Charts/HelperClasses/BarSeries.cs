@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Caliburn.Micro;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace GeoReVi
 {
@@ -58,6 +59,18 @@ namespace GeoReVi
             }
         }
 
+        //Point collection that build up the line series
+        private BindableCollection<LocationTimeValue> linePoints = new BindableCollection<LocationTimeValue>();
+        public BindableCollection<LocationTimeValue> LinePoints
+        {
+            get => this.linePoints;
+            set
+            {
+                this.linePoints = value;
+                NotifyOfPropertyChange(() => LinePoints);
+            }
+        }
+
         /// <summary>
         ///  Bar names collection
         /// </summary>
@@ -68,15 +81,12 @@ namespace GeoReVi
             {
                 this.barNames = value;
 
-
-                if (_a != null)
-                    _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => BarNames);
             }
         }
 
         //fill color property
+        [XmlIgnore()]
         public Brush FillColor
         {
             get { return this.fillColor; }
@@ -84,24 +94,18 @@ namespace GeoReVi
             {
                 this.fillColor = value;
 
-                if (_a != null)
-                    _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => FillColor);
             }
         }
 
         //Border color property
+        [XmlIgnore()]
         public Brush BorderColor
         {
             get { return this.borderColor; }
             set
             {
                 this.borderColor = value;
-
-
-                if (_a != null)
-                    _a.UpdateChart();
 
                 NotifyOfPropertyChange(() => BorderColor);
             }
@@ -120,10 +124,6 @@ namespace GeoReVi
                 else
                     this.borderThickness = value;
 
-
-                if (_a != null)
-                    _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => BorderThickness);
             }
         }
@@ -135,10 +135,6 @@ namespace GeoReVi
             set
             {
                 this.barWidth = value;
-
-                if (_a != null)
-                    _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => BarWidth);
             }
         }
@@ -150,11 +146,6 @@ namespace GeoReVi
             set
             {
                 this.seriesName = value;
-
-
-                if (_a != null)
-                    _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => SeriesName);
             }
         }
@@ -168,10 +159,6 @@ namespace GeoReVi
             set
             {
                 this.values = value;
-
-                if (_a != null)
-                    _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => Values);
             }
         }
@@ -185,10 +172,6 @@ namespace GeoReVi
             set
             {
                 counts = value;
-
-                if (_a != null)
-                    _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => Counts);
             }
         }
@@ -215,11 +198,6 @@ namespace GeoReVi
             set
             {
                 this.display = value;
-
-                if (_a != null)
-                    if (_a.Count != 0)
-                        _a.UpdateChart();
-
                 NotifyOfPropertyChange(() => Display);
             }
         }

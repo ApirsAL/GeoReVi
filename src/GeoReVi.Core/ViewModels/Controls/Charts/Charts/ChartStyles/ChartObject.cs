@@ -1024,6 +1024,7 @@ namespace GeoReVi
                 {
                     int index = DataSet.IndexOf(SelectedDataSet);
                     DataSet.RemoveAt(index);
+                    DataCollection.RemoveAt(index);
                 }
             }
             catch

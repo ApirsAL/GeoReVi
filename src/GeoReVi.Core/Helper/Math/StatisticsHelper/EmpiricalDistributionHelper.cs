@@ -1,5 +1,4 @@
-﻿
-using Caliburn.Micro;
+﻿using Caliburn.Micro;
 using System;
 
 namespace GeoReVi
@@ -67,9 +66,9 @@ namespace GeoReVi
         /// </summary>
         /// <param name="mean"></param>
         /// <param name="standardDeviation"></param>
-        /// <param name="f"></param>
+        /// <param name="f">Y value of a distribution</param>
         /// <returns></returns>
-        public double GetNormalDistributionValue(double mean, double standardDeviation, double f)
+        public double GetDistributionValue(double mean, double standardDeviation, double f)
         {
             return 1 / (standardDeviation * Math.Sqrt(2 * Math.PI)) * Math.Exp(-0.5 * (Math.Pow((f - mean) / standardDeviation, 2)));
         }

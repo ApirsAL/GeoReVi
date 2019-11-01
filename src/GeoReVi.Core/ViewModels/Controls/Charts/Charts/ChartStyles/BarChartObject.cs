@@ -221,6 +221,7 @@ namespace GeoReVi
 
                 for (int j = 0; j < Bs.Count(); j++)
                 {
+                    //Calculating empirical distributions
                     for (int i = 0; i < labels.Count(); i++)
                     {
                         var a = NormalizePoint(new LocationTimeValue(i + 1, values[i] > Ymax ? Ymax : values[i]));
@@ -270,6 +271,7 @@ namespace GeoReVi
                 for(int i = 0; i<Bs.Count();i++)
                 {
                     Bs[i].BarPoints.Clear();
+                    Bs[i].LinePoints.Clear();
 
                     Bs[i].Counts = DistributionHelper.Counts(Bs[i].Values.ToArray(), bins).Select(x => (double)x).ToArray();
 
@@ -282,6 +284,9 @@ namespace GeoReVi
 
                     for (int j = 0; j < Bs[i].Counts.Count(); j++)
                     {
+                        if (bins[j] + (i * (width / Bs.Count)) > Xmax || bins[j] < Xmin)
+                            continue;
+
                         var a = NormalizePoint(new LocationTimeValue(bins[j] + (i * (width / Bs.Count)), Bs[i].Counts[j] > Ymax ? Ymax : Bs[i].Counts[j]));
                         var b = NormalizePoint(new LocationTimeValue(Xmin + width / Bs.Count(), Bs[i].Counts[j] > Ymax ? Ymax - Ymin : Bs[i].Counts[j]));
 
@@ -289,6 +294,29 @@ namespace GeoReVi
                             Y = a.Y,
                             Width = b.X,
                             Height = ChartHeight - Math.Abs(b.Y) });
+                    }
+
+                    //Calculating the theoretical distributions
+                    if (Bs[i].EDH.CalculateDistribution)
+                    {
+                        double av = Bs[i].Values.Average();
+                        double std = Bs[i].Values.StdDev();
+                        bins = DistributionHelper.Subdivide(AllValues.ToArray(), 200);
+                        double[] theoreticalDistribution = new double[200];
+
+                        for (int j = 0; j < 200; j++)
+                        {
+                            theoreticalDistribution[j] = Bs[i].EDH.GetDistributionValue(av, std, bins[j]);
+                        }
+
+                        //Scale the distribution to fit in the chart
+                        theoreticalDistribution = DistributionHelper.ScaleToArea(theoreticalDistribution, Ymax, Ymin);
+
+                        for (int j = 0; j < 200; j++)
+                        {
+                            if(bins[j] >= Xmin && bins[j] <= Xmax)
+                            Bs[i].LinePoints.Add(NormalizePoint(new LocationTimeValue(bins[j], theoreticalDistribution[j])));
+                        }
                     }
                 }
 
