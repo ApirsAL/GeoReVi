@@ -208,6 +208,7 @@
     <Compile Include="ValueConverter\GetPropertyValueConverter.cs" />
     <Compile Include="ValueConverter\GridviewItemConverter\GridViewItemValueConverter.cs" />
     <Compile Include="ValueConverter\LocationValueToPointCollectionConverter.cs" />
+    <Compile Include="ValueConverter\PositioningValueConverter.cs" />
     <Compile Include="ValueConverter\TabItemIndexConverter.cs" />
     <Compile Include="ValueConverter\TernaryHeightConverter.cs" />
     <Compile Include="ValueConverter\VisibilityToInverseBooleanConverter.cs" />

@@ -50,8 +50,8 @@ namespace GeoReVi
             Title = _vco.Title;
             GridlineColor = _vco.GridlineColor;
             GridlinePattern = _vco.GridlinePattern;
-            HasLegend = _vco.HasLegend;
-            LegendPosition = _vco.LegendPosition;
+            Legend.IsLegend = _vco.Legend.IsLegend;
+            Legend.LegendPosition = _vco.Legend.LegendPosition;
             ShallRender = _vco.ShallRender;
             DataTableColumnNames = _vco.DataTableColumnNames;
 
@@ -129,8 +129,8 @@ namespace GeoReVi
         public void InitializeStandardVariogram()
         {
             Title = "";
-            YLabel = "γ(Lag)";
-            XLabel = "Lag distance";
+            YLabel.Text = "γ(Lag)";
+            XLabel.Text = "Lag distance";
             Ds = null;
             Ds = new BindableCollection<LineSeries>();
         }

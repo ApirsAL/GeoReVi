@@ -84,6 +84,20 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// Dash array of the gridline
+        /// </summary>
+        private DoubleCollection strokeDashArray = new DoubleCollection(new double[4] { 4, 2, 1, 2 });
+        public DoubleCollection StrokeDashArray
+        {
+            get => this.strokeDashArray;
+            set
+            {
+                this.strokeDashArray = value;
+                NotifyOfPropertyChange(() => StrokeDashArray);
+            }
+        }
+
         #endregion
 
         #region Constructor

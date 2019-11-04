@@ -133,8 +133,8 @@ namespace GeoReVi
         /// <summary>
         /// Z label
         /// </summary>
-        private string zLabel = "z axis";
-        public string ZLabel
+        private Label zLabel = new Label() { Text = "z axis" };
+        public Label ZLabel
         {
             get => zLabel;
             set
@@ -553,8 +553,8 @@ namespace GeoReVi
             Title = _ch.Title;
             GridlineColor = _ch.GridlineColor;
             GridlinePattern = _ch.GridlinePattern;
-            HasLegend = _ch.HasLegend;
-            LegendPosition = _ch.LegendPosition;
+            Legend.IsLegend = _ch.Legend.IsLegend;
+            Legend.LegendPosition = _ch.Legend.LegendPosition;
             ShallRender = _ch.ShallRender;
             DataTableColumnNames = _ch.DataTableColumnNames;
             Elevation = _ch.Elevation;
@@ -787,16 +787,16 @@ namespace GeoReVi
 
                 if (ColumnList.Count > 0)
                 {
-                    XLabel = ColumnList[0];
-                    YLabel = ColumnList[1];
-                    ZLabel = ColumnList[2];
+                    XLabel.Text = ColumnList[0];
+                    YLabel.Text = ColumnList[1];
+                    ZLabel.Text = ColumnList[2];
                     Title = ColumnList[3];
                 }
                 else
                 {
-                    XLabel = "Local x [m]";
-                    YLabel = "Local y [m]";
-                    ZLabel = "Local z [m]";
+                    XLabel.Text = "Local x [m]";
+                    YLabel.Text = "Local y [m]";
+                    ZLabel.Text = "Local z [m]";
                     Title = "Parameter";
                 }
             }
@@ -987,7 +987,7 @@ namespace GeoReVi
                                             break;
                                         case Dimensionality.TwoD:
                                             Point3D central1 = ls3D.Mesh.Vertices[i].ToPoint3D();
-                                            Vector3D vec = ls3D.Mesh.CalculateGradient(ls3D.Mesh.Vertices[i]);
+                                            Vector3D vec = ls3D.Mesh.CalculateGradient2D(ls3D.Mesh.Vertices[i]);
                                             gradients.Add(new Tuple<Point3D, double[]>(central1, new double[3] { vec.X, vec.Y, vec.Z } ));
                                             break;
 
@@ -1497,21 +1497,21 @@ namespace GeoReVi
                 if (dx == 0)
                 {
                     txt.Position = new Point3D(((Xmax + Xmin)) / 2 - minEast - txt.Height, (Ymin - minNorth) - (2 * txt.Height), Zmin - minAltitude);
-                    txt.Text = XLabel;
+                    txt.Text = XLabel.Text;
                     txt.TextDirection = new Vector3D(1, 0, 0);                      // Set text to run in line with X axis
                     txt.UpDirection = new Vector3D(0, 1, 0);                             // Set text to Point Up on Y axis
                 }
                 if (dx == 1)
                 {
                     txt.Position = new Point3D((Xmin - minEast) - 2 * txt.Height, ((Ymax + Ymin)) / 2 - minNorth - txt.Height, Zmin - minAltitude);
-                    txt.Text = YLabel;
+                    txt.Text = YLabel.Text;
                     txt.TextDirection = new Vector3D(0, 1, 0);                      // Set text to run in line with X axis
                     txt.UpDirection = new Vector3D(1, 0, 0);                             // Set text to Point Up on Y axis
                 }
                 if (dx == 2)
                 {
                     txt.Position = new Point3D((Xmin - minEast) - 2 * txt.Height, Ymax - minNorth, ((Zmax + Zmin)) / 2 - minAltitude);
-                    txt.Text = IsZGrid ? ZLabel : " ";
+                    txt.Text = IsZGrid ? ZLabel.Text : " ";
                     txt.TextDirection = new Vector3D(0, 0, 1);                      // Set text to run in line with X axis
                     txt.UpDirection = new Vector3D(1, 0, 0);
                 }

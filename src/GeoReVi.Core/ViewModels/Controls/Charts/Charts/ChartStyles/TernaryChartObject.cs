@@ -11,8 +11,8 @@ namespace GeoReVi
     public class TernaryChartObject : LineChartObject
     {
 
-        private string zLabel = "Z axis";
-        public string ZLabel
+        private Label zLabel = new Label() { Text = "Z axis" };
+        public Label ZLabel
         {
             get => this.zLabel;
             set
@@ -29,8 +29,8 @@ namespace GeoReVi
             Title = _tco.Title;
             GridlineColor = _tco.GridlineColor;
             GridlinePattern = _tco.GridlinePattern;
-            HasLegend = _tco.HasLegend;
-            LegendPosition = _tco.LegendPosition;
+            Legend.IsLegend = _tco.Legend.IsLegend;
+            Legend.LegendPosition = _tco.Legend.LegendPosition;
             ShallRender = _tco.ShallRender;
             DataTableColumnNames = _tco.DataTableColumnNames;
 
@@ -147,9 +147,9 @@ namespace GeoReVi
                 SpatialPointSeries.Add(tup);
             }
 
-            XLabel = ColumnList[0];
-            YLabel = ColumnList[1];
-            ZLabel = ColumnList[2];
+            XLabel.Text = ColumnList[0];
+            YLabel.Text = ColumnList[1];
+            ZLabel.Text = ColumnList[2];
 
             CreateChart();
         }

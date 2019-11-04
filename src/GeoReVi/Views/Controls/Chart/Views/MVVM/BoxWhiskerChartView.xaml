@@ -129,26 +129,32 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Column="1"
+                    <Canvas Grid.Column="1"
                                   Grid.Row="0"
                                   HorizontalAlignment="Stretch">
                         <TextBlock Text="{Binding Path=Bco.Title}"
-                                           HorizontalAlignment="Center">
+                                   Canvas.Top="-15">
                         </TextBlock>
 
-                    </Grid>
-                    <DockPanel Grid.Column="0"
-                           Grid.Row="1"
-                          VerticalAlignment="Stretch">
-                        <Grid VerticalAlignment="Stretch">
-                            <TextBlock Text="{Binding Path=Bco.YLabel}"
-                                               VerticalAlignment="Center">
-                                <TextBlock.LayoutTransform>
-                                    <RotateTransform Angle="270"/>
-                                </TextBlock.LayoutTransform>
-                            </TextBlock>
+                    </Canvas>
+                    <Canvas>
+                        <TextBlock Text="{Binding Path=Bco.XLabel.Text}"
+                                       Canvas.Left="{Binding Path=Bco.XLabel.X}"
+                                       Canvas.Top="{Binding Path=Bco.XLabel.Y}">
+                        </TextBlock>
 
-                        </Grid>
+                    </Canvas>
+                    <Canvas VerticalAlignment="Stretch">
+                        <TextBlock Text="{Binding Path=Bco.YLabel.Text}"
+                                   Canvas.Left="{Binding Path=Bco.YLabel.X}"
+                                       Canvas.Top="{Binding Path=Bco.YLabel.Y}">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="270"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+
+                    </Canvas>
+                    <DockPanel Grid.Column="0">
                         <ItemsControl ItemsSource="{Binding Path=Bco.YLabels}"
                                               MaxHeight="{Binding Path=Bco.ChartHeight}"
                                           VirtualizingPanel.IsVirtualizing="True">
@@ -190,26 +196,14 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Grid HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding Path=Bco.XLabel}"
-                                                   HorizontalAlignment="Center">
-                            </TextBlock>
-
-                        </Grid>
                     </StackPanel>
                     <Border Grid.Column="1"
-                      Grid.Row="1"
+                      Grid.Row="0"
                                     Margin="0"
                                 Padding="5,5,100,5">
                         <Grid Name="ChartContainerGrid"
                                   Height="{Binding Path=Bco.ChartHeight}"
                                    Width="{Binding Path=Bco.ChartWidth}">
-                            <!--
-    	This ItemsControl presents the colored Symbols.
-        
-        The data-template that defines the visuals for each rectangle is in the 
-        resources section at the start of this file.
-        -->
                             <Rectangle Width="{Binding Path=Bco.ChartWidth}"
                                            Height="{Binding Path=Bco.ChartHeight}"
                                            Stroke="Black"
@@ -380,39 +374,32 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
 
-                            <Grid Height="Auto"
-                                  Width="Auto"
-                                  VerticalAlignment="Top">
-                                <ItemsControl ItemsSource="{Binding Path=Bco.DataCollection, NotifyOnSourceUpdated=True}"
-                                              VirtualizingPanel.IsVirtualizing="True">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Columns="1"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <DockPanel>
-                                                <Grid Width="10"
-                                                          Height="10">
-                                                    <Canvas>
-                                                        <Rectangle Fill="{Binding Path=FillColor}"
-                                                                           Stroke="{Binding Path=BorderColor}"
-                                                                           Canvas.Left="0"
-                                                                            Canvas.Top="0"
-                                                                           Width="10"
-                                                                           Height="10"
-                                                                           StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.BorderThickness}"/>
-                                                      
-                                                    </Canvas>
-                                                </Grid>
-                                                <TextBlock Text="{Binding SeriesName}"
-                                                           Margin="5,0"/>
-                                            </DockPanel>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
+                            <ItemsControl ItemsSource="{Binding Path=Bco.Legend.LegendObjects, NotifyOnSourceUpdated=True}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              Visibility="{Binding Path=Bco.Legend.IsLegend, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Canvas>
+                                            <Rectangle Fill="{Binding Path=Rectangle.Brush}"
+                                                       Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                       Width="10"
+                                                       Height="10"
+                                                       StrokeThickness="2"
+                                                       Stroke="{Binding Path=LineColor}"/>
+
+                                            <TextBlock Text="{Binding Path=Label.Text}"
+                                                                   Canvas.Left="{Binding Path=Label.X}"
+                                                                   Canvas.Top="{Binding Path=Label.Y}"/>
+                                        </Canvas>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </Grid>
                     </Border>
 
@@ -473,7 +460,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                         <StackPanel>
                                             <Button Style="{StaticResource HyperlinkButton}"
                                             cal:Message.Attach="SubdivideAxes"
-                                                        cal:Bind.ModelWithoutContext="{Binding Lco}"
+                                                        cal:Bind.ModelWithoutContext="{Binding Bco}"
                                             FontSize="{StaticResource FontSizeVerySmall}"
                                             Content="Subdivide axes"
                                     HorizontalAlignment="Left"
@@ -543,7 +530,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                                 <DockPanel Margin="0,5">
                                                     <TextBlock Text="Has legend"
                                                                            FontWeight="DemiBold"/>
-                                                    <CheckBox IsChecked="{Binding Bco.HasLegend, Mode=TwoWay}"
+                                                    <CheckBox IsChecked="{Binding Bco.Legend.IsLegend, Mode=TwoWay}"
                                                                           HorizontalAlignment="Right"/>
                                                 </DockPanel>
                                                 <TextBlock Text="Legend Position"
@@ -553,10 +540,10 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                                               VerticalAlignment="Center" 
                                                                                           Margin="0,5"
                                                               MinWidth="60"
-                                                              ItemsSource="{Binding Path=Bco.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              ItemsSource="{Binding Path=Bco.Legend.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
                                                               SelectedValuePath="Value"
                                                               DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=Bco.LegendPosition, Mode=OneWayToSource}"
+                                                              SelectedValue="{Binding Path=Bco.Legend.LegendPosition, Mode=OneWayToSource}"
                                                                               SelectedIndex="0"/>
 
                                             </StackPanel>

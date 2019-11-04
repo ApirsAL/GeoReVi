@@ -377,6 +377,7 @@
     <Compile Include="ValueConverter\UserMessageValueConverter.cs" />
     <Compile Include="ViewModels\Authentication\HomeViewModel.cs" />
     <Compile Include="ViewModels\Authentication\LoginViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\LegendObject.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Image.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\SymbolType.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BarChartViewModel.cs" />

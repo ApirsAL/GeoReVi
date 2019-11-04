@@ -46,7 +46,7 @@ If bugs or any other issues are identified we would be grateful for reporting th
 
 ## Samples
 
-### Reservoir scale thermal conductivity distribution
+### Reservoir scale temperature distribution
 <img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="50%">
 
 ### Meter-scale permeability distribution

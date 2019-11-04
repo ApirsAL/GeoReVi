@@ -117,7 +117,8 @@
                                     cal:Bind.ModelWithoutContext="{Binding Barco}"
                                     cal:Message.Attach="CreateChart"/>
                 <Grid DockPanel.Dock="Top"
-                              Name="ChartGrid">
+                              Name="ChartGrid"
+                      Margin="0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
@@ -128,27 +129,36 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Column="1"
+                    <Canvas Grid.Column="1"
                                   Grid.Row="0"
                                   HorizontalAlignment="Stretch">
                         <TextBlock Text="{Binding Path=Barco.Title}"
-                                           HorizontalAlignment="Center">
+                                   Canvas.Top="-15">
                         </TextBlock>
 
-                    </Grid>
+                    </Canvas>
+                    <Canvas>
+                        <TextBlock Text="{Binding Path=Barco.XLabel.Text}"
+                                       Canvas.Left="{Binding Path=Barco.XLabel.X}"
+                                       Canvas.Top="{Binding Path=Barco.XLabel.Y}">
+                        </TextBlock>
+
+                    </Canvas>
+                    <Canvas VerticalAlignment="Stretch">
+                        <TextBlock Text="{Binding Path=Barco.YLabel.Text}"
+                                   Canvas.Left="{Binding Path=Barco.YLabel.X}"
+                                       Canvas.Top="{Binding Path=Barco.YLabel.Y}">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="270"/>
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+
+                    </Canvas>
                     <DockPanel Grid.Column="0"
                            Grid.Row="1"
                           VerticalAlignment="Stretch">
-                        <Grid VerticalAlignment="Stretch">
-                            <TextBlock Text="{Binding Path=Barco.YLabel}"
-                                               VerticalAlignment="Center">
-                                <TextBlock.LayoutTransform>
-                                    <RotateTransform Angle="270"/>
-                                </TextBlock.LayoutTransform>
-                            </TextBlock>
-
-                        </Grid>
                         <ItemsControl ItemsSource="{Binding Path=Barco.YLabels}"
+                                      x:Name="YLabelsItemsSource"
                                               MaxHeight="{Binding Path=Barco.ChartHeight}"
                                           VirtualizingPanel.IsVirtualizing="True">
                             <ItemsControl.ItemsPanel>
@@ -189,12 +199,6 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <Grid HorizontalAlignment="Center">
-                            <TextBlock Text="{Binding Path=Barco.XLabel}"
-                                                   HorizontalAlignment="Left">
-                            </TextBlock>
-
-                        </Grid>
                     </StackPanel>
                     <Border Grid.Column="1"
                       Grid.Row="1"
@@ -321,17 +325,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                     <DataTemplate>
                                         <Border>
                                             <Grid x:Name="DataCollectionControl">
-                                                <Canvas>
-                                                    <Polyline  Stroke="{Binding Path=LineSeriesBar.LineColor}"
-                                                      StrokeThickness="{Binding Path=LineSeriesBar.LineThickness}">
-                                                        <Polyline.Points>
-                                                            <MultiBinding Converter="{StaticResource LocationValueToPointCollectionConverter}">
-                                                                <Binding Path="LinePoints" />
-                                                                <Binding Path="BorderThickness" FallbackValue="0" />
-                                                            </MultiBinding>
-                                                        </Polyline.Points>
-                                                    </Polyline>
-                                                </Canvas>
                                                 <ItemsControl ItemsSource="{Binding Path=BarPoints}"
                                                               VirtualizingPanel.IsVirtualizing="True">
                                                     <ItemsControl.ItemTemplate>
@@ -348,13 +341,25 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
+                                                <Canvas>
+                                                    <Polyline  Stroke="{Binding Path=LineSeriesBar.LineColor}"
+                                                      StrokeThickness="{Binding Path=LineSeriesBar.LineThickness}">
+                                                        <Polyline.Points>
+                                                            <MultiBinding Converter="{StaticResource LocationValueToPointCollectionConverter}">
+                                                                <Binding Path="LinePoints" />
+                                                                <Binding Path="BorderThickness" FallbackValue="0" />
+                                                            </MultiBinding>
+                                                        </Polyline.Points>
+                                                    </Polyline>
+                                                </Canvas>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <ItemsControl ItemsSource="{Binding Path=Barco.DataCollection, NotifyOnSourceUpdated=True}"
-                                              VirtualizingPanel.IsVirtualizing="True">
+                                <ItemsControl ItemsSource="{Binding Path=Barco.Legend.LegendObjects, NotifyOnSourceUpdated=True}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              Visibility="{Binding Path=Barco.Legend.IsLegend, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <UniformGrid Columns="1"/>
@@ -362,25 +367,19 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <DockPanel>
-                                                <Grid Width="10"
-                                                      Height="10"
-                                                      Margin="5,0">
-                                                    <Canvas>
-                                                        <Rectangle Fill="{Binding Path=FillColor}"
-                                                                           Stroke="{Binding Path=BorderColor}"
-                                                                           Canvas.Left="0"
-                                                                            Canvas.Top="0"
-                                                                           Width="10"
-                                                                           Height="10"
-                                                                           StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.BorderThickness}"/>
+                                            <Canvas>
+                                            <Rectangle Fill="{Binding Path=Rectangle.Brush}"
+                                                       Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                       Width="10"
+                                                       Height="10"
+                                                       StrokeThickness="2"
+                                                       Stroke="{Binding Path=LineColor}"/>
 
-                                                        <TextBlock Text="{Binding SeriesName}"
-                                                                   Canvas.Left="20"
-                                                                   Canvas.Top="0"/>
-                                                    </Canvas>
-                                                </Grid>
-                                            </DockPanel>
+                                                <TextBlock Text="{Binding Path=Label.Text}"
+                                                                   Canvas.Left="{Binding Path=Label.X}"
+                                                                   Canvas.Top="{Binding Path=Label.Y}"/>
+                                            </Canvas>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
@@ -422,10 +421,10 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                                     <TextBox Text="{Binding Barco.Title, Mode=TwoWay}"/>
                                                     <TextBlock Text="X label"
                                                                        FontWeight="DemiBold"/>
-                                                    <TextBox Text="{Binding Barco.XLabel, Mode=TwoWay}"/>
+                                                    <TextBox Text="{Binding Barco.XLabel.Text, Mode=TwoWay}"/>
                                                     <TextBlock Text="Y label"
                                                                        FontWeight="DemiBold"/>
-                                                    <TextBox Text="{Binding Barco.YLabel, Mode=TwoWay}"/>
+                                                    <TextBox Text="{Binding Barco.YLabel.Text, Mode=TwoWay}"/>
 
                                                 </StackPanel>
                                             </Expander>
@@ -445,7 +444,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                         <StackPanel MinWidth="30">
                                             <Button Style="{StaticResource HyperlinkButton}"
                                             cal:Message.Attach="SubdivideAxes"
-                                                        cal:Bind.ModelWithoutContext="{Binding Lco}"
+                                                        cal:Bind.ModelWithoutContext="{Binding Barco}"
                                             FontSize="{StaticResource FontSizeVerySmall}"
                                             Content="Subdivide axes"
                                     HorizontalAlignment="Left"
@@ -576,7 +575,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                                     <DockPanel>
                                                         <TextBlock Text="Has legend"
                                                                            FontWeight="DemiBold"/>
-                                                        <CheckBox IsChecked="{Binding Barco.HasLegend, Mode=TwoWay}"
+                                                        <CheckBox IsChecked="{Binding Barco.Legend.IsLegend, Mode=TwoWay}"
                                                                                       HorizontalAlignment="Right"/>
                                                     </DockPanel>
                                                     <TextBlock Text="Legend position"
@@ -584,10 +583,10 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                                                     <ComboBox HorizontalAlignment="Left" 
                                                               VerticalAlignment="Center" 
                                                               MinWidth="60"
-                                                              ItemsSource="{Binding Path=Barco.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              ItemsSource="{Binding Path=Barco.Legend.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
                                                               SelectedValuePath="Value"
                                                               DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=Barco.LegendPosition, Mode=TwoWay}"
+                                                              SelectedValue="{Binding Path=Barco.Legend.LegendPosition, Mode=TwoWay}"
                                                                               SelectedIndex="0"/>
 
                                                 </StackPanel>

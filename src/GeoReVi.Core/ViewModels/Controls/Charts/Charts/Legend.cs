@@ -3,17 +3,45 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Caliburn.Micro;
 
 namespace GeoReVi
 {
-    public class Legend
+    public class Legend : PropertyChangedBase
     {
         #region Private members
 
         private bool isLegend;
         private bool isBorder;
-        private Canvas legendCanvas;
         private LegendPositionEnum legendPosition;
+
+        /// <summary>
+        /// X coordinate of the legend
+        /// </summary>
+        private double x = 0;
+        public double X
+        {
+            get => this.x;
+            set
+            {
+                this.x = value;
+                NotifyOfPropertyChange(() => X);
+            }
+        }
+
+        /// <summary>
+        /// Y coordinate of the legend
+        /// </summary>
+        private double y = 0;
+        public double Y
+        {
+            get => this.y;
+            set
+            {
+                this.y = value;
+                NotifyOfPropertyChange(() => Y);
+            }
+        }
 
         #endregion
 
@@ -21,8 +49,35 @@ namespace GeoReVi
 
         public Legend() { isLegend = false; isBorder = true; legendPosition = LegendPositionEnum.NorthEast; }
         public LegendPositionEnum LegendPosition { get { return legendPosition; } set { legendPosition = value; } }
-        public bool IsLegend { get { return isLegend; } set { isLegend = value; } }
+
+        /// <summary>
+        /// Checks if the legend should be displayed or not
+        /// </summary>
+        public bool IsLegend
+        {
+            get => isLegend;
+            set
+            {
+                isLegend = value;
+                NotifyOfPropertyChange(()=> IsLegend);
+            }
+        }
+
         public bool IsBorder { get { return isBorder; } set { isBorder = value; } }
+
+        /// <summary>
+        /// Legend objects
+        /// </summary>
+        private BindableCollection<LegendObject> legendObjects = new BindableCollection<LegendObject>();
+        public BindableCollection<LegendObject> LegendObjects
+        {
+            get => this.legendObjects;
+            set
+            {
+                this.legendObjects = value;
+                NotifyOfPropertyChange(() => LegendObjects);
+            }
+        }
 
         #endregion
 

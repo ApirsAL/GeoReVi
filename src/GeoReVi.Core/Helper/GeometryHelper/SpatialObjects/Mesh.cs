@@ -450,7 +450,7 @@ namespace GeoReVi
         /// </summary>
         /// <param name="loc"></param>
         /// <returns></returns>
-        public Vector3D CalculateGradient(LocationTimeValue loc)
+        public Vector3D CalculateGradient2D(LocationTimeValue loc)
         {
             Vector3D grad = new Vector3D();
 
@@ -460,9 +460,9 @@ namespace GeoReVi
 
                 for (int i = 0; i < locs.Length; i++)
                 {
-                    grad.X += loc.X != locs[i].X ? 1 / Math.Abs(loc.X - locs[i].X) : 0;
-                    grad.Y += loc.Y != locs[i].Y ? 1 / Math.Abs(loc.Y - locs[i].Y) : 0;
-                    grad.Z += loc.Z != locs[i].Z ? 1 / Math.Abs(loc.Z - locs[i].Z) : 0;
+                    grad.X += loc.X != locs[i].X ? Math.Abs(loc.Z - locs[i].Z) / Math.Abs(loc.X - locs[i].X) : 0;
+                    grad.Y += loc.Y != locs[i].Y ? Math.Abs(loc.Z - locs[i].Z) / Math.Abs(loc.Y - locs[i].Y) : 0;
+                    grad.Z += loc.Z != locs[i].Z ? loc.Z - locs[i].Z / Math.Abs(loc.Z - locs[i].Z) : 0;
                 }
             }
             catch

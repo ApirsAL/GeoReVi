@@ -341,22 +341,23 @@ namespace GeoReVi
                                 foreach (string eig in eigenvalues)
                                     EigenValueBarChart.Barco.XLabels.Add(new Label() { Text = eig });
 
-                                EigenValueBarChart.Barco.YLabel = "Loading";
+                                EigenValueBarChart.Barco.YLabel.Text = "Loading";
                                 EigenValueBarChart.Barco.Ymax = EigenValues.Max() + 2;
                                 EigenValueBarChart.Barco.Xmax = EigenValues.Count() + 1;
                                 EigenValueBarChart.Barco.CreateCategoricHistogram(eigenvalues.ToArray(), EigenValues);
-                                EigenValueBarChart.Barco.XLabel = "Eigenvalue#";
-                                EigenValueBarChart.Barco.YLabel = "Eigenvalue";
+                                EigenValueBarChart.Barco.XLabel.Text = "Eigenvalue#";
+                                EigenValueBarChart.Barco.YLabel.Text = "Eigenvalue";
 
                                 PC12.Lco.ShallRender = true;
-                                PC12.Lco.XLabel = "PC1";
-                                PC12.Lco.YLabel = "PC2";
+                                PC12.Lco.XLabel.Text = "PC1";
+                                PC12.Lco.YLabel.Text = "PC2";
                                 PC12.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
                                 PC12.Lco.CreateLineChart("","");
 
                                 PC13.Lco.ShallRender = true;
-                                PC13.Lco.XLabel = "PC1";
-                                PC13.Lco.YLabel = "PC3";
+                                PC13.Lco.Direction = DirectionEnum.XZ;
+                                PC13.Lco.XLabel.Text = "PC1";
+                                PC13.Lco.YLabel.Text = "PC3";
                                 PC13.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
                                 PC13.Lco.CreateLineChart("", "");
 
@@ -366,14 +367,30 @@ namespace GeoReVi
                                 }
 
                                 PC12BiPlot.Lco.ShallRender = true;
-                                PC12BiPlot.Lco.XLabel = "PC1";
-                                PC12BiPlot.Lco.YLabel = "PC2";
-                                PC12BiPlot.Lco.CreateBiPlot(eigenvectors.ToArray(), EigenVectors[0], EigenVectors[1]);
+                                PC12BiPlot.Lco.XLabel.Text = "PC1";
+                                PC12BiPlot.Lco.YLabel.Text = "PC2";
+                                PC12BiPlot.Lco.Direction= DirectionEnum.X;
+                                
+                                Mesh biplot = new Mesh() { Data = EigenVectors.ToTable() };
+
+                                DataRow dr = biplot.Data.NewRow();
+                                for (int k = 0; k < dr.Table.Columns.Count(); k++)
+                                    dr[k] = 0.0;
+
+                                for (int i = 1; i<biplot.Data.Rows.Count()*2;i+=2)
+                                {
+                                    biplot.Data.Rows.InsertAt(dr, i);
+                                }
+
+                                PC12BiPlot.Lco.DataSet.Add(biplot);
+
+                                PC12BiPlot.Lco.CreateLineChart("", "");
 
                                 PC13BiPlot.Lco.ShallRender = true;
-                                PC13BiPlot.Lco.XLabel = "PC1";
-                                PC13BiPlot.Lco.YLabel = "PC3";
-                                PC13BiPlot.Lco.CreateBiPlot(eigenvectors.ToArray(), EigenVectors[0], EigenVectors[2]);
+                                PC13BiPlot.Lco.Direction = DirectionEnum.Y;
+                                PC13BiPlot.Lco.XLabel.Text = "PC1";
+                                PC13BiPlot.Lco.YLabel.Text = "PC3";
+                                PC13BiPlot.Lco.CreateLineChart("","");
                             }
                             catch
                             {

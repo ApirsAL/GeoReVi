@@ -6,6 +6,7 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace GeoReVi
 {
@@ -16,10 +17,10 @@ namespace GeoReVi
         //Title of the plot
         private string title = "Scatterplot";
         //X-axis label
-        private string xLabel = "X Axis";
+        private Label xLabel = new Label() { Text = "X Axis" };
         private BindableCollection<Label> xLabels = new BindableCollection<Label>();
         //Y-axis label
-        private string yLabel = "Y Axis";
+        private Label yLabel = new Label() { Text = "Y Axis" };
         private BindableCollection<Label> yLabels = new BindableCollection<Label>();
         //is x grid bool
         private bool isXGrid = true;
@@ -27,9 +28,7 @@ namespace GeoReVi
         //is y axis grid bool
         private bool isYGrid = true;
         private bool isYLog = false;
-        //has legend
-        private bool hasLegend = true;
-        private LegendPositionEnum legendPosition = LegendPositionEnum.SouthEast;
+
 
         private double chartWidth = 300;
         private double chartHeight = 300;
@@ -51,6 +50,20 @@ namespace GeoReVi
         #endregion
 
         #region Public properties
+
+        /// <summary>
+        /// Legend of the chart
+        /// </summary>
+        private Legend legend = new Legend();
+        public Legend Legend
+        {
+            get => this.legend;
+            set
+            {
+                this.legend = value;
+                NotifyOfPropertyChange(() => Legend);
+            }
+        }
 
         /// <summary>
         /// X Gridlines of the chart object
@@ -120,8 +133,10 @@ namespace GeoReVi
             }
         }
 
-
-        public string XLabel
+        /// <summary>
+        /// X label of the chart
+        /// </summary>
+        public Label XLabel
         {
             get =>  this.xLabel;
             set
@@ -149,7 +164,7 @@ namespace GeoReVi
         /// <summary>
         /// Y label text
         /// </summary>
-        public string YLabel
+        public Label YLabel
         {
             get
             {
@@ -402,36 +417,6 @@ namespace GeoReVi
         /// </summary>
         public bool IsYLog { get { return isYLog; } set { isYLog = value; NotifyOfPropertyChange(() => IsYLog); } }
 
-        /// <summary>
-        /// Check if chart has legend
-        /// </summary>
-        public bool HasLegend
-        {
-            get
-            {
-                return hasLegend;
-            }
-            set
-            {
-                hasLegend = value;
-
-                NotifyOfPropertyChange(() => HasLegend);
-            }
-        }
-
-        /// <summary>
-        /// Position of the legend
-        /// </summary>
-        public LegendPositionEnum LegendPosition
-        {
-            get => this.legendPosition;
-            set
-            {
-                this.legendPosition = value;
-
-                NotifyOfPropertyChange(() => LegendPosition);
-            }
-        }
 
         /// <summary>
         /// Minimum x axis value
@@ -733,6 +718,84 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Adds a legend to the chart
+        /// </summary>
+        public virtual void AddLegend()
+        {
+            try
+            {
+                //Getting the longest in the legend
+                double xMax = DataCollection.Select(x => MeasureString(x.GetType().GetProperty("SeriesName").GetValue(x, null).ToString())).Select(x => x.Width).Max();
+                double height = DataCollection.Count() * 15.0;
+
+                Legend.LegendObjects.Clear();
+
+                //Placing the legend
+                switch (Legend.LegendPosition)
+                {
+                    case LegendPositionEnum.East:
+                        Legend.X = ChartWidth;
+                        Legend.Y = ChartHeight / 2;
+                        break;
+                    case LegendPositionEnum.North:
+                        Legend.X = ChartWidth / 2;
+                        Legend.Y = 0;
+                        break;
+                    case LegendPositionEnum.South:
+                        Legend.X = ChartWidth / 2;
+                        Legend.Y = ChartHeight - height;
+                        break;
+                    case LegendPositionEnum.West:
+                        Legend.X = 0;
+                        Legend.Y = ChartHeight / 2 - xMax;
+                        break;
+                    case LegendPositionEnum.NorthEast:
+                        Legend.X = ChartWidth;
+                        Legend.Y = 0;
+                        break;
+                    case LegendPositionEnum.NorthWest:
+                        Legend.X = 0;
+                        Legend.Y = 0;
+                        break;
+                    case LegendPositionEnum.SouthEast:
+                        Legend.X = ChartWidth;
+                        Legend.Y = ChartHeight - height;
+                        break;
+                    case LegendPositionEnum.SouthWest:
+                        Legend.X = 0;
+                        Legend.Y = ChartHeight - height;
+                        break;
+                }
+
+                //Adding labels
+                for (int i = 0; i < DataCollection.Count; i++)
+                {
+                    Legend.LegendObjects.Add(new LegendObject()
+                    {
+                        Label = new Label()
+                        {
+                            Text = DataCollection[i].GetType().GetProperty("SeriesName").GetValue(DataCollection[i], null).ToString(),
+                            X = Legend.X + 15,
+                            Y = Legend.Y + 15 * i
+                        },
+                        Rectangle = new Rectangle2D()
+                        {
+                            X = Legend.X,
+                            Y = Legend.Y + 15*i+7
+                        }
+                    });
+
+                    xMax = MeasureString(Legend.LegendObjects[i].Label.Text).Width > xMax ? MeasureString(Legend.LegendObjects[i].Label.Text).Width : xMax;
+                }
+
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
         /// Adds labels to the chart
         /// </summary>
         public virtual void AddGridlines()
@@ -877,6 +940,12 @@ namespace GeoReVi
                             Y = pt.Y + MeasureString(dx.ToString()).Height
                         };
 
+                        if (dx == Xmin)
+                        {
+                            XLabel.X = ChartWidth / 2 + MeasureString(XLabel.Text).Width;
+                            XLabel.Y = ChartHeight + 3.5*MeasureString(XLabel.Text).Height;
+                        }
+
                         if (tb.Text == "0" && dx != Xmin)
                             tb.Text = dx.ToString("E0");
 
@@ -906,6 +975,12 @@ namespace GeoReVi
                             X = pt.X - MeasureString(Math.Round(dx, 2).ToString()).Width - 5,
                             Y = pt.Y + MeasureString(Math.Round(dx, 2).ToString()).Height
                         };
+
+                        if (dx == Xmin)
+                        {
+                            XLabel.X = ChartWidth/2 + MeasureString(XLabel.Text).Width;
+                            XLabel.Y = ChartHeight + 3.5 * MeasureString(XLabel.Text).Height;
+                        }
 
                         if (tb.Text == "0" && dx != Xmin)
                             tb.Text = a.ToString("E0");
@@ -956,6 +1031,12 @@ namespace GeoReVi
                             Y = pt.Y - MeasureString(Math.Round(dy, 2).ToString()).Height
                         };
 
+                        if (dy == Ymin)
+                        {
+                            YLabel.X = -3.5 * maxWidth;
+                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Width / 2;
+                        }
+
                         YLabels.Add(tb);
 
                         i++;
@@ -1000,6 +1081,12 @@ namespace GeoReVi
                             X = - 3*maxWidth,
                             Y = pt.Y - MeasureString(dy.ToString()).Height
                         };
+
+                        if(dy == Ymin)
+                        {
+                            YLabel.X = -3.5 * maxWidth;
+                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Width / 2;
+                        }
 
                         YLabels.Add(tb);
 

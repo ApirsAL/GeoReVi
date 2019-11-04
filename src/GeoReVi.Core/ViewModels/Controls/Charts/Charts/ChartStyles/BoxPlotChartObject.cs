@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Windows.Media;
 
 namespace GeoReVi
 {
@@ -63,8 +64,8 @@ namespace GeoReVi
             Title = _bco.Title;
             GridlineColor = _bco.GridlineColor;
             GridlinePattern = _bco.GridlinePattern;
-            HasLegend = _bco.HasLegend;
-            LegendPosition = _bco.LegendPosition;
+            Legend.IsLegend = _bco.Legend.IsLegend;
+            Legend.LegendPosition = _bco.Legend.LegendPosition;
             ShallRender = _bco.ShallRender;
             DataTableColumnNames = _bco.DataTableColumnNames;
 
@@ -165,6 +166,7 @@ namespace GeoReVi
             }
 
             DataCollection.AddRange(Bp);
+            AddLegend();
         }
 
         /// <summary>
@@ -328,6 +330,26 @@ namespace GeoReVi
                         loc.Y -= 6;
                         bps.Outliers.Add(loc);
                     }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Adding the legend to the chart
+        /// </summary>
+        public override void AddLegend()
+        {
+            base.AddLegend();
+
+            try
+            {
+                for (int i = 0; i < DataCollection.Count(); i++)
+                {
+                    Legend.LegendObjects[i].Rectangle.Brush = (SolidColorBrush)DataCollection[i].FillColor;
                 }
             }
             catch

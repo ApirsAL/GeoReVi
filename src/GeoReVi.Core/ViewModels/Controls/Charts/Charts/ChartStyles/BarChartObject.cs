@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Windows.Media;
 
 namespace GeoReVi
 {
@@ -72,8 +73,8 @@ namespace GeoReVi
             Title = _bco.Title;
             GridlineColor = _bco.GridlineColor;
             GridlinePattern = _bco.GridlinePattern;
-            HasLegend = _bco.HasLegend;
-            LegendPosition = _bco.LegendPosition;
+            Legend.IsLegend = _bco.Legend.IsLegend;
+            Legend.LegendPosition = _bco.Legend.LegendPosition;
             ShallRender = _bco.ShallRender;
             DataTableColumnNames = _bco.DataTableColumnNames;
 
@@ -144,7 +145,7 @@ namespace GeoReVi
             i.BorderColor = System.Windows.Media.Brushes.Black;
 
             if (Bs.Count >= 1)
-                i.FillColor = IntToColorConverter.Convert(IntToColorConverter.ConvertBack(Bs[Bs.Count - 1].FillColor)+1);
+                i.FillColor = IntToColorConverter.Convert(IntToColorConverter.ConvertBack(Bs[Bs.Count - 1].FillColor) + 1);
             else
                 i.FillColor = IntToColorConverter.Convert(1);
 
@@ -157,7 +158,7 @@ namespace GeoReVi
         /// </summary>
         public void InitializeStandardHistogram()
         {
-            YLabel = "Frequency [-]";
+            YLabel.Text = "Frequency [-]";
         }
 
         /// <summary>
@@ -172,7 +173,7 @@ namespace GeoReVi
             if (!ShallRender)
                 return;
 
-            for (int i = 0; i< DataSet.Count(); i++)
+            for (int i = 0; i < DataSet.Count(); i++)
             {
                 try
                 {
@@ -262,60 +263,67 @@ namespace GeoReVi
                 if (Updating)
                     return;
 
-                //Subdividing into bins
-                double[] bins = DistributionHelper.Subdivide(AllValues.ToArray(), NumberBins);
-                double width = bins[1] - bins[0];
-
                 DataCollection.Clear();
 
-                for(int i = 0; i<Bs.Count();i++)
+                if (AllValues != null)
                 {
-                    Bs[i].BarPoints.Clear();
-                    Bs[i].LinePoints.Clear();
+                    //Subdividing into bins
+                    double[] bins = DistributionHelper.Subdivide(AllValues.ToArray(), NumberBins);
+                    double width = bins[1] - bins[0];
 
-                    Bs[i].Counts = DistributionHelper.Counts(Bs[i].Values.ToArray(), bins).Select(x => (double)x).ToArray();
 
-                    var count = Bs[i].Counts.Max();
-                
-                    if(count>maxCount)
+                    for (int i = 0; i < Bs.Count(); i++)
                     {
-                        maxCount = Convert.ToInt32(count);
-                    }
+                        Bs[i].BarPoints.Clear();
+                        Bs[i].LinePoints.Clear();
 
-                    for (int j = 0; j < Bs[i].Counts.Count(); j++)
-                    {
-                        if (bins[j] + (i * (width / Bs.Count)) > Xmax || bins[j] < Xmin)
-                            continue;
+                        Bs[i].Counts = DistributionHelper.Counts(Bs[i].Values.ToArray(), bins).Select(x => (double)x).ToArray();
 
-                        var a = NormalizePoint(new LocationTimeValue(bins[j] + (i * (width / Bs.Count)), Bs[i].Counts[j] > Ymax ? Ymax : Bs[i].Counts[j]));
-                        var b = NormalizePoint(new LocationTimeValue(Xmin + width / Bs.Count(), Bs[i].Counts[j] > Ymax ? Ymax - Ymin : Bs[i].Counts[j]));
+                        var count = Bs[i].Counts.Max();
 
-                        Bs[i].BarPoints.Add(new Rectangle2D() { X = a.X,
-                            Y = a.Y,
-                            Width = b.X,
-                            Height = ChartHeight - Math.Abs(b.Y) });
-                    }
-
-                    //Calculating the theoretical distributions
-                    if (Bs[i].EDH.CalculateDistribution)
-                    {
-                        double av = Bs[i].Values.Average();
-                        double std = Bs[i].Values.StdDev();
-                        bins = DistributionHelper.Subdivide(AllValues.ToArray(), 200);
-                        double[] theoreticalDistribution = new double[200];
-
-                        for (int j = 0; j < 200; j++)
+                        if (count > maxCount)
                         {
-                            theoreticalDistribution[j] = Bs[i].EDH.GetDistributionValue(av, std, bins[j]);
+                            maxCount = Convert.ToInt32(count);
                         }
 
-                        //Scale the distribution to fit in the chart
-                        theoreticalDistribution = DistributionHelper.ScaleToArea(theoreticalDistribution, Ymax, Ymin);
-
-                        for (int j = 0; j < 200; j++)
+                        for (int j = 0; j < Bs[i].Counts.Count(); j++)
                         {
-                            if(bins[j] >= Xmin && bins[j] <= Xmax)
-                            Bs[i].LinePoints.Add(NormalizePoint(new LocationTimeValue(bins[j], theoreticalDistribution[j])));
+                            if (bins[j] + (i * (width / Bs.Count)) > Xmax || bins[j] < Xmin)
+                                continue;
+
+                            var a = NormalizePoint(new LocationTimeValue(bins[j] + (i * (width / Bs.Count)), Bs[i].Counts[j] > Ymax ? Ymax : Bs[i].Counts[j]));
+                            var b = NormalizePoint(new LocationTimeValue(Xmin + width / Bs.Count(), Bs[i].Counts[j] > Ymax ? Ymax - Ymin : Bs[i].Counts[j]));
+
+                            Bs[i].BarPoints.Add(new Rectangle2D()
+                            {
+                                X = a.X,
+                                Y = a.Y,
+                                Width = b.X,
+                                Height = ChartHeight - Math.Abs(b.Y)
+                            });
+                        }
+
+                        //Calculating the theoretical distributions
+                        if (Bs[i].EDH.CalculateDistribution)
+                        {
+                            double av = Bs[i].Values.Average();
+                            double std = Bs[i].Values.StdDev();
+                            bins = DistributionHelper.Subdivide(AllValues.ToArray(), 200);
+                            double[] theoreticalDistribution = new double[200];
+
+                            for (int j = 0; j < 200; j++)
+                            {
+                                theoreticalDistribution[j] = Bs[i].EDH.GetDistributionValue(av, std, bins[j]);
+                            }
+
+                            //Scale the distribution to fit in the chart
+                            theoreticalDistribution = DistributionHelper.ScaleToArea(theoreticalDistribution, Ymax, Ymin);
+
+                            for (int j = 0; j < 200; j++)
+                            {
+                                if (bins[j] >= Xmin && bins[j] <= Xmax)
+                                    Bs[i].LinePoints.Add(NormalizePoint(new LocationTimeValue(bins[j], theoreticalDistribution[j])));
+                            }
                         }
                     }
                 }
@@ -323,16 +331,16 @@ namespace GeoReVi
                 if (Xmin == 0 && Xmax == 0 && Ymin == 0 && Ymax == 0)
                     SubdivideAxes();
 
-
-                    AddGridlines();
-                    AddTicksAndLabels();
+                DataCollection.AddRange(Bs);
+                AddLegend();
+                AddGridlines();
+                AddTicksAndLabels();
             }
             catch
             {
 
             }
 
-            DataCollection.AddRange(Bs);
         }
 
         /// <summary>
@@ -344,6 +352,26 @@ namespace GeoReVi
             {
                 base.RemoveSelectedSeries();
                 CreateHistogram();
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Adding the legend to the chart
+        /// </summary>
+        public override void AddLegend()
+        {
+            base.AddLegend();
+
+            try
+            {
+                for(int i = 0; i<DataCollection.Count();i++)
+                {
+                    Legend.LegendObjects[i].Rectangle.Brush = (SolidColorBrush)DataCollection[i].FillColor;
+                }
             }
             catch
             {

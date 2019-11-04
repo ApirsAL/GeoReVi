@@ -24,7 +24,7 @@ namespace GeoReVi
         {
 
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "PNG (*.png)|*.png|BMP (*.bmp)|*.bmp|EMF (*.emf)|*.emf|PDF (*.pdf)|*.pdf";
+            saveFileDialog1.Filter = "PNG (*.png)|*.png|BMP (*.bmp)|*.bmp|PDF (*.pdf)|*.pdf";
             saveFileDialog1.RestoreDirectory = true;
 
             saveFileDialog1.ShowDialog();

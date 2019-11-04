@@ -142,7 +142,7 @@ namespace GeoReVi
 
             Xmax = 11;
 
-            XLabel = "Grain size";
+            XLabel.Text = "Grain size";
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace GeoReVi
                         }));
                 }
 
-                YLabel = "Depth [m]";
+                YLabel.Text = "Depth [m]";
                 double diff = Math.Abs(Ymax - Ymin);
                 DataCollection.AddRange(LithologicalLayerSeries);
             }

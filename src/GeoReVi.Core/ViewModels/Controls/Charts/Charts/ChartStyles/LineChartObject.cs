@@ -61,25 +61,25 @@ namespace GeoReVi
                 switch (value)
                 {
                     case DirectionEnum.X:
-                        YLabel = "x-direction [m]";
+                        YLabel.Text = "x-direction [m]";
                         break;
                     case DirectionEnum.Y:
-                        YLabel = "y-direction [m]";
+                        YLabel.Text = "y-direction [m]";
                         break;
                     case DirectionEnum.Z:
-                        YLabel = "z-direction [m]";
+                        YLabel.Text = "z-direction [m]";
                         break;
                     case DirectionEnum.XY:
-                        YLabel = "y-direction [m]";
-                        XLabel = "x-direction [m]"; ;
+                        YLabel.Text = "y-direction [m]";
+                        XLabel.Text = "x-direction [m]"; ;
                         break;
                     case DirectionEnum.XZ:
-                        YLabel = "z-direction [m]";
-                        XLabel = "x-direction [m]";
+                        YLabel.Text = "z-direction [m]";
+                        XLabel.Text = "x-direction [m]";
                         break;
                     case DirectionEnum.YZ:
-                        YLabel = "z-direction [m]";
-                        XLabel = "y-direction [m]";
+                        YLabel.Text = "z-direction [m]";
+                        XLabel.Text = "y-direction [m]";
                         break;
                 }
 
@@ -194,8 +194,8 @@ namespace GeoReVi
             Title = _lco.Title;
             GridlineColor = _lco.GridlineColor;
             GridlinePattern = _lco.GridlinePattern;
-            HasLegend = _lco.HasLegend;
-            LegendPosition = _lco.LegendPosition;
+            Legend.IsLegend = _lco.Legend.IsLegend;
+            Legend.LegendPosition = _lco.Legend.LegendPosition;
             ShallRender = _lco.ShallRender;
             DataTableColumnNames = _lco.DataTableColumnNames;
 
@@ -265,25 +265,25 @@ namespace GeoReVi
             switch (Direction)
             {
                 case DirectionEnum.X:
-                    YLabel = "x-direction [m]";
+                    YLabel.Text = "x-direction [m]";
                     break;
                 case DirectionEnum.Y:
-                    YLabel = "y-direction [m]";
+                    YLabel.Text = "y-direction [m]";
                     break;
                 case DirectionEnum.Z:
-                    YLabel = "z-direction [m]";
+                    YLabel.Text = "z-direction [m]";
                     break;
                 case DirectionEnum.XY:
-                    YLabel = "y-direction [m]";
-                    XLabel = "x-direction [m]"; ;
+                    YLabel.Text = "y-direction [m]";
+                    XLabel.Text = "x-direction [m]"; ;
                     break;
                 case DirectionEnum.XZ:
-                    YLabel = "z-direction [m]";
-                    XLabel = "x-direction [m]";
+                    YLabel.Text = "z-direction [m]";
+                    XLabel.Text = "x-direction [m]";
                     break;
                 case DirectionEnum.YZ:
-                    YLabel = "z-direction [m]";
-                    XLabel = "y-direction [m]";
+                    YLabel.Text = "z-direction [m]";
+                    XLabel.Text = "y-direction [m]";
                     break;
             }
 
@@ -387,9 +387,9 @@ namespace GeoReVi
 
             if (ColumnList.Count > 0)
             {
-                XLabel = IsXLog ? ColumnList[0] + " (log)" : ColumnList[0];
+                XLabel.Text = IsXLog ? ColumnList[0] + " (log)" : ColumnList[0];
 
-                YLabel = IsYLog ? ColumnList[1] + " (log" : ColumnList[1];
+                YLabel.Text = IsYLog ? ColumnList[1] + " (log" : ColumnList[1];
             }
 
             CreateChart();
@@ -645,6 +645,7 @@ namespace GeoReVi
             }
 
             DataCollection = Ds;
+            AddLegend();
 
         }
 
@@ -724,6 +725,27 @@ namespace GeoReVi
             catch
             {
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Adding a legend to the chart
+        /// </summary>
+        public override void AddLegend()
+        {
+            base.AddLegend();
+
+            try
+            {
+                for (int i = 0; i < DataCollection.Count(); i++)
+                {
+                    Legend.LegendObjects[i].Rectangle.Brush = (SolidColorBrush)DataCollection[i].Symbols.FillColor;
+                    Legend.LegendObjects[i].Symbol = DataCollection[i].Symbols.SymbolType;
+                }
+            }
+            catch
+            {
+
             }
         }
 
