@@ -411,13 +411,13 @@ namespace GeoReVi
             double zDiff = zArray.Length > 1 ? zArray[1] - zArray[0] : 0;
 
             if (xArray.Length < 1)
-                xArray = new double[] { OriginalLocationValues.Average(x => x.X) };
+                xArray = new double[] { EndX };
 
             if (yArray.Length < 1)
-                yArray = new double[] { OriginalLocationValues.Average(x => x.Y) };
+                yArray = new double[] { EndY };
 
             if (zArray.Length < 1)
-                zArray = new double[] { OriginalLocationValues.Average(x => x.Z) };
+                zArray = new double[] { EndZ };
 
             if (BoundaryType != BoundaryType.TwoBoundingSurfaces)
                 for (int i = 0; i < xArray.Length; i++)

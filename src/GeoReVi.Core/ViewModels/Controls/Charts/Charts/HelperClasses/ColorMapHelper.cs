@@ -33,7 +33,7 @@ namespace GeoReVi
             if (cm.ColormapBrushes == null || cm.ColormapBrushes.Count == 0)
                 cm.CalculateColormapBrushes(opacity);
 
-            brush = cm.ColormapBrushes[colorIndex].Brush;
+            brush = (SolidColorBrush)cm.ColormapBrushes[colorIndex].Brush;
 
             //brush.Freeze();
 

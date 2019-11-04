@@ -437,13 +437,13 @@
                                                             <TextBox Text="{Binding Ch3d.LabelFontSize, Mode=TwoWay}"/>
                                                             <TextBlock Text="X label"
                                                                        FontWeight="DemiBold"/>
-                                                            <TextBox Text="{Binding Ch3d.XLabel, Mode=TwoWay}"/>
+                                                            <TextBox Text="{Binding Ch3d.XLabel.Text, Mode=TwoWay}"/>
                                                             <TextBlock Text="Y label"
                                                                        FontWeight="DemiBold"/>
-                                                            <TextBox Text="{Binding Ch3d.YLabel, Mode=TwoWay}"/>
+                                                            <TextBox Text="{Binding Ch3d.YLabel.Text, Mode=TwoWay}"/>
                                                             <TextBlock Text="Z label"
                                                                        FontWeight="DemiBold"/>
-                                                            <TextBox Text="{Binding Ch3d.ZLabel, Mode=TwoWay}"/>
+                                                            <TextBox Text="{Binding Ch3d.ZLabel.Text, Mode=TwoWay}"/>
                                                         </StackPanel>
                                                     </Expander>
                                                 </StackPanel>
@@ -1124,9 +1124,9 @@
                                                    ShowCoordinateSystem="True"
                                                    CoordinateSystemHeight="40"
                                                    Grid.Column="0"
-                                                   CoordinateSystemLabelX="{Binding Ch3d.XLabel}"
-                                                   CoordinateSystemLabelY="{Binding Ch3d.YLabel}"
-                                                   CoordinateSystemLabelZ="{Binding Ch3d.ZLabel}">
+                                                   CoordinateSystemLabelX="{Binding Ch3d.XLabel.Text}"
+                                                   CoordinateSystemLabelY="{Binding Ch3d.YLabel.Text}"
+                                                   CoordinateSystemLabelZ="{Binding Ch3d.ZLabel.Text}">
                     <HelixToolkit:HelixViewport3D.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                             <GradientStop Color="{Binding ElementName=TopColor, Path=SelectedColor.Color, Mode=OneWay}" Offset="0.0" />

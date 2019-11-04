@@ -1027,8 +1027,8 @@ namespace GeoReVi
                                                 x.Item1.Y + 0.5 * x.Item2[1],
                                                 x.Item1.Z + 0.5 * x.Item2[2]),
                                     ls3D.WireframeThickness,
-                                    ls3D.WireframeThickness * 2,
-                                    5);
+                                    ls3D.WireframeThickness,
+                                    18);
                            });
 
                             mesh = meshBuilder.ToMesh(true);

@@ -282,7 +282,6 @@
                                      Style="{StaticResource LeftSideTabItem}">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Auto"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                     <Border Background="{StaticResource ForegroundLightBrush}">
@@ -746,9 +745,6 @@
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
                                                             <StackPanel Margin="6">
-                                                                <TextBlock Text="Interpolated points"
-                                                                               FontWeight="DemiBold"/>
-                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.DiscretizedLocationValues.Count, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
                                                                 <TextBlock Text="RMSE"
                                                                                FontWeight="DemiBold"/>
                                                                 <TextBlock Text="{Binding Path=SpatialInterpolationHelper.RMSE, Mode=OneWay, NotifyOnSourceUpdated=True}"/>

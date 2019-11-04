@@ -462,7 +462,7 @@ namespace GeoReVi
                 {
                     grad.X += loc.X != locs[i].X ? Math.Abs(loc.Z - locs[i].Z) / Math.Abs(loc.X - locs[i].X) : 0;
                     grad.Y += loc.Y != locs[i].Y ? Math.Abs(loc.Z - locs[i].Z) / Math.Abs(loc.Y - locs[i].Y) : 0;
-                    grad.Z += loc.Z != locs[i].Z ? loc.Z - locs[i].Z / Math.Abs(loc.Z - locs[i].Z) : 0;
+                    grad.Z += 0;
                 }
             }
             catch

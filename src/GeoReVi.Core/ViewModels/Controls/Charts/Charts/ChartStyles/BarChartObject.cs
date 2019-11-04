@@ -370,7 +370,7 @@ namespace GeoReVi
             {
                 for(int i = 0; i<DataCollection.Count();i++)
                 {
-                    Legend.LegendObjects[i].Rectangle.Brush = (SolidColorBrush)DataCollection[i].FillColor;
+                    Legend.LegendObjects[i].Rectangle.Brush = DataCollection[i].FillColor;
                 }
             }
             catch

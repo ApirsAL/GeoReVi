@@ -466,9 +466,9 @@ namespace GeoReVi
         }
 
         //Brush
-        private SolidColorBrush brush = Brushes.Black;
+        private Brush brush = Brushes.Black;
         [XmlIgnore]
-        public SolidColorBrush Brush
+        public Brush Brush
         {
             get => this.brush;
             set
