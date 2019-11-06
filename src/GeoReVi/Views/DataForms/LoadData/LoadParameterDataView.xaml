@@ -562,6 +562,16 @@
                                                               DisplayMemberPath="Description"
                                                               SelectedValue="{Binding Path=SpatialInterpolationHelper.InterpolationFeature, Mode=TwoWay}"
                                                                               SelectedIndex="0"/>
+                                                        <TextBlock Text="Distance type"
+                                                                           FontWeight="DemiBold"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.DistanceType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.DistanceType, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
                                                         <TextBlock Text="Interpolation method"
                                                                        FontWeight="DemiBold"/>
                                                         <ComboBox HorizontalAlignment="Left" 
@@ -629,6 +639,20 @@
                                                                        FontWeight="DemiBold"/>
                                                                 <TextBox Text="{Binding Path=SpatialInterpolationHelper.ErrorVariance, Mode=TwoWay}"
                                                                          Visibility="{Binding Path=SpatialInterpolationHelper.IncludeErrorVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                                        />
+                                                                <DockPanel>
+                                                                    <TextBlock Text="Include local variance"
+                                                                           FontWeight="DemiBold"
+                                                                       VerticalAlignment="Center"/>
+                                                                    <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.IncludeLocalVariance, Mode=TwoWay}"
+                                                                              HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"/>
+                                                                </DockPanel>
+                                                                <TextBlock Text="Local variance"
+                                                                           Visibility="{Binding Path=SpatialInterpolationHelper.IncludeLocalVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.LocalVariance, Mode=TwoWay}"
+                                                                         Visibility="{Binding Path=SpatialInterpolationHelper.IncludeLocalVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
                                                                         />
                                                                 <TextBlock Text="Cross validation points to remove"
                                                                        FontWeight="DemiBold"/>

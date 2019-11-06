@@ -23,6 +23,20 @@ namespace GeoReVi
         #region Public properties
 
         /// <summary>
+        /// Getting the distance type
+        /// </summary>
+        private DistanceType distanceType = DistanceType.Euclidean;
+        public DistanceType DistanceType
+        {
+            get => this.distanceType;
+            set
+            {
+                this.distanceType = value;
+                NotifyOfPropertyChange(() => DistanceType);
+            }
+        }
+
+        /// <summary>
         /// The wanted interpolation method
         /// </summary>
         private GeostatisticalInterpolationMethod interpolationMethod = GeostatisticalInterpolationMethod.IDW;
@@ -95,6 +109,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Check if the local variance of the field should be included
+        /// </summary>
+        private bool includeLocalVariance = false;
+        public bool IncludeLocalVariance
+        {
+            get => this.includeLocalVariance;
+            set
+            {
+                this.includeLocalVariance = value;
+                NotifyOfPropertyChange(() => IncludeLocalVariance);
+            }
+        }
+
+        /// <summary>
         /// Defines whether all values of the selected source grids should be 
         /// used for interpolation or only those where the target vertex name fits the source grid name
         /// </summary>
@@ -120,6 +148,20 @@ namespace GeoReVi
             {
                 this.errorVariance = value;
                 NotifyOfPropertyChange(() => ErrorVariance);
+            }
+        }
+
+        /// <summary>
+        /// The local variance of the field
+        /// </summary>
+        private double localVariance = 0;
+        public double LocalVariance
+        {
+            get => this.localVariance;
+            set
+            {
+                this.localVariance = value;
+                NotifyOfPropertyChange(() => LocalVariance);
             }
         }
 
@@ -393,6 +435,7 @@ namespace GeoReVi
             DiscretizedLocationValues = new Mesh();
             OriginalLocationValues.Clear();
 
+            //Adding selected source meshes to a data collection
             foreach (var d in SelectedMeasPoints)
             {
                 try
@@ -413,6 +456,7 @@ namespace GeoReVi
                 }
             }
 
+            //Creating a new mesh for the interpolation
             try
             {
                 if (SelectedInterpolationMeasPoints[0].Vertices.Count() == 0)
@@ -451,6 +495,7 @@ namespace GeoReVi
 
             }
 
+            //Performing the interpolation
             CommandHelper ch = new CommandHelper();
             await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsComputing, async () =>
             {
@@ -511,9 +556,11 @@ namespace GeoReVi
                                a.Name
                                )).ToList()));
 
+                //Creating the mesh cells
                 if (SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Hexahedral || SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Tetrahedal)
                     DiscretizedLocationValues.CellsFromPointCloud();
 
+                //Defining mesh cell type
                 DiscretizedLocationValues.MeshCellType = SelectedInterpolationMeasPoints[0].MeshCellType;
                 DiscretizedLocationValues.Dimensionality = SelectedInterpolationMeasPoints[0].Dimensionality;
                 DiscretizedLocationValues.Faces = SelectedInterpolationMeasPoints[0].Faces;
@@ -697,6 +744,7 @@ namespace GeoReVi
                 }
             }
 
+            //Running the categorization
             CommandHelper ch = new CommandHelper();
             await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsComputing, async () =>
             {
@@ -721,6 +769,7 @@ namespace GeoReVi
 
                             });
 
+                            //Creating a new data set
                             DiscretizedLocationValues.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(SelectedInterpolationMeasPoints[0].Vertices.Select(x =>
                                new LocationTimeValue()
                                {
@@ -818,28 +867,43 @@ namespace GeoReVi
                         break;
                 }
 
-                //for (int i = 0; i < DiscretizedLocationValues.Vertices.Count(); i++)
-                Parallel.For((int)0, (int)DiscretizedLocationValues.Vertices.Count(), k =>
+                for (int i = 0; i < DiscretizedLocationValues.Vertices.Count(); i++)
+                //Parallel.For((int)0, (int)DiscretizedLocationValues.Vertices.Count(), k =>
                 {
                     try
                     {
-                        int i = Convert.ToInt32(k);
+                        //int i = Convert.ToInt32(k);
                         double value = 0;
                         double weightSum = 0;
 
-                        //Buffer of the original data values where the number of points defined for validation will be removed before kriging
-                        BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.ToArray()
-                                 .Where(x =>
-                                         Math.Abs(DiscretizedLocationValues.Vertices[i].X - x.X) <= SearchRadiusX &&
-                                          Math.Abs(DiscretizedLocationValues.Vertices[i].Y - x.Y) <= SearchRadiusY &&
-                                          Math.Abs(DiscretizedLocationValues.Vertices[i].Z - x.Z) <= SearchRadiusZ &&
-                                          ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).ToList());
+                        List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
+
+                        for (int f = 0; f< OriginalLocationValues.Count();f++)
+                        {
+                            try
+                            {
+                                double[] distances = new double[3] { Math.Abs(DiscretizedLocationValues.Vertices[i].X - OriginalLocationValues[f].X), Math.Abs(DiscretizedLocationValues.Vertices[i].Y - OriginalLocationValues[f].Y), Math.Abs(DiscretizedLocationValues.Vertices[i].Z - OriginalLocationValues[f].Z) };
+
+                                if (distances[0] > SearchRadiusX)
+                                    continue;
+                                if (distances[1] > SearchRadiusY)
+                                    continue;
+                                if (distances[2] > SearchRadiusZ)
+                                    continue;
+
+                                includedPoints.Add(OriginalLocationValues[f]);
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
 
                         if (includedPoints == null || includedPoints.Count() == 0)
-                            includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).Take(MaximumNeighborCount));
+                            includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).Take(MaximumNeighborCount).ToList();
 
                         if (includedPoints.Count > MaximumNeighborCount)
-                            includedPoints = new BindableCollection<LocationTimeValue>(includedPoints.OrderBy(x => DiscretizedLocationValues.Vertices[i].GetEuclideanDistance(x)).Take(MaximumNeighborCount).ToList());
+                            includedPoints = includedPoints.OrderBy(x => DistanceType == DistanceType.Euclidean ? DiscretizedLocationValues.Vertices[i].GetEuclideanDistance(x) : DiscretizedLocationValues.Vertices[i].GetDijkstraDistance(DiscretizedLocationValues, x)).Take(MaximumNeighborCount).ToList();
 
                         //Weights for the interpolation
                         double[] weights = new double[includedPoints.Count()];
@@ -847,11 +911,7 @@ namespace GeoReVi
                         //Calculating IDW values
                         for (int j = 0; j < includedPoints.Count(); j++)
                         {
-                            double distX = DiscretizedLocationValues.Vertices[i].X - includedPoints[j].X;
-                            double distY = DiscretizedLocationValues.Vertices[i].Y - includedPoints[j].Y;
-                            double distZ = DiscretizedLocationValues.Vertices[i].Z - includedPoints[j].Z;
-
-                            double dist = GeographyHelper.EuclideanDistance(distX, distY, InterpolationFeature != InterpolationFeature.Elevation ? distZ : 0, false);
+                            double dist = DistanceType == DistanceType.Euclidean ? DiscretizedLocationValues.Vertices[i].GetEuclideanDistance(includedPoints[j]) : DiscretizedLocationValues.Vertices[i].GetDijkstraDistance(DiscretizedLocationValues, includedPoints[j]);
 
                             if (dist != 0)
                             {
@@ -931,7 +991,7 @@ namespace GeoReVi
                     {
 
                     }
-                });
+                }
 
                 //If wanted, transforming the interpolated values to the original distribution range
                 if (TransformToOriginalDistribution)
@@ -976,19 +1036,34 @@ namespace GeoReVi
                     double weightSum = 0;
                     double value = 0;
 
-                    //Buffer of the original data values where the number of points defined for validation will be removed before kriging
-                    BindableCollection<LocationTimeValue> validationPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.ToArray()
-                         .Where(x =>
-                                 Math.Abs(OriginalLocationValues[i].X - x.X) <= SearchRadiusX &&
-                                  Math.Abs(OriginalLocationValues[i].Y - x.Y) <= SearchRadiusY &&
-                                  Math.Abs(OriginalLocationValues[i].Z - x.Z) <= SearchRadiusZ &&
-                                 OriginalLocationValues[i].X != x.X &&
-                                  OriginalLocationValues[i].Y != x.Y &&
-                                 OriginalLocationValues[i].Z != x.Z &&
-                                  ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).ToList());
+                    List<LocationTimeValue> validationPoints = new List<LocationTimeValue>();
+
+                    for (int f = 0; f < OriginalLocationValues.Count(); f++)
+                    {
+                        try
+                        {
+                            double[] distances = new double[3] { Math.Abs(OriginalLocationValues[i].X - OriginalLocationValues[f].X), Math.Abs(OriginalLocationValues[i].Y - OriginalLocationValues[f].Y), Math.Abs(OriginalLocationValues[i].Z - OriginalLocationValues[f].Z) };
+
+                            if (OriginalLocationValues[i].Equals(OriginalLocationValues[f]))
+                                continue;
+
+                            if (distances[0] > SearchRadiusX)
+                                continue;
+                            if (distances[1] > SearchRadiusY)
+                                continue;
+                            if (distances[2] > SearchRadiusZ)
+                                continue;
+
+                            validationPoints.Add(OriginalLocationValues[f]);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
 
                     if (validationPoints == null || validationPoints.Count() == 0 || validationPoints.Count() > MaximumNeighborCount)
-                        validationPoints = new BindableCollection<LocationTimeValue>(validationPoints.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).Take(MaximumNeighborCount));
+                        validationPoints = validationPoints.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).Take(MaximumNeighborCount).ToList();
 
                     while (validationPoints.Contains(OriginalLocationValues[i]))
                     {
@@ -1044,7 +1119,7 @@ namespace GeoReVi
                         pointPairs.Add(new List<double>() { OriginalLocationValues[i].Value[0], interpolatedValue });
                     }
 
-                    validationPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.ToList());
+                    validationPoints = OriginalLocationValues.ToList();
                 };
 
                 if (TransformToOriginalDistribution)
@@ -1112,16 +1187,31 @@ namespace GeoReVi
                 {
                     DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
-                    //Buffer of the original data values where the number of points defined for validation will be removed before kriging
-                    BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.ToArray()
-                             .Where(x =>
-                                     Math.Abs(DiscretizedLocationValues.Vertices[j].X - x.X) <= SearchRadiusX &&
-                                      Math.Abs(DiscretizedLocationValues.Vertices[j].Y - x.Y) <= SearchRadiusY &&
-                                      Math.Abs(DiscretizedLocationValues.Vertices[j].Z - x.Z) <= SearchRadiusZ &&
-                                      ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).ToList());
+                    List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
+
+                    for (int f = 0; f < OriginalLocationValues.Count(); f++)
+                    {
+                        try
+                        {
+                            double[] distances = new double[3] { Math.Abs(DiscretizedLocationValues.Vertices[j].X - OriginalLocationValues[f].X), Math.Abs(DiscretizedLocationValues.Vertices[j].Y - OriginalLocationValues[f].Y), Math.Abs(DiscretizedLocationValues.Vertices[j].Z - OriginalLocationValues[f].Z) };
+
+                            if (distances[0] > SearchRadiusX)
+                                continue;
+                            if (distances[1] > SearchRadiusY)
+                                continue;
+                            if (distances[2] > SearchRadiusZ)
+                                continue;
+
+                            includedPoints.Add(OriginalLocationValues[f]);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
 
                     if (includedPoints == null || includedPoints.Count() == 0 || includedPoints.Count() > MaximumNeighborCount)
-                        includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount));
+                        includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount).ToList();
 
                     double[] semivarianceVector = new double[includedPoints.Count() + 1];
 
@@ -1250,19 +1340,34 @@ namespace GeoReVi
                 for (int k = 0; k < OriginalLocationValues.Count(); k++)
                 {
 
-                    //Buffer of the original data values where the number of points defined for validation will be removed before kriging
-                    BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues
-                        .Where(x =>
-                                OriginalLocationValues[k].X - x.X <= SearchRadiusX &&
-                                OriginalLocationValues[k].Y - x.Y <= SearchRadiusY &&
-                                OriginalLocationValues[k].Z - x.Z <= SearchRadiusZ &&
-                                !OriginalLocationValues[k].Equals(x))
-                                .OrderBy(x => GeographyHelper.EuclideanDistance(OriginalLocationValues[k].X - x.X,
-                                                                                OriginalLocationValues[k].Y - x.Y,
-                                                                                OriginalLocationValues[k].Z - x.Z)).ToList());
+                    List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
+
+                    for (int f = 0; f < OriginalLocationValues.Count(); f++)
+                    {
+                        try
+                        {
+                            double[] distances = new double[3] { Math.Abs(OriginalLocationValues[k].X - OriginalLocationValues[f].X), Math.Abs(OriginalLocationValues[k].Y - OriginalLocationValues[f].Y), Math.Abs(OriginalLocationValues[k].Z - OriginalLocationValues[f].Z) };
+
+                            if (OriginalLocationValues[k].Equals(OriginalLocationValues[f]))
+                                continue;
+
+                            if (distances[0] > SearchRadiusX)
+                                continue;
+                            if (distances[1] > SearchRadiusY)
+                                continue;
+                            if (distances[2] > SearchRadiusZ)
+                                continue;
+
+                            includedPoints.Add(OriginalLocationValues[f]);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
 
                     if (includedPoints.Count > MaximumNeighborCount)
-                        includedPoints = new BindableCollection<LocationTimeValue>(includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList());
+                        includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList();
 
 
                     //Semivariance matrix for the ordinary kriging system
@@ -1439,16 +1544,31 @@ namespace GeoReVi
                     {
                         DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
-                        //Buffer of the original data values where the number of points defined for validation will be removed before kriging
-                        BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.ToArray()
-                             .Where(x =>
-                                     Math.Abs(DiscretizedLocationValues.Vertices[j].X - x.X) <= SearchRadiusX &&
-                                      Math.Abs(DiscretizedLocationValues.Vertices[j].Y - x.Y) <= SearchRadiusY &&
-                                      Math.Abs(DiscretizedLocationValues.Vertices[j].Z - x.Z) <= SearchRadiusZ &&
-                                      ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).ToList());
+                        List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
+
+                        for (int f = 0; f < OriginalLocationValues.Count(); f++)
+                        {
+                            try
+                            {
+                                double[] distances = new double[3] { Math.Abs(DiscretizedLocationValues.Vertices[j].X - OriginalLocationValues[f].X), Math.Abs(DiscretizedLocationValues.Vertices[j].Y - OriginalLocationValues[f].Y), Math.Abs(DiscretizedLocationValues.Vertices[j].Z - OriginalLocationValues[f].Z) };
+
+                                if (distances[0] > SearchRadiusX)
+                                    continue;
+                                if (distances[1] > SearchRadiusY)
+                                    continue;
+                                if (distances[2] > SearchRadiusZ)
+                                    continue;
+
+                                includedPoints.Add(OriginalLocationValues[f]);
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
 
                         if (includedPoints == null || includedPoints.Count() == 0 || includedPoints.Count() != MaximumNeighborCount)
-                            includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount));
+                            includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount).ToList();
 
                         double mean = includedPoints.Average(x => x.Value[0]);
 
@@ -1500,6 +1620,7 @@ namespace GeoReVi
                                     break;
                             }
 
+                            //Calculating variance
                             DiscretizedLocationValues.Vertices[j].Value[1] += weights[i] * Vh.CalculateCovariance(includedPoints[i], DiscretizedLocationValues.Vertices[j]);
 
                         }
@@ -1521,6 +1642,7 @@ namespace GeoReVi
                                 break;
                         }
 
+                        //Calculating variance
                         DiscretizedLocationValues.Vertices[j].Value[1] = Vh.CalculateCovariance(DiscretizedLocationValues.Vertices[j], DiscretizedLocationValues.Vertices[j]) - DiscretizedLocationValues.Vertices[j].Value[1];
 
                     }
@@ -1592,18 +1714,34 @@ namespace GeoReVi
                 {
                     await Task.Delay(0);
 
-                    //Buffer of the original data values where the number of points defined for validation will be removed before kriging
-                    BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues
-                        .Where(x =>
-                                OriginalLocationValues[k].X - x.X <= SearchRadiusX &&
-                                OriginalLocationValues[k].Y - x.Y <= SearchRadiusY &&
-                                OriginalLocationValues[k].Z - x.Z <= SearchRadiusZ)
-                                .OrderBy(x => GeographyHelper.EuclideanDistance(OriginalLocationValues[k].X - x.X,
-                                                                                OriginalLocationValues[k].Y - x.Y,
-                                                                                OriginalLocationValues[k].Z - x.Z)).ToList());
+                    List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
+
+                    for (int f = 0; f < OriginalLocationValues.Count(); f++)
+                    {
+                        try
+                        {
+                            double[] distances = new double[3] { Math.Abs(OriginalLocationValues[k].X - OriginalLocationValues[f].X), Math.Abs(OriginalLocationValues[k].Y - OriginalLocationValues[f].Y), Math.Abs(OriginalLocationValues[k].Z - OriginalLocationValues[f].Z) };
+
+                            if (OriginalLocationValues[k].Equals(OriginalLocationValues[f]))
+                                continue;
+
+                            if (distances[0] > SearchRadiusX)
+                                continue;
+                            if (distances[1] > SearchRadiusY)
+                                continue;
+                            if (distances[2] > SearchRadiusZ)
+                                continue;
+
+                            includedPoints.Add(OriginalLocationValues[f]);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
 
                     if (includedPoints.Count > MaximumNeighborCount)
-                        includedPoints = new BindableCollection<LocationTimeValue>(includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList());
+                        includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList();
 
                     //Semivariance matrix for the ordinary kriging system
                     double[,] semivarianceMatrix = new double[includedPoints.Count(), includedPoints.Count()];
@@ -1624,7 +1762,7 @@ namespace GeoReVi
                         {
                             semivarianceMatrix[i, j] = Vh.CalculateCovariance(includedPoints[i], includedPoints[j]);
                             if (i == j && IncludeErrorVariance)
-                                semivarianceMatrix[i, k] += ErrorVariance;
+                                semivarianceMatrix[i, j] += ErrorVariance;
                         }
                     }
 
@@ -1682,6 +1820,7 @@ namespace GeoReVi
 
                 }
 
+                //Transforming to the range of the original distribution
                 if (TransformToOriginalDistribution)
                 {
                     double zMax = pointPairs.Select(x => x[1]).Max();
@@ -1726,7 +1865,8 @@ namespace GeoReVi
             }
             catch
             {
-
+                MAE = double.NaN;
+                RMSE = double.NaN;
             }
         }
 
@@ -2293,7 +2433,7 @@ namespace GeoReVi
                 for (int i = 0; i < DiscretizedLocationValues.Vertices.Count(); i++)
                 {
                     double mean = DiscretizedLocationValues.Vertices[i].Value[0];
-                    double stdDev = Math.Sqrt((!IncludeErrorVariance ? DiscretizedLocationValues.Vertices[i].Value[1] : ErrorVariance));
+                    double stdDev = Math.Sqrt((!IncludeLocalVariance ? DiscretizedLocationValues.Vertices[i].Value[1] : LocalVariance));
 
                     //Using the Box-Muller algorithm to produce Gaussian random number
                     DiscretizedLocationValues.Vertices[i].Value[0] = DistributionHelper.SampleFromGaussian(mean, stdDev);
@@ -2302,6 +2442,188 @@ namespace GeoReVi
             catch
             {
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Calculating the p value cross validation for the simple kriging method
+        /// </summary>
+        /// <returns></returns>
+        private async Task ComputeSequentialGaussianSimulationCrossValidation()
+        {
+            double mae = 0;
+            double rmseSum = 0;
+            double globalMean = 0;
+            List<List<double>> pointPairs = new List<List<double>>();
+
+            try
+            {
+                //Calculating global mean
+                switch (InterpolationFeature)
+                {
+                    case InterpolationFeature.Value:
+                        globalMean = OriginalLocationValues.ToArray().Average(x => x.Value[0]);
+                        break;
+                    case InterpolationFeature.Longitude:
+                        globalMean = OriginalLocationValues.ToArray().Average(x => x.X);
+                        break;
+                    case InterpolationFeature.Latitutde:
+                        globalMean = OriginalLocationValues.ToArray().Average(x => x.Y);
+                        break;
+                    case InterpolationFeature.Elevation:
+                        globalMean = OriginalLocationValues.ToArray().Average(x => x.Z);
+                        break;
+                }
+
+                //Calculating the RMSE
+                //Parallel.For(0, OriginalLocationValues.Count(), k =>
+                for (int k = 0; k < OriginalLocationValues.Count(); k++)
+                {
+                    await Task.Delay(0);
+
+                    //Buffer of the original data values where the number of points defined for validation will be removed before kriging
+                    BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues
+                        .Where(x =>
+                                OriginalLocationValues[k].X - x.X <= SearchRadiusX &&
+                                OriginalLocationValues[k].Y - x.Y <= SearchRadiusY &&
+                                OriginalLocationValues[k].Z - x.Z <= SearchRadiusZ)
+                                .OrderBy(x => GeographyHelper.EuclideanDistance(OriginalLocationValues[k].X - x.X,
+                                                                                OriginalLocationValues[k].Y - x.Y,
+                                                                                OriginalLocationValues[k].Z - x.Z)).ToList());
+
+                    if (includedPoints.Count > MaximumNeighborCount)
+                        includedPoints = new BindableCollection<LocationTimeValue>(includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList());
+
+                    //Semivariance matrix for the ordinary kriging system
+                    double[,] semivarianceMatrix = new double[includedPoints.Count(), includedPoints.Count()];
+
+                    //Buffer of the original data values where the number of points defined for validation will be removed before kriging 
+                    BindableCollection<LocationTimeValue> validationPoints = new BindableCollection<LocationTimeValue>(includedPoints.ToList());
+
+                    //Semivariance matrix for RMSE
+                    double[,] semivarianceMatrixRMSE = new double[,] { };
+
+                    //Semivariance vector for RMSE
+                    double[] semivarianceVector2 = new double[] { };
+
+                    //Calculating the semivariance matrix based on the variogram model
+                    for (int i = 0; i < includedPoints.Count(); i++)
+                    {
+                        for (int j = 0; j < includedPoints.Count(); j++)
+                        {
+                            semivarianceMatrix[i, j] = Vh.CalculateCovariance(includedPoints[i], includedPoints[j]);
+                            if (i == j && IncludeErrorVariance)
+                                semivarianceMatrix[i, j] += ErrorVariance;
+                        }
+                    }
+
+                    semivarianceMatrixRMSE = semivarianceMatrix.Copy();
+
+                    semivarianceVector2 = new double[includedPoints.Count()];
+
+                    for (int i = 0; i < includedPoints.Count(); i++)
+                    {
+                        semivarianceVector2[i] = Vh.CalculateCovariance(OriginalLocationValues[k], includedPoints[i]);
+                    }
+
+                    //Removing the defined number of points from the validation data set
+                    for (int l = 0; l < CrossValidationRemovePointCount; l++)
+                    {
+                        int m = rnd.Next(0, validationPoints.Count() - 1);
+                        validationPoints.RemoveAt(m);
+                        semivarianceMatrixRMSE = ArrayHelper.TrimArray(m, m, semivarianceMatrixRMSE);
+                        semivarianceVector2 = semivarianceVector2.Where((val, idx) => idx != m).ToArray();
+                    }
+
+                    //Calculating the weights of the original data values on the interpolated value
+                    double[] weights = Matrix.Solve(semivarianceMatrixRMSE, semivarianceVector2, true);
+
+                    double weightSum = weights.Sum();
+
+                    //Initializing the calculated value
+                    double value = 0;
+
+                    double variance = 0;
+
+                    //Calculating the value at the point which is the sum of the weights times values in the original data table
+                    for (int i = 0; i < validationPoints.Count(); i++)
+                    {
+                        //Calculating global mean for error treatment
+                        switch (InterpolationFeature)
+                        {
+                            case InterpolationFeature.Value:
+                                value += weights[i] * (validationPoints[i].Value[0] - globalMean);
+                                break;
+                            case InterpolationFeature.Longitude:
+                                value += weights[i] * (validationPoints[i].X - globalMean);
+                                break;
+                            case InterpolationFeature.Latitutde:
+                                value += weights[i] * (validationPoints[i].Y - globalMean);
+                                break;
+                            case InterpolationFeature.Elevation:
+                                value += weights[i] * (validationPoints[i].Z - globalMean);
+                                break;
+                        }
+
+                        variance += weights[i] * Vh.CalculateCovariance(validationPoints[i], OriginalLocationValues[k]);
+                    }
+
+                    value += globalMean;
+
+                    variance = Vh.CalculateCovariance(OriginalLocationValues[k], OriginalLocationValues[k]) - variance;
+
+                    double stdDev = Math.Sqrt((!IncludeLocalVariance ? variance : LocalVariance));
+
+                    pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], DistributionHelper.SampleFromGaussian(value, stdDev)});
+                }
+
+                //Transforming results to the extend of the original data distribution
+                if (TransformToOriginalDistribution)
+                {
+                    double zMax = pointPairs.Select(x => x[1]).Max();
+                    double zMin = pointPairs.Select(x => x[1]).Min();
+                    double zAverage = pointPairs.Select(x => x[1]).Average();
+
+                    double tMax = pointPairs.Select(x => x[0]).Max();
+                    double tMin = pointPairs.Select(x => x[0]).Min();
+
+                    for (int i = 0; i < pointPairs.Count(); i++)
+                    {
+                        pointPairs[i][1] = ((pointPairs[i][1] - zMin) / (zMax - zMin)) * (tMax - tMin) + tMin;
+                    }
+                }
+
+                for (int i = 0; i < pointPairs.Count(); i++)
+                {
+                    switch (InterpolationFeature)
+                    {
+                        case InterpolationFeature.Value:
+                            //Increasing the value by the constrain value and it's weight
+                            mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
+                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            break;
+                        case InterpolationFeature.Longitude:
+                            mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
+                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            break;
+                        case InterpolationFeature.Latitutde:
+                            mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
+                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            break;
+                        case InterpolationFeature.Elevation:
+                            mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
+                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            break;
+                    }
+                }
+
+                MAE = mae / OriginalLocationValues.Count();
+                RMSE = Math.Sqrt(RMSE / OriginalLocationValues.Count());
+            }
+            catch
+            {
+                MAE = double.NaN;
+                RMSE = double.NaN;
             }
         }
 

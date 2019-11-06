@@ -135,14 +135,15 @@ namespace GeoReVi
 
             Initialize();
 
-            for(int i = 0; i< DataSet.Count();i++)
+            for (int i = 0; i < DataSet.Count(); i++)
+                AddDataSeries();
+
+            for(int i = DataSet.Count() -1; i>= 0; i--)
             {
                 try
                 {
                     //temporal storage for measurement values
                     double[] a = new double[] { };
-
-                    AddDataSeries();
 
                     a = DataSet[i].Data.AsEnumerable().Select(x => (double)x[0]).Where(x => x != 0).ToArray();
 
@@ -165,6 +166,7 @@ namespace GeoReVi
                 }
             }
 
+            Bp.Reverse();
             DataCollection.AddRange(Bp);
             AddLegend();
         }
@@ -349,6 +351,7 @@ namespace GeoReVi
             {
                 for (int i = 0; i < DataCollection.Count(); i++)
                 {
+                    Legend.LegendObjects[i].Label.Text = DataSet[DataSet.Count() - 1 - i].Name;
                     Legend.LegendObjects[i].Rectangle.Brush = (SolidColorBrush)DataCollection[i].FillColor;
                 }
             }

@@ -273,7 +273,7 @@ namespace GeoReVi
                 Outliers.Add(objectFarthestFromMean);
 
                 //Calling the method again
-                RemoveOutliers();
+                RemoveOutliers(_outlierRange);
             }
         }
 

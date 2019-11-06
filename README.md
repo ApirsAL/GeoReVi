@@ -49,6 +49,9 @@ If bugs or any other issues are identified we would be grateful for reporting th
 ### Reservoir scale temperature distribution
 <img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="50%">
 
+### Three-dimensional Outcrop Model
+<img src="docs/Samples/Meshes/OutcropModeling.png" width="50%">
+
 ### Meter-scale permeability distribution
 <img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
 

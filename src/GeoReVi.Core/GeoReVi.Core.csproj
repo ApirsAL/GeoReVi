@@ -285,7 +285,9 @@
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Tetrahedon.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Triangle.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\CategorizationMethod.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\DijkstraHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\DiscretizationMethod.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\DistanceType.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\Drift.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\GeographyHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\GeostatisticalAnalysis.cs" />

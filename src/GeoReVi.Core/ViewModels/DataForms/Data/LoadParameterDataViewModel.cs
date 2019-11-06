@@ -295,6 +295,7 @@ namespace GeoReVi
                     FileInfo fi = new FileInfo(file);
 
                     DataTable table = new DataTable() { TableName = "MyTableName" };
+                    DataTable tableCloned = new DataTable();
 
                     if (fi.Extension == ".XLSX" || fi.Extension == ".xlsx")
                     {
@@ -303,7 +304,18 @@ namespace GeoReVi
 
                         ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
 
-                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = table });
+                        tableCloned = table.Clone();
+                        tableCloned.Columns["Value1"].DataType = typeof(double);
+                        tableCloned.Columns["X"].DataType = typeof(double);
+                        tableCloned.Columns["Y"].DataType = typeof(double);
+                        tableCloned.Columns["Z"].DataType = typeof(double);
+
+                        foreach (DataRow row1 in table.Rows)
+                        {
+                            tableCloned.ImportRow(row1);
+                        }
+
+                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
                     }
                     else if (fi.Extension == ".CSV" || fi.Extension == ".csv")
                     {
@@ -311,7 +323,18 @@ namespace GeoReVi
 
                         ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
 
-                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = table });
+                        tableCloned = table.Clone();
+                        tableCloned.Columns["Value1"].DataType = typeof(double);
+                        tableCloned.Columns["X"].DataType = typeof(double);
+                        tableCloned.Columns["Y"].DataType = typeof(double);
+                        tableCloned.Columns["Z"].DataType = typeof(double);
+
+                        foreach (DataRow row1 in table.Rows)
+                        {
+                            tableCloned.ImportRow(row1);
+                        }
+
+                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
                     }
                     else if (fi.Extension == ".gmsh" || fi.Extension == ".gmsh")
                     {

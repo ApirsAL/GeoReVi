@@ -245,25 +245,54 @@ namespace GeoReVi
                             int xMaxIndex = Vertices.Max(x => x.MeshIndex[0]);
                             int yMinIndex = Vertices.Min(x => x.MeshIndex[1]);
                             int yMaxIndex = Vertices.Max(x => x.MeshIndex[1]);
+                            int zMinIndex = Vertices.Min(x => x.MeshIndex[2]);
+                            int zMaxIndex = Vertices.Max(x => x.MeshIndex[2]);
 
-                            //3D collection of vertices
-                            LocationTimeValue[,] locs = new LocationTimeValue[(xMaxIndex - xMinIndex) + 1, (yMaxIndex - yMinIndex) +1];
-
-                            //Adding vertices to the collection based on the count
-                            for (int i = 0; i < Vertices.Count(); i++)
-                                locs[Vertices[i].MeshIndex[0], Vertices[i].MeshIndex[1]] = Vertices[i];
-
-                            for (int i = xMinIndex; i < xMaxIndex; i++)
+                            if(zMinIndex == 0 && zMaxIndex == 0)
                             {
-                                for (int j = yMinIndex; j < yMaxIndex; j++)
+                                //3D collection of vertices
+                                LocationTimeValue[,] locs = new LocationTimeValue[(xMaxIndex - xMinIndex) + 1, (yMaxIndex - yMinIndex) +1];
+
+                                //Adding vertices to the collection based on the count
+                                for (int i = 0; i < Vertices.Count(); i++)
+                                    locs[Vertices[i].MeshIndex[0], Vertices[i].MeshIndex[1]] = Vertices[i];
+
+                                for (int i = xMinIndex; i < xMaxIndex; i++)
                                 {
-                                    Quadrilateral quad = new Quadrilateral();
+                                    for (int j = yMinIndex; j < yMaxIndex; j++)
+                                    {
+                                        Quadrilateral quad = new Quadrilateral();
 
-                                    quad.Vertices = new LocationTimeValue[4] { locs[i, j], locs[i, j + 1], locs[i + 1, j + 1], locs[i + 1, j] };
+                                        quad.Vertices = new LocationTimeValue[4] { locs[i, j], locs[i, j + 1], locs[i + 1, j + 1], locs[i + 1, j] };
 
-                                    quad.SortVertices();
+                                        quad.SortVertices();
 
-                                    Faces.Add(quad);
+                                        Faces.Add(quad);
+                                    }
+                                }
+
+                            }
+                            else if(yMinIndex == 0 && yMaxIndex == 0)
+                            {
+                                //3D collection of vertices
+                                LocationTimeValue[,] locs = new LocationTimeValue[(xMaxIndex - xMinIndex) + 1, (zMaxIndex - zMinIndex) + 1];
+
+                                //Adding vertices to the collection based on the count
+                                for (int i = 0; i < Vertices.Count(); i++)
+                                    locs[Vertices[i].MeshIndex[0], Vertices[i].MeshIndex[2]] = Vertices[i];
+
+                                for (int i = xMinIndex; i < xMaxIndex; i++)
+                                {
+                                    for (int j = zMinIndex; j < zMaxIndex; j++)
+                                    {
+                                        Quadrilateral quad = new Quadrilateral();
+
+                                        quad.Vertices = new LocationTimeValue[4] { locs[i, j], locs[i, j + 1], locs[i + 1, j + 1], locs[i + 1, j] };
+
+                                        quad.SortVertices();
+
+                                        Faces.Add(quad);
+                                    }
                                 }
                             }
                             break;
@@ -482,14 +511,15 @@ namespace GeoReVi
         {
             List<LocationTimeValue> retLocs = new List<LocationTimeValue>();
 
+            if (locs.Length == 0)
+                CreateVerticeArray();
+
             try
             {
                 int indexX = loc.MeshIndex[0];
                 int indexY = loc.MeshIndex[1];
                 int indexZ = loc.MeshIndex[2];
 
-
-                
                 //Checking if the correct count of points is returned
                 switch(Dimensionality)
                 {
@@ -507,12 +537,18 @@ namespace GeoReVi
                         break;
                     case Dimensionality.ThreeD:
 
-                        retLocs.Add(locs[indexX - 1, indexY, indexZ]);
-                        retLocs.Add(locs[indexX, indexY - 1, indexZ]);
-                        retLocs.Add(locs[indexX, indexY, indexZ - 1]);
-                        retLocs.Add(locs[indexX + 1, indexY, indexZ]);
-                        retLocs.Add(locs[indexX, indexY + 1, indexZ]);
-                        retLocs.Add(locs[indexX, indexY, indexZ + 1]);
+                        if(indexX != 0)
+                            retLocs.Add(locs[indexX - 1, indexY, indexZ]);
+                        if(indexY != 0)
+                            retLocs.Add(locs[indexX, indexY - 1, indexZ]);
+                        if(indexZ != 0)
+                            retLocs.Add(locs[indexX, indexY, indexZ - 1]);
+                        if(indexX != locs.GetLength(0)-1)
+                            retLocs.Add(locs[indexX + 1, indexY, indexZ]);
+                        if(indexY != locs.GetLength(1)-1)
+                            retLocs.Add(locs[indexX, indexY + 1, indexZ]);
+                        if(indexZ != locs.GetLength(2)-1)
+                            retLocs.Add(locs[indexX, indexY, indexZ + 1]);
 
                         if (retLocs.Count() > 6 && !loc.IsExterior)
                         {

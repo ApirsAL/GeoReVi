@@ -386,16 +386,16 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                     <DataTemplate>
                                         <Canvas>
                                             <Rectangle Fill="{Binding Path=Rectangle.Brush}"
-                                                       Canvas.Left="{Binding Path=Rectangle.X}"
-                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
-                                                       Width="10"
-                                                       Height="10"
-                                                       StrokeThickness="2"
-                                                       Stroke="{Binding Path=LineColor}"/>
+                                                           Canvas.Left="{Binding Path=Rectangle.X}"
+                                                           Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                           Width="10"
+                                                           Height="10"
+                                                           StrokeThickness="2"
+                                                           Stroke="{Binding Path=LineColor}"/>
 
                                             <TextBlock Text="{Binding Path=Label.Text}"
-                                                                   Canvas.Left="{Binding Path=Label.X}"
-                                                                   Canvas.Top="{Binding Path=Label.Y}"/>
+                                                                       Canvas.Left="{Binding Path=Label.X}"
+                                                                       Canvas.Top="{Binding Path=Label.Y}"/>
                                         </Canvas>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -438,10 +438,10 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                                     <TextBox Text="{Binding Bco.Title, Mode=TwoWay}"/>
                                                     <TextBlock Text="X label"
                                                                        FontWeight="DemiBold"/>
-                                                    <TextBox Text="{Binding Bco.XLabel, Mode=TwoWay}"/>
+                                                    <TextBox Text="{Binding Bco.XLabel.Text, Mode=TwoWay}"/>
                                                     <TextBlock Text="Y label"
                                                                        FontWeight="DemiBold"/>
-                                                    <TextBox Text="{Binding Bco.YLabel, Mode=TwoWay}"/>
+                                                    <TextBox Text="{Binding Bco.YLabel.Text, Mode=TwoWay}"/>
 
                                                 </StackPanel>
                                             </Expander>

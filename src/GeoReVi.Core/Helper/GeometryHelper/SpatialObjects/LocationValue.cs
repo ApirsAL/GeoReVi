@@ -316,6 +316,67 @@ namespace GeoReVi
             else if (this.X < other.x) { return -1; }
             else { return 0; }
         }
+
+        /// <summary>
+        /// Gets the euclidean distance
+        /// </summary>
+        /// <returns></returns>
+        public double GetEuclideanDistance(LocationTimeValue loc)
+        {
+            try
+            {
+                return GeographyHelper.EuclideanDistance(this, loc);
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Getting the Dijkstra distance
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public double GetDijkstraDistance(Mesh mesh, LocationTimeValue target)
+        {
+            try
+            {
+                DijkstraHelper dijkstra = new DijkstraHelper();
+                return dijkstra.GetDijkstraDistance(this, target, mesh);
+            }
+            catch
+            {
+                return double.NaN;
+            }
+        }
+
+        /// <summary>
+        /// Getting the gradient of a three dimensional neighborhood
+        /// </summary>
+        /// <param name="neighbors"></param>
+        /// <returns></returns>
+        public double[] GetGradient(List<LocationTimeValue> neighbors)
+        {
+                double[] grad = new double[3] { 0, 0, 0 };
+
+                try
+                {
+                    for (int i = 0; i < neighbors.Count; i++)
+                    {
+                        grad[0] += X != neighbors[i].X ? (Value[0] - neighbors[i].Value[0]) / Math.Abs(X - neighbors[i].X) : 0;
+                        grad[1] += Y != neighbors[i].Y ? (Value[0] - neighbors[i].Value[0]) / Math.Abs(Y - neighbors[i].Y) : 0;
+                        grad[2] += Z != neighbors[i].Z ? (Value[0] - neighbors[i].Value[0]) / Math.Abs(Z - neighbors[i].Z) : 0;
+                    }
+                }
+                catch
+                {
+
+                }
+
+                return grad;
+        }
         #endregion
     }
 }

@@ -398,13 +398,13 @@ namespace GeoReVi
             }
 
             //Determining the domain where the discrete points should be created in
-            double[] xDomain = StartX == EndX ? OriginalLocationValues.Select(x => x.X).ToArray() : new double[] { StartX, EndX };
-            double[] yDomain = StartY == EndY ? OriginalLocationValues.Select(x => x.Y).ToArray() : new double[] { StartY, EndY };
-            double[] zDomain = StartZ == EndZ ? OriginalLocationValues.Select(x => x.Z).ToArray() : new double[] { StartZ, EndZ };
+            double[] xDomain = StartX == EndX ? OriginalLocationValues.Select(x => x.X).ToArray() : new double[2] { StartX, EndX };
+            double[] yDomain = StartY == EndY ? OriginalLocationValues.Select(x => x.Y).ToArray() : new double[2] { StartY, EndY };
+            double[] zDomain = StartZ == EndZ ? OriginalLocationValues.Select(x => x.Z).ToArray() : new double[2] { StartZ, EndZ };
 
-            double[] xArray = DistributionHelper.Subdivide(xDomain, BinsX);
-            double[] yArray = DistributionHelper.Subdivide(yDomain, BinsY);
-            double[] zArray = DistributionHelper.Subdivide(zDomain, BinsZ);
+            double[] xArray = BinsX == 0 ? new double[] { EndX } : DistributionHelper.Subdivide(xDomain, BinsX);
+            double[] yArray = BinsY == 0 ? new double[] { EndY } : DistributionHelper.Subdivide(yDomain, BinsY);
+            double[] zArray = BinsZ == 0 ? new double[] { EndZ } : DistributionHelper.Subdivide(zDomain, BinsZ);
 
             double xDiff = xArray.Length > 1 ? xArray[1] - xArray[0] : 0;
             double yDiff = yArray.Length > 1 ? yArray[1] - yArray[0] : 0;
@@ -526,51 +526,71 @@ namespace GeoReVi
                 if (SelectedMeasPoints[0].Vertices.Count() != SelectedMeasPoints[1].Vertices.Count())
                     return;
 
+                //Getting the min and max index of each dimension
                 int xMinIndex = SelectedMeasPoints[0].Vertices.Min(x => x.MeshIndex[0]);
                 int xMaxIndex = SelectedMeasPoints[0].Vertices.Max(x => x.MeshIndex[0]);
                 int yMinIndex = SelectedMeasPoints[0].Vertices.Min(x => x.MeshIndex[1]);
                 int yMaxIndex = SelectedMeasPoints[0].Vertices.Max(x => x.MeshIndex[1]);
+                int zMinIndex = SelectedMeasPoints[0].Vertices.Min(x => x.MeshIndex[2]);
+                int zMaxIndex = SelectedMeasPoints[0].Vertices.Max(x => x.MeshIndex[2]);
 
-                for (int i = 0; i < xMaxIndex; i++)
+                //Checking what dimension is zero
+                string surfaceDimension = (xMinIndex == xMaxIndex ? "x" : (yMinIndex == yMaxIndex ? "y" : zMinIndex == zMaxIndex ? "z" : ""));
+
+                for (int i = 0; i < (xMaxIndex == xMinIndex ? 1 : xMaxIndex); i++)
                 {
-                    for (int j = 0; j < yMaxIndex; j++)
+                    for (int j = 0; j < (yMaxIndex == yMinIndex ? 1 : yMaxIndex); j++)
                     {
-                        LocationTimeValue loc1 = SelectedMeasPoints[0].Vertices.Where(x => x.MeshIndex[0] == i && x.MeshIndex[1] == j).First();
-                        LocationTimeValue loc2 = SelectedMeasPoints[1].Vertices.Where(x => x.MeshIndex[0] == i && x.MeshIndex[1] == j).First();
-
-                        double lowerX = loc1.X < loc2.X ? loc1.X : loc2.X;
-                        double lowerY = loc1.Y < loc2.Y ? loc1.Y : loc2.Y;
-                        double lowerZ = loc1.Z < loc2.Z ? loc1.Z : loc2.Z;
-
-                        double differenceX = Math.Abs(loc1.X - loc2.X);
-                        double differenceY = Math.Abs(loc1.Y - loc2.Y);
-                        double differenceZ = Math.Abs(loc1.Z - loc2.Z);
-
-                        double stepWidthX = differenceX / SelectedMeasPoints[0].Vertices.Select(x => x.MeshIndex[0]).Max(x => x);
-                        double stepWidthY = differenceY / SelectedMeasPoints[0].Vertices.Select(x => x.MeshIndex[1]).Max(x => x);
-                        double stepWidthZ = differenceZ / BinsZ;
-
-
-                        for (int k = 0; k < zArray.Length; k++)
+                        for(int k = 0; k<(zMaxIndex == zMinIndex ? 1 : zMaxIndex); k++)
                         {
-                            LocationTimeValue locBetween = new
-                                LocationTimeValue(
-                                lowerX + i * stepWidthX,
-                                lowerY + j * stepWidthY,
-                                lowerZ + k * stepWidthZ)
-                            {
-                                Geographic = false,
-                                IsDiscretized = true,
-                                IsExterior = i == xMinIndex
-                                        || i == xMaxIndex - 1
-                                        || j == yMinIndex
-                                        || j == yMaxIndex - 1
-                                        || k == 0
-                                        || k == zArray.Length - 1,
-                            };
-                            locBetween.MeshIndex = new int[3] { loc1.MeshIndex[0], loc1.MeshIndex[1], k };
+                            //Determining the points that should be connected
+                            LocationTimeValue loc1 = SelectedMeasPoints[0].Vertices.Where(x => x.MeshIndex[0] == i && x.MeshIndex[1] == j && x.MeshIndex[2] == k).First();
+                            LocationTimeValue loc2 = SelectedMeasPoints[1].Vertices.Where(x => x.MeshIndex[0] == i && x.MeshIndex[1] == j && x.MeshIndex[2] == k).First();
 
-                            DiscretizedLocationValues.Vertices.Add(locBetween);
+                            //Determining the lower x,y and z value
+                            double lowerX = loc1.X < loc2.X ? loc1.X : loc2.X;
+                            double lowerY = loc1.Y < loc2.Y ? loc1.Y : loc2.Y;
+                            double lowerZ = loc1.Z < loc2.Z ? loc1.Z : loc2.Z;
+
+                            //Determining the spatial diffences between those points
+                            double differenceX = Math.Abs(loc1.X - loc2.X);
+                            double differenceY = Math.Abs(loc1.Y - loc2.Y);
+                            double differenceZ = Math.Abs(loc1.Z - loc2.Z);
+
+                            //Calculating the step width
+                            double stepWidthX = surfaceDimension == "x" ? differenceX / BinsX : differenceX / SelectedMeasPoints[0].Vertices.Select(x => x.MeshIndex[0]).Max(x => x);
+                            double stepWidthY = surfaceDimension == "y" ? differenceY / BinsY : differenceY / SelectedMeasPoints[0].Vertices.Select(x => x.MeshIndex[1]).Max(x => x);
+                            double stepWidthZ = surfaceDimension == "z" ? differenceZ / BinsZ : differenceZ / SelectedMeasPoints[0].Vertices.Select(x => x.MeshIndex[2]).Max(x => x); ;
+
+                            //Iterating over the array that should be determined
+                            for (int l = 0; l < (surfaceDimension == "x" ? xArray.Length : (surfaceDimension == "y" ? yArray.Length : (surfaceDimension == "z" ? zArray.Length : 1))) ; l++)
+                            {
+                                //Creating the new point as a function of the boundary points
+                                LocationTimeValue locBetween = new
+                                    LocationTimeValue(
+                                    lowerX + (surfaceDimension == "x" ? l * stepWidthX : i * stepWidthX),
+                                    lowerY + (surfaceDimension == "y" ? l * stepWidthY : j * stepWidthY),
+                                    lowerZ + (surfaceDimension == "z" ? l * stepWidthZ : k * stepWidthZ))
+                                {
+                                    Geographic = false,
+                                    IsDiscretized = true,
+                                    IsExterior = (surfaceDimension == "x" ? l == xMinIndex : i == xMinIndex)
+                                            || (surfaceDimension == "x" ? l == xArray.Length - 1 : i == xMaxIndex - 1)
+                                            || (surfaceDimension == "y" ? l == yMinIndex : i == yMinIndex)
+                                            || (surfaceDimension == "y" ? l == yArray.Length - 1 : j == yMaxIndex - 1)
+                                            || (surfaceDimension == "z" ? l == zMinIndex : i == zMinIndex)
+                                            || (surfaceDimension == "z" ? l == zArray.Length - 1 : k == zMaxIndex - 1)
+                                };
+                                //new index
+                                locBetween.MeshIndex = new int[3] 
+                                {
+                                    surfaceDimension == "x" ? l : loc1.MeshIndex[0],
+                                    surfaceDimension == "y" ? l : loc1.MeshIndex[1],
+                                    surfaceDimension == "z" ? l : loc1.MeshIndex[2] };
+
+                                DiscretizedLocationValues.Vertices.Add(locBetween);
+                            }
+
                         }
                     }
                 }

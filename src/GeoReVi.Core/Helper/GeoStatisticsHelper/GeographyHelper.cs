@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Device.Location;
@@ -71,18 +72,6 @@ namespace GeoReVi
         /// <param name=""></param>
         /// <returns></returns>
         public static double EuclideanDistance(LocationTimeValue point1, LocationTimeValue point2)
-        {
-            return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2) + Math.Pow(point2.Z - point1.Z, 2));
-        }
-
-        /// <summary>
-        /// Calculating the range of an x,y,z vector or the distance of two geographic points
-        /// </summary>
-        /// <param name=""></param>
-        /// <param name=""></param>
-        /// <param name=""></param>
-        /// <returns></returns>
-        public static double GetEuclideanDistance(this LocationTimeValue point1, LocationTimeValue point2)
         {
             return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2) + Math.Pow(point2.Z - point1.Z, 2));
         }
