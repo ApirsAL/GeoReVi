@@ -14,7 +14,7 @@ namespace GeoReVi
     public abstract class MultiVariateAnalysis : PropertyChangedBase, IMultidimensionalDataSetHolder, IStatisticalAnalysis
     {
         /// <summary>
-        /// The calculationDataSet
+        /// The calculation dataSet
         /// </summary>
         private double[,] calculationDataSet = new double[,] { };
         public double[,] CalculationDataSet
@@ -25,6 +25,12 @@ namespace GeoReVi
                 this.calculationDataSet = value;
                 NotifyOfPropertyChange(() => CalculationDataSetView);
             }
+        }
+
+        //Data set in jaggged format
+        public double[][] CalculationJaggedDataSet
+        {
+            get => CalculationDataSet.ToJagged();
         }
 
         /// <summary>

@@ -43,8 +43,33 @@ namespace GeoReVi
             }
         }
 
-        //Point collection that build up the line series
-        public List<LocationTimeValue> Hull { get; set; }
+        /// <summary>
+        /// Convex hull of the points
+        /// </summary>
+        private PointCollection hull = new PointCollection();
+        public PointCollection Hull
+        {
+            get => this.hull;
+            set
+            {
+                this.hull = value;
+                NotifyOfPropertyChange(() => Hull);
+            }
+        }
+
+        /// <summary>
+        /// RegressionHelper
+        /// </summary>
+        private RegressionHelper regressionHelper = new RegressionHelper();
+        public RegressionHelper RegressionHelper
+        {
+            get => this.regressionHelper;
+            set
+            {
+                this.regressionHelper = value;
+                NotifyOfPropertyChange(() => RegressionHelper);
+            }
+        }
 
         //Point collection that build up the line series
         private BindableCollection<LocationTimeValue> linePoints = new BindableCollection<LocationTimeValue>();
@@ -55,6 +80,18 @@ namespace GeoReVi
             {
                 this.linePoints = value;
                 NotifyOfPropertyChange(() => LinePoints);
+            }
+        }
+
+        ///Point collection that build up the regression of the series
+        private PointCollection regressionLinePoints = new PointCollection();
+        public PointCollection RegressionLinePoints
+        {
+            get => this.regressionLinePoints;
+            set
+            {
+                this.regressionLinePoints = value;
+                NotifyOfPropertyChange(() => RegressionLinePoints);
             }
         }
 
@@ -226,7 +263,6 @@ namespace GeoReVi
         public LineSeries()
         {
             LinePoints = new BindableCollection<LocationTimeValue>();
-            Hull = new List<LocationTimeValue>();
             Symbols = new Symbols<LineSeries>();
         }
 
@@ -237,7 +273,6 @@ namespace GeoReVi
         {
             _a = a;
             LinePoints = new BindableCollection<LocationTimeValue>();
-            Hull = new List<LocationTimeValue>();
             Symbols = new Symbols<LineSeries>(a);
         }
 
@@ -307,15 +342,30 @@ namespace GeoReVi
         /// <summary>
         /// Computes the convex hull of the Line points
         /// </summary>
-        public void ComputeComplexHull()
+        public void ComputeConvexHull()
         {
             try
             {
-                Hull = ConvexHull.ComputeConvexHull2D(this.LinePoints.ToList()).ToList();
+                Hull = ConvexHull.ComputeConvexHull2D(LinePoints.ToList()).ToList().ToPointCollection();
             }
             catch
             {
-                Hull = new List<LocationTimeValue>();
+                Hull = new PointCollection();
+            }
+        }
+
+        /// <summary>
+        /// Computing the regression
+        /// </summary>
+        public void ComputeRegression()
+        {
+            try
+            {
+               RegressionLinePoints = RegressionHelper.Compute(LinePoints.ToList());
+            }
+            catch
+            {
+
             }
         }
 

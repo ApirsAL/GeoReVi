@@ -211,20 +211,20 @@ inpeArrayApparentPermm2,Apparent permeability array,tblIntrinsicPermeability,Int
 inpeAccuracym2,Accuracy [m2],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
 inpeTemperature,Temperature [°C],tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
 inpeArrayDischarge,Discharge array,tblIntrinsicPermeability,Intrinsic permeability,1,Numerical
-sgrIdPk,Measurement ID,tblSpectralGammaRay,Spectral gamma ray,0,Numerical
-sgType,Type,tblSpectralGammaRay,Spectral gamma ray,1,Categorical
-sgDate,Date,tblSpectralGammaRay,Spectral gamma ray,1,Date
-sgMeasuringTime,Measuring time [s],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgTotalCounts,Total counts [-],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgPotassiumCPS,Potassium [cps],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgPotassiumPercent,Potassium [%],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgUraniumCPS,Uranium [cps],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgUraniumPPM,Uranium [ppm],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgThoriumCPS,Thorium [cps],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgThoriumPPM,Thorium [ppm],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgAccuracy,Accuracy [%],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
-sgNotes,Notes,tblSpectralGammaRay,Spectral gamma ray,1,Categorical
-sgAPI,Total radiation [API],tblSpectralGammaRay,Spectral gamma ray,1,Numerical
+sgrIdPk,Measurement ID,tblSpectralGammaRay,Spectral Gamma Ray,0,Numerical
+sgType,Type,tblSpectralGammaRay,Spectral Gamma Ray,1,Categorical
+sgDate,Date,tblSpectralGammaRay,Spectral Gamma Ray,1,Date
+sgMeasuringTime,Measuring time [s],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgTotalCounts,Total counts [-],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgPotassiumCPS,Potassium [cps],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgPotassiumPercent,Potassium [%],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgUraniumCPS,Uranium [cps],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgUraniumPPM,Uranium [ppm],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgThoriumCPS,Thorium [cps],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgThoriumPPM,Thorium [ppm],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgAccuracy,Accuracy [%],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
+sgNotes,Notes,tblSpectralGammaRay,Spectral Gamma Ray,1,Categorical
+sgAPI,Total radiation [API],tblSpectralGammaRay,Spectral Gamma Ray,1,Numerical
 swIdFk,Measurement ID,tblSonicWave,Sonic wave velocity,0,Numerical
 swWavetype,Wavetype [p-wave or s-wave],tblSonicWave,Sonic wave velocity,1,Categorical
 swSampleSaturation,Sample saturation [-],tblSonicWave,Sonic wave velocity,1,Numerical
@@ -483,3 +483,5 @@ hhHead,Hydraulic head [m],tblHydraulicHead,Hydraulic head,1,Numerical
 hhAccuracy,Hydraulic head accuracy [m],tblHydraulicHead,Hydraulic head,1,Numerical
 hhMeasurementTime,Measurement time [s],tblHydraulicHead,Hydraulic head,1,Numerical
 sampElevation,Elevation [m a.s.l.],tblRockSample,Rock sample,1,Numerical
+tgrTotalCount,Total counts [-],tblTotalGammaRay,Total Gamma Ray,1,Numerical
+tgrValueAPI,API,tblTotalGammaRay,Total Gamma Ray,1,Numerical

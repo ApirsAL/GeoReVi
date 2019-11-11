@@ -173,21 +173,12 @@ namespace GeoReVi
                     {
                         DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SetDataTableNames().AsResult();
 
-                        DatasetManagementAndVisualizationViewModel.SelectedLineChartViewModel.Lco.DataTableColumnNames = DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames;
-                        DatasetManagementAndVisualizationViewModel.TernaryChartViewModel.Tco.DataTableColumnNames = DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames;
-
-                        DatasetManagementAndVisualizationViewModel.TernaryChartViewModel.Tco.ColumnList.Clear();
-                        DatasetManagementAndVisualizationViewModel.SelectedLineChartViewModel.Lco.ColumnList.Clear();
 
                         DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SelectedColumn.Add(DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames[0]);
-                        DatasetManagementAndVisualizationViewModel.TernaryChartViewModel.Tco.ColumnList.AddRange(DatasetManagementAndVisualizationViewModel.TernaryChartViewModel.Tco.DataTableColumnNames.Take(3));
-                        DatasetManagementAndVisualizationViewModel.SelectedLineChartViewModel.Lco.ColumnList.AddRange(DatasetManagementAndVisualizationViewModel.SelectedLineChartViewModel.Lco.DataTableColumnNames.Take(2));
                     }
                     else
                     {
                         DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames = new BindableCollection<string>();
-                        DatasetManagementAndVisualizationViewModel.SelectedLineChartViewModel.Lco.DataTableColumnNames = new ObservableCollection<string>();
-                        DatasetManagementAndVisualizationViewModel.TernaryChartViewModel.Tco.DataTableColumnNames = new ObservableCollection<string>();
                     }
                 }
                 catch

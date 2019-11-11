@@ -359,6 +359,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Barco.TickColor}"
                             </ItemsControl>
                                 <ItemsControl ItemsSource="{Binding Path=Barco.Legend.LegendObjects, NotifyOnSourceUpdated=True}"
                                               VirtualizingPanel.IsVirtualizing="True"
+                                              VerticalAlignment="Top"
                                               Visibility="{Binding Path=Barco.Legend.IsLegend, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>

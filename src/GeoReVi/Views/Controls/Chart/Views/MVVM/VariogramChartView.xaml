@@ -505,6 +505,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Vco.TickColor}"
                                 </ItemsControl>
                                 <ItemsControl ItemsSource="{Binding Path=Vco.Legend.LegendObjects, NotifyOnSourceUpdated=True}"
                                               VirtualizingPanel.IsVirtualizing="True"
+                                              VerticalAlignment="Top"
                                               Visibility="{Binding Path=Vco.Legend.IsLegend, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>

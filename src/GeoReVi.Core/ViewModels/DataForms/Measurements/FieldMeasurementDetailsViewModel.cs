@@ -774,10 +774,6 @@ namespace GeoReVi
                 rockQualityDesignationIndex = new tblRockQualityDesignationIndex();
                 StructureOrientation = new tblStructureOrientation();
 
-                string tableName = new ApirsRepository<tblAlia>().GetModelByExpression(x => x.alTableAlias == SelectedFieldMeasurement.measParameter).First().alTableName;
-                Properties = new BindableCollection<tblAlia>(new ApirsRepository<tblAlia>().GetModelByExpression(x => x.alTableName == tableName && x.alDataType == "Numerical"));
-                FilterProperties = new BindableCollection<tblAlia>(new ApirsRepository<tblAlia>().GetModelByExpression(x => x.alTableName == tableName && x.alDataType == "Categorical"));
-
                 switch (SelectedFieldMeasurement.measParameter)
                 {
                     case "Total Gamma Ray":
@@ -804,15 +800,28 @@ namespace GeoReVi
 
                 }
 
-                if (Properties.Count() > 0)
-                    SelectedProperty = Properties.First();
-                else
-                    SelectedProperty = new tblAlia();
+                try
+                {
+                    string tableName = new ApirsRepository<tblAlia>().GetModelByExpression(x => x.alTableAlias.ToLower() == SelectedFieldMeasurement.measParameter.ToLower()).FirstOrDefault().alTableName;
+                    Properties = new BindableCollection<tblAlia>(new ApirsRepository<tblAlia>().GetModelByExpression(x => x.alTableName == tableName && x.alDataType == "Numerical"));
+                    FilterProperties = new BindableCollection<tblAlia>(new ApirsRepository<tblAlia>().GetModelByExpression(x => x.alTableName == tableName && x.alDataType == "Categorical"));
 
-                if (FilterProperties.Count() > 0)
-                    SelectedFilterProperty = FilterProperties.First();
-                else
-                    SelectedFilterProperty = new tblAlia();
+                    if (Properties.Count() > 0)
+                        SelectedProperty = Properties.First();
+                    else
+                        SelectedProperty = new tblAlia();
+
+                    if (FilterProperties.Count() > 0)
+                        SelectedFilterProperty = FilterProperties.First();
+                    else
+                        SelectedFilterProperty = new tblAlia();
+                }
+
+                catch
+                {
+
+                }
+
             }
             catch (Exception e)
             {
@@ -1214,45 +1223,41 @@ namespace GeoReVi
                 using (var db = new ApirsRepository<tblMeasurement>())
                 {
                     string resultType = new ApirsRepository<tblMeasurement>().GetModelByExpression(b => b.measIdPk == SelectedFieldMeasurement.measIdPk).Select(b => b.measParameter).First();
+
                     if (resultType != null)
                     {
                         if (resultType != SelectedFieldMeasurement.measParameter)
                         {
-                            if (((ShellViewModel)IoC.Get<IShell>()).ShowQuestion("You updated the physical parameter. Your specific values will be removed and updated. Are you sure to go on?") == MessageBoxViewResult.No)
-                                SelectedFieldMeasurement.measParameter = resultType;
-                            else
+                            switch (resultType)
                             {
-                                switch (resultType)
-                                {
-                                    case "Total Gamma Ray":
-                                        if (TotalGammaRay.tgrfimeIdPk != 0)
-                                            new ApirsRepository<tblTotalGammaRay>().DeleteModelById(TotalGammaRay.tgrfimeIdPk);
-                                        break;
-                                    case "Spectral Gamma Ray":
-                                        if (SpectralGammaRay.sgrIdPk != 0)
-                                            new ApirsRepository<tblSpectralGammaRay>().DeleteModelById(SpectralGammaRay.sgrIdPk);
-                                        break;
-                                    case "Magnetic Susceptibility":
-                                        if (MagneticSusceptibility.susfimeIdPk != 0)
-                                            new ApirsRepository<tblSusceptibility>().DeleteModelById(MagneticSusceptibility.susfimeIdPk);
-                                        break;
-                                    case "Sonic Log":
-                                        if (SonicLog.slfimeIdFk != 0)
-                                            new ApirsRepository<tblSonicLog>().DeleteModelById(SonicLog.slfimeIdFk);
-                                        break;
-                                    case "Temperature":
-                                        if (Temperature.btfimeIdFk != 0)
-                                            new ApirsRepository<tblBoreholeTemperature>().DeleteModelById(Temperature.btfimeIdFk);
-                                        break;
-                                    case "Rock Quality Designation Index":
-                                        if (RockQualityDesignationIndex.rqdfimeIdFk != 0)
-                                            new ApirsRepository<tblRockQualityDesignationIndex>().DeleteModelById(RockQualityDesignationIndex.rqdfimeIdFk);
-                                        break;
-                                    case "Structure Orientation":
-                                        if (StructureOrientation.sofimeIdFk != 0)
-                                            new ApirsRepository<tblStructureOrientation>().DeleteModelById(StructureOrientation.sofimeIdFk);
-                                        break;
-                                }
+                                case "Total Gamma Ray":
+                                    if (TotalGammaRay.tgrfimeIdPk != 0)
+                                        new ApirsRepository<tblTotalGammaRay>().DeleteModelById(TotalGammaRay.tgrfimeIdPk);
+                                    break;
+                                case "Spectral Gamma Ray":
+                                    if (SpectralGammaRay.sgrIdPk != 0)
+                                        new ApirsRepository<tblSpectralGammaRay>().DeleteModelById(SpectralGammaRay.sgrIdPk);
+                                    break;
+                                case "Magnetic Susceptibility":
+                                    if (MagneticSusceptibility.susfimeIdPk != 0)
+                                        new ApirsRepository<tblSusceptibility>().DeleteModelById(MagneticSusceptibility.susfimeIdPk);
+                                    break;
+                                case "Sonic Log":
+                                    if (SonicLog.slfimeIdFk != 0)
+                                        new ApirsRepository<tblSonicLog>().DeleteModelById(SonicLog.slfimeIdFk);
+                                    break;
+                                case "Temperature":
+                                    if (Temperature.btfimeIdFk != 0)
+                                        new ApirsRepository<tblBoreholeTemperature>().DeleteModelById(Temperature.btfimeIdFk);
+                                    break;
+                                case "Rock Quality Designation Index":
+                                    if (RockQualityDesignationIndex.rqdfimeIdFk != 0)
+                                        new ApirsRepository<tblRockQualityDesignationIndex>().DeleteModelById(RockQualityDesignationIndex.rqdfimeIdFk);
+                                    break;
+                                case "Structure Orientation":
+                                    if (StructureOrientation.sofimeIdFk != 0)
+                                        new ApirsRepository<tblStructureOrientation>().DeleteModelById(StructureOrientation.sofimeIdFk);
+                                    break;
                             }
                         }
                     }

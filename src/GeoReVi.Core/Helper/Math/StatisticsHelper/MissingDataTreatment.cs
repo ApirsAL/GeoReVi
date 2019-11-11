@@ -11,7 +11,7 @@ namespace GeoReVi
         RemoveRow = 1,
         [Description("Remove column")]
         RemoveColumn = 2,
-        [Description("Arithmetic average")]
+        [Description("Arithmetic mean")]
         ArithmeticAverage = 3
     }
 }

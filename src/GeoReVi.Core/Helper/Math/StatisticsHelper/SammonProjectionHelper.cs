@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace GeoReVi
 {
+    /// <summary>
+    /// Main part of the logic is taken from
+    /// https://www.codeproject.com/Articles/43123/Sammon-Projection
+    /// </summary>
     public class SammonProjectionHelper : MultiVariateAnalysis
     {
         #region Members
@@ -15,6 +19,11 @@ namespace GeoReVi
         private double _lambda = 1;
         private int[] _indicesI;
         private int[] _indicesJ;
+
+        /// <summary>
+        /// The precalculated distance-matrix.
+        /// </summary>
+        protected double[][] _distanceMatrix;
 
         #endregion
 
@@ -35,6 +44,14 @@ namespace GeoReVi
         }
 
         /// <summary>
+		/// The number of input-vectors.
+		/// </summary>
+		public int Count
+        {
+            get { return this.CalculationJaggedDataSet.Length; }
+        }
+
+        /// <summary>
         /// The maximum number of iterations.
         /// </summary>
         private int maxIteration = 0;
@@ -51,7 +68,7 @@ namespace GeoReVi
         /// <summary>
         /// The maximum number of iterations.
         /// </summary>
-        private int outputDimension = 2;
+        private int outputDimension = 4;
         public int OutputDimension
         {
             get => this.outputDimension;
@@ -137,8 +154,6 @@ namespace GeoReVi
             if (DataSet.Count() == 0)
                 return;
 
-            CommandHelper ch = new CommandHelper();
-
             DataTable dat = new DataTable();
 
             foreach (Mesh dt in DataSet)
@@ -156,87 +171,96 @@ namespace GeoReVi
 
             InitializeSammon();
 
-            await ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsComputing, async () =>
+            //Iterating
+            for (int z = 0; z < MaxIteration; z++)
             {
-                try
+                Iterate();
+            }
+
+            try
+            {
+                List<Mesh> projectedData = new List<Mesh>();
+
+                int j = 0;
+                for (int i = 0; i < DataSet.Count(); i++)
                 {
-                    for(int z = 0; z<MaxIteration;z++)
+                    projectedData.Add(new Mesh() { Name = DataSet[i].Name, Data = ProjectedValues.ToTable().AsEnumerable().Skip(j).Take(DataSet[i].Data.Rows.Count).CopyToDataTable() });
+                    projectedData[i].Data.Columns[projectedData[i].Data.Columns.Count - 1].SetOrdinal(0);
+                    j += DataSet[i].Data.Rows.Count;
+                }
+
+                LineChartViewModel.Lco.ShallRender = true;
+                LineChartViewModel.Lco.Direction = DirectionEnum.XY;
+                LineChartViewModel.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
+                LineChartViewModel.Lco.CreateLineChart();
+                LineChartViewModel.Lco.XLabel.Text = "Dimension 1";
+                LineChartViewModel.Lco.YLabel.Text = "Dimension 2";
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Making one iteration
+        /// </summary>
+        public void Iterate()
+        {
+            try
+            {
+                int[] indicesI = _indicesI;
+                int[] indicesJ = _indicesJ;
+                double[][] distanceMatrix = _distanceMatrix;
+                double[][] projection = ProjectedValues;
+
+                // Shuffle the indices-array for random pick of the points:
+                indicesI.FisherYatesShuffle();
+                indicesJ.FisherYatesShuffle();
+
+                for (int i = 0; i < indicesI.Length; i++)
+                {
+                    double[] distancesI = distanceMatrix[indicesI[i]];
+                    double[] projectionI = projection[indicesI[i]];
+
+                    for (int j = 0; j < indicesJ.Length; j++)
                     {
-                        int[] indicesI = _indicesI;
-                        int[] indicesJ = _indicesJ;
-                        double[,] distanceMatrix = CalculateDistanceMatrix();
-                        double[][] projection = ProjectedValues;
+                        if (indicesI[i] == indicesJ[j])
+                            continue;
 
-                        // Shuffle the indices-array for random pick of the points:
-                        indicesI.FisherYatesShuffle();
-                        indicesJ.FisherYatesShuffle();
+                        double[] projectionJ = projection[indicesJ[j]];
 
-                        for (int i = 0; i < indicesI.Length; i++)
+                        double dij = distancesI[indicesJ[j]];
+                        double Dij = ManhattenDistance(
+                                projectionI,
+                                projectionJ);
+
+                        // Avoid division by zero:
+                        if (Dij == 0)
+                            Dij = 1e-10;
+
+                        double delta = _lambda * (dij - Dij) / Dij;
+
+                        for (int k = 0; k < projectionJ.Length; k++)
                         {
-                            double[] distancesI = distanceMatrix.GetRow(indicesI[i]);
-                            double[] projectionI = projection[indicesI[i]];
+                            double correction =
+                                delta * (projectionI[k] - projectionJ[k]);
 
-                            for (int j = 0; j < indicesJ.Length; j++)
-                            {
-                                if (indicesI[i] == indicesJ[j])
-                                    continue;
-
-                                double[] projectionJ = ProjectedValues[indicesJ[j]];
-
-                                double dij = distancesI[indicesJ[j]];
-                                double Dij = ManhattenDistance(
-                                        projectionI,
-                                        projectionJ);
-
-                                // Avoid division by zero:
-                                if (Dij == 0)
-                                    Dij = 1e-10;
-
-                                double delta = _lambda * (dij - Dij) / Dij;
-
-                                for (int k = 0; k < projectionJ.Length; k++)
-                                {
-                                    double correction =
-                                        delta * (projectionI[k] - projectionJ[k]);
-
-                                    projectionI[k] += correction;
-                                    projectionJ[k] -= correction;
-                                }
-                            }
+                            projectionI[k] += correction;
+                            projectionJ[k] -= correction;
                         }
-
-                        ProjectedValues = projectedValues;
-                        // Reduce lambda monotonically:
-                        ReduceLambda();
-                    }
-
-
-                    try
-                    {
-                        List<Mesh> projectedData = new List<Mesh>();
-
-                        int j = 0;
-                        for (int i = 0; i < DataSet.Count(); i++)
-                        {
-                            projectedData.Add(new Mesh() { Name = DataSet[i].Name, Data = ProjectedValues.ToTable().AsEnumerable().Skip(j).Take(DataSet[i].Data.Rows.Count).CopyToDataTable() });
-
-                            j += DataSet[i].Data.Rows.Count;
-                        }
-
-                        LineChartViewModel.Lco.ShallRender = true;
-                        LineChartViewModel.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
-                        LineChartViewModel.Lco.CreateScatterChart();
-                    }
-                    catch
-                    {
-                        return;
                     }
                 }
-                catch
-                {
 
-                }
-            });
+                // Reduce lambda monotonically:
+                ReduceLambda();
+
+                ProjectedValues = projection;
+            }
+            catch
+            {
+
+            }
         }
 
         /// <summary>
@@ -244,18 +268,23 @@ namespace GeoReVi
         /// </summary>
         public void InitializeSammon()
         {
-            Random rnd = new Random();
-            ProjectedValues = CalculationDataSet.ToJagged();
+            _distanceMatrix = CalculateDistanceMatrix();
 
-            for (int i = 0; i < CalculationDataSet.GetRow(0).Length; i++)
+            // Initialize random points for the projection:
+            Random rnd = new Random();
+            double[][] projection = new double[this.Count][];
+            this.ProjectedValues = projection;
+            for (int i = 0; i < projection.Length; i++)
             {
-                for (int j = 0; j < CalculationDataSet.GetRow(0).Length; j++)
-                    ProjectedValues[i][j] = Convert.ToDouble(rnd.Next(0, CalculationDataSet.GetRow(0).Length));
+                double[] projectionI = new double[this.OutputDimension];
+                projection[i] = projectionI;
+                for (int j = 0; j < projectionI.Length; j++)
+                    projectionI[j] = rnd.Next(0, this.Count);
             }
 
             // Create the indices-arrays:
-            _indicesI = Enumerable.Range(0, CalculationDataSet.GetRow(0).Length).ToArray();
-            _indicesJ = new int[CalculationDataSet.GetRow(0).Length];
+            _indicesI = Enumerable.Range(0, this.Count).ToArray();
+            _indicesJ = new int[this.Count];
             _indicesI.CopyTo(_indicesJ, 0);
         }
 
@@ -267,28 +296,35 @@ namespace GeoReVi
         /// Calculates the distance matrix of a double matrix
         /// </summary>
         /// <returns></returns>
-        private double[,] CalculateDistanceMatrix()
+        private double[][] CalculateDistanceMatrix()
         {
-            //Semivariance matrix for the ordinary kriging system
-            double[,] distanceMatrix = new double[CalculationDataSet.GetRow(0).Length, CalculationDataSet.GetRow(0).Length];
+            double[][] distanceMatrix = new double[this.Count][];
+            double[][] inputData = this.CalculationJaggedDataSet;
 
-            for (int i = 0; i < CalculationDataSet.GetRow(0).Length; i++)
+            for (int i = 0; i < distanceMatrix.Length; i++)
             {
-                for (int j = 0; j < CalculationDataSet.GetRow(0).Length; j++)
+                double[] distances = new double[this.Count];
+                distanceMatrix[i] = distances;
+
+                double[] inputI = inputData[i];
+
+                for (int j = 0; j < distances.Length; j++)
                 {
                     if (j == i)
                     {
-                        distanceMatrix[i, j] = 0;
+                        distances[j] = 0;
                         continue;
                     }
 
-                    distanceMatrix[i, j] = ManhattenDistance(CalculationDataSet.GetColumn(i), CalculationDataSet.GetColumn(j));
+                    distances[j] = ManhattenDistance(
+                        inputI,
+                        inputData[j]);
                 }
             }
 
             return distanceMatrix;
         }
-        
+
 
         /// <summary>
         /// Calculates the Manhatten distance of two vectors

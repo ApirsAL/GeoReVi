@@ -53,11 +53,9 @@ namespace GeoReVi
             Legend.IsLegend = _vco.Legend.IsLegend;
             Legend.LegendPosition = _vco.Legend.LegendPosition;
             ShallRender = _vco.ShallRender;
-            DataTableColumnNames = _vco.DataTableColumnNames;
 
             ChartHeight = _vco.ChartHeight;
             ChartWidth = _vco.ChartWidth;
-            ColumnList = _vco.ColumnList;
 
             Y2max = _vco.Y2max;
             Y2min = _vco.Y2min;

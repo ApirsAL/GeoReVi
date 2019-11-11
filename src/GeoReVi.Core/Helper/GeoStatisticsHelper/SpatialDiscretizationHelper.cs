@@ -2,14 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace GeoReVi
 {
     /// <summary>
-    /// A class that discretizizes a spatial domain into discrete values
+    /// A class that discretizes a spatial domain into discrete values
     /// </summary>
     /// <typeparam name="T">Type of value</typeparam>
     public class SpatialDiscretizationHelper : GeostatisticalAnalysis
@@ -505,10 +503,6 @@ namespace GeoReVi
                                     {
                                         continue;
                                     }
-                                    break;
-                                case DiscretizationMethod.Octree:
-                                    Mesh mesh = new Mesh();
-
                                     break;
                                 default:
                                     break;

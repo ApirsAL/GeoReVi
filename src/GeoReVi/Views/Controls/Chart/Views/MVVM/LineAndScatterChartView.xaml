@@ -157,7 +157,6 @@
                                     <RotateTransform Angle="270"/>
                                 </TextBlock.LayoutTransform>
                             </TextBlock>
-
                         </Canvas>
                         <DockPanel Grid.Column="0"
                            Grid.Row="1"
@@ -344,6 +343,18 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                                             </Polyline.Points>
                                                         </Polyline>
                                                     </Canvas>
+                                                    <Canvas>
+                                                        <Polyline  Stroke="Red"
+                                                                  StrokeThickness="2"
+                                                                   Points="{Binding RegressionLinePoints}"/>
+                                                    </Canvas>
+                                                    <Canvas>
+                                                        <Polygon  Stroke="Black"
+                                                                              StrokeThickness="0.5"
+                                                                              Fill="{Binding Symbols.FillColor}"
+                                                                              Opacity="0.2"
+                                                                               Points="{Binding Hull}"/>
+                                                    </Canvas>
                                                     <ItemsControl ItemsSource="{Binding Path=LinePoints}"
                                                                   >
                                                         <ItemsControl.ItemTemplate>
@@ -491,6 +502,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                 </ItemsControl>
                                 <ItemsControl ItemsSource="{Binding Path=Lco.Legend.LegendObjects, NotifyOnSourceUpdated=True}"
                                               VirtualizingPanel.IsVirtualizing="True"
+                                              VerticalAlignment="Top"
                                               Visibility="{Binding Path=Lco.Legend.IsLegend, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -871,22 +883,37 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                             </Border>
                                         </ScrollViewer>
                                     </TabItem>
-                                    <TabItem Header="Convex hull"
-                                                             Style="{StaticResource LeftSideTabItem}">
+                                    <TabItem Header="Regression"
+                                              Style="{StaticResource LeftSideTabItem}">
                                         <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Hidden"
                                                                       MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                             <Border Background="{StaticResource ForegroundLightBrush}">
-                                                <StackPanel MinWidth="30">
-                                                    <DockPanel>
-                                                        <TextBlock Text="Show convex hull"
+                                                <DockPanel MinWidth="30">
+                                                    <TextBlock Text="Show regression"
                                                                            FontWeight="DemiBold"/>
-                                                        <CheckBox IsChecked="{Binding Lco.ShowConvexHull, Mode=TwoWay}"
+                                                    <CheckBox IsChecked="{Binding Lco.ShowRegression, Mode=TwoWay}"
                                                                                       HorizontalAlignment="Right"/>
-                                                    </DockPanel>
-                                                </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                    <TabItem Header="Hull"
+                                              Style="{StaticResource LeftSideTabItem}">
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Hidden"
+                                                                      MaxHeight="400"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                            <Border Background="{StaticResource ForegroundLightBrush}">
+                                                <DockPanel MinWidth="30">
+                                                    <TextBlock Text="Show convex hull"
+                                                                           FontWeight="DemiBold"/>
+                                                    <CheckBox IsChecked="{Binding Lco.ShowConvexHull, Mode=TwoWay}"
+                                                                                      HorizontalAlignment="Right"/>
+                                                </DockPanel>
                                             </Border>
                                         </ScrollViewer>
                                     </TabItem>
@@ -1017,6 +1044,47 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                                                        FontWeight="DemiBold"/>
                                                                     <TextBox Text="{Binding Opacity, Mode=TwoWay}"/>
 
+                                                                </StackPanel>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                        <Expander ExpandDirection="Down"
+                                                                          Header="Regression"
+                                                                          FontWeight="Bold"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                            <StackPanel  Margin="5">
+                                                                <StackPanel MinWidth="30">
+                                                                    <TextBlock Text="Type"
+                                                                           FontWeight="DemiBold"/>
+                                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=RegressionHelper.RegType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=RegressionHelper.RegType, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                    <DockPanel>
+                                                                        <TextBlock Text="Degree"
+                                                                           FontWeight="DemiBold"/>
+                                                                        <TextBox Text="{Binding Path=RegressionHelper.Degree}"
+                                                                                 FontWeight="DemiBold"/>
+                                                                    </DockPanel>
+                                                                    <DockPanel>
+                                                                        <TextBlock Text="R2="
+                                                                           FontWeight="DemiBold"/>
+                                                                        <TextBox Text="{Binding Path=RegressionHelper.RSquare}"
+                                                                                  IsReadOnly="True"
+                                                                                 FontWeight="DemiBold"/>
+                                                                    </DockPanel>
+                                                                    <DockPanel>
+                                                                        <TextBlock Text="Function = "
+                                                                           FontWeight="DemiBold"/>
+                                                                        <TextBox Text="{Binding Path=RegressionHelper.Function}"
+                                                                                 IsEnabled="True"
+                                                                                 IsReadOnly="True"
+                                                                           FontWeight="DemiBold"/>
+                                                                    </DockPanel>
                                                                 </StackPanel>
                                                             </StackPanel>
                                                         </Expander>

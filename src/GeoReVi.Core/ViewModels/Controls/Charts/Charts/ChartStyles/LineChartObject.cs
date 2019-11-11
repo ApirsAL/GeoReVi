@@ -148,6 +148,20 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// Shows or hides the regression line
+        /// </summary>
+        private bool showRegression = false;
+        public bool ShowRegression
+        {
+            get => this.showRegression;
+            set
+            {
+                this.showRegression = value;
+                NotifyOfPropertyChange(() => ShowRegression);
+            }
+        }
+
         #region Meta properties
 
         private double maxx;
@@ -197,11 +211,9 @@ namespace GeoReVi
             Legend.IsLegend = _lco.Legend.IsLegend;
             Legend.LegendPosition = _lco.Legend.LegendPosition;
             ShallRender = _lco.ShallRender;
-            DataTableColumnNames = _lco.DataTableColumnNames;
 
             ChartHeight = _lco.ChartHeight;
             ChartWidth = _lco.ChartWidth;
-            ColumnList = _lco.ColumnList;
 
             Y2max = _lco.Y2max;
             Y2min = _lco.Y2min;
@@ -331,73 +343,6 @@ namespace GeoReVi
         /// <summary>
         /// Creating a scatter chart from the data set
         /// </summary>
-        public void CreateScatterChart()
-        {
-            int i = 0;
-
-            Initialize();
-            InitializeStandardScatterplot();
-
-            foreach (var d in DataSet)
-            {
-                try
-                {
-                    if (d.Data.Rows.Count < 1)
-                        continue;
-
-                    AddDataSeries();
-
-                    ObservableCollection<LocationTimeValue> tup = new ObservableCollection<LocationTimeValue>();
-
-                    if (ColumnList.Count > 0)
-                    {
-                        tup.AddRange(new List<LocationTimeValue>(d.Data.AsEnumerable()
-                            .Select(x => new LocationTimeValue()
-                            {
-                                X = (x.Field<double>(ColumnList[0]) == -9999 || x.Field<double>(ColumnList[0]) == -999999) ? 0 : x.Field<double>(ColumnList[0]),
-                                Y = (x.Field<double>(ColumnList[1]) == -9999 || x.Field<double>(ColumnList[1]) == -999999) ? 0 : x.Field<double>(ColumnList[1]),
-                                Name = (d.Name)
-                            }
-                            ).Where(x => x.X != 0 && x.Y != 0)));
-
-                    }
-                    else
-                    {
-                        tup.AddRange(new List<LocationTimeValue>(d.Data.AsEnumerable()
-                                .Select(x => new LocationTimeValue()
-                                {
-                                    X = (x.Field<double>(0) == -9999 || x.Field<double>(ColumnList[0]) == -999999) ? 0 : x.Field<double>(ColumnList[0]),
-                                    Y = (x.Field<double>(1) == -9999 || x.Field<double>(ColumnList[1]) == -999999) ? 0 : x.Field<double>(ColumnList[1]),
-                                    Name = (d.Name)
-
-                                }).Where(x => x.X != 0 && x.Y != 0)));
-
-                    }
-
-                    SpatialPointSeries.Add(tup);
-
-                    i += 1;
-                }
-                catch
-                {
-                    i += 1;
-                    continue;
-                }
-            }
-
-            if (ColumnList.Count > 0)
-            {
-                XLabel.Text = IsXLog ? ColumnList[0] + " (log)" : ColumnList[0];
-
-                YLabel.Text = IsYLog ? ColumnList[1] + " (log" : ColumnList[1];
-            }
-
-            CreateChart();
-        }
-
-        /// <summary>
-        /// Creating a scatter chart from the data set
-        /// </summary>
         public void CreateMatrixChart()
         {
             try
@@ -446,61 +391,14 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Creates a biplot based on labels and x and y values
-        /// </summary>
-        /// <param name="labels"></param>
-        /// <param name="xValues"></param>
-        /// <param name="yValues"></param>
-        public void CreateBiPlot(string[] labels, double[] xValues, double[] yValues)
-        {
-            if (!ShallRender)
-                return;
-
-            DataCollection.Clear();
-            Initialize();
-            InitializeStandardScatterplot();
-
-            try
-            {
-                AddDataSeries();
-                Ds[0].SeriesName = "Parameters";
-                Ds[0].LinePattern = LinePatternEnum.Solid;
-                Ds[0].ShowPointLabels = true;
-
-                for (int i = 0; i < labels.Count(); i++)
-                {
-                    Ds[0].LinePoints.Add(new LocationTimeValue(0, 0, 0, ""));
-                    Ds[0].LinePoints.Add(new LocationTimeValue(xValues[i], yValues[i], 0, labels[i]));
-                }
-
-                if (Ds[0].LinePoints.Count > 0)
-                {
-                    Maxx = Ds[0].LinePoints.Max(x => x.X);
-                    Minx = Ds[0].LinePoints.Min(x => x.X);
-                    Maxy = Ds[0].LinePoints.Max(x => x.Y);
-                    Miny = Ds[0].LinePoints.Min(x => x.Y);
-                }
-
-                SubdivideAxes();
-
-                DataCollection.AddRange(Ds);
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
         /// Creating a line chart
         /// </summary>
-        public void CreateLineChart(string title, string parameter, int index = 0, string par = "")
+        public void CreateLineChart()
         {
 
             if (!ShallRender)
                 return;
 
-            Title = title;
             Initialize();
             InitializeStandardSpatialLog();
 
@@ -547,11 +445,6 @@ namespace GeoReVi
                 if (Updating)
                     return;
 
-                if (SpatialPointSeries.Count() == 0)
-                {
-                    CreateLineChart("", "");
-                }
-
                 int i = 0;
 
                 if (IsColorMap)
@@ -572,6 +465,7 @@ namespace GeoReVi
 
                     List<LocationTimeValue> points = new List<LocationTimeValue>();
 
+                    //Adding all points from the line series to the chart
                     for (int j = 0; j < ser.Count(); j++)
                     {
                         LocationTimeValue a = new LocationTimeValue();
@@ -633,6 +527,21 @@ namespace GeoReVi
                         Miny = Ds[i].LinePoints.Min(x => DeNormalizePoint(x).Y);
                     }
 
+                    if(ShowConvexHull)
+                    {
+                        Ds[i].ComputeConvexHull();
+                    }
+
+                    //Computing the regression
+                    if (ShowRegression)
+                    {
+                        Ds[i].ComputeRegression();
+                        Ds[i].RegressionHelper.FitPolynomials[0] = DeNormalizePoint(new LocationTimeValue(0, Ds[i].RegressionHelper.FitPolynomials[0], 0)).Y;
+                        Ds[i].RegressionHelper.CreateFunction();
+                    }
+                    else
+                        Ds[i].RegressionLinePoints = new PointCollection();
+
                     i += 1;
                 }
 
@@ -645,6 +554,18 @@ namespace GeoReVi
             }
 
             DataCollection = Ds;
+
+            try
+            {
+                for(int i = 0;i<DataCollection.Count();i++)
+                {
+                    DataCollection[i].LinePoints = new BindableCollection<LocationTimeValue>(DataCollection[i].LinePoints);
+                }
+            }
+            catch
+            {
+
+            }
             AddLegend();
 
         }
@@ -741,6 +662,9 @@ namespace GeoReVi
                 {
                     Legend.LegendObjects[i].Rectangle.Brush = (SolidColorBrush)DataCollection[i].Symbols.FillColor;
                     Legend.LegendObjects[i].Symbol = DataCollection[i].Symbols.SymbolType;
+
+                    if (ShowRegression)
+                        Legend.LegendObjects[i].Label.Text = Legend.LegendObjects[i].Label.Text + " (" + DataCollection[i].RegressionHelper.Function + ") R^2 = " + DataCollection[i].RegressionHelper.RSquare.ToString().Substring(0,5);
                 }
             }
             catch
@@ -754,89 +678,115 @@ namespace GeoReVi
         /// </summary>
         public void SubdivideAxes()
         {
-            double local;
 
-            local = Math.Round(Minx, 1) == 0 ?
-                (Math.Round(Minx, 2) == 0 ?
-                (Math.Round(Minx, 3) == 0 ?
-                (Math.Round(Minx, 4) == 0 ?
-                  Math.Round(Minx, 4)
-                : Math.Round(Minx, 4))
-                : Math.Round(Minx, 3))
-                : Math.Round(Minx, 2))
-                : Math.Round(Minx, 1);
+            try
+            {
+                double minX = SpatialPointSeries.SelectMany(x => x.Select(y => y.X)).Min();
+                double minY = SpatialPointSeries.SelectMany(x => x.Select(y => y.Y)).Min();
+                double maxX = SpatialPointSeries.SelectMany(x => x.Select(y => y.X)).Max();
+                double maxY = SpatialPointSeries.SelectMany(x => x.Select(y => y.X)).Min();
 
-            //Math.Round(minx, 1);
+                LocationTimeValue Mins = new LocationTimeValue(
+                    minX,
+                    minY);
 
-            if (local > 0 && local < Xmin) { Xmin = local - local * 0.1; }
-            else if (local < Xmin) { Xmin = local + local * 0.1; }
+                LocationTimeValue Maxs = new LocationTimeValue(
+        maxX,
+        maxY);
 
-            local = Math.Round(Maxx, 1) == 0 ?
-                (Math.Round(Maxx, 2) == 0 ?
-                (Math.Round(Maxx, 3) == 0 ?
-                (Math.Round(Maxx, 4) == 0 ?
-                  Math.Round(Maxx, 4)
-                : Math.Round(Maxx, 4))
-                : Math.Round(Maxx, 3))
-                : Math.Round(Maxx, 2))
-                : Math.Round(Maxx, 1);
+                Xmin = Mins.X;
+                Xmax = Maxs.X;
+                Ymin = Mins.Y;
+                Ymax = Maxs.Y;
 
-            //Math.Round(Ds.LinePoints.Max(x => x.X), 1);
+            }
+            catch
+            {
 
-            if (local > 0 && local > Xmax) { Xmax = local + local * 0.1; }
-            else if (local > Xmax) { Xmax = local - local * 0.1; }
+            }
 
-            local = Math.Round(Miny, 1) == 0 ?
-                (Math.Round(Miny, 2) == 0 ?
-                (Math.Round(Miny, 3) == 0 ?
-                (Math.Round(Miny, 4) == 0 ?
-                  Math.Round(Miny, 4)
-                : Math.Round(Miny, 4))
-                : Math.Round(Miny, 3))
-                : Math.Round(Miny, 2))
-                : Math.Round(Miny, 1);
 
-            //Math.Round(Ds.LinePoints.Min(y => y.Y), 1);
+            //local = Math.Round(DataCollection.Min(x => x.LinePoints.Min(y => y.X)), 1) == 0 ?
+            //    (Math.Round(Minx, 2) == 0 ?
+            //    (Math.Round(Minx, 3) == 0 ?
+            //    (Math.Round(Minx, 4) == 0 ?
+            //      Math.Round(Minx, 4)
+            //    : Math.Round(Minx, 4))
+            //    : Math.Round(Minx, 3))
+            //    : Math.Round(Minx, 2))
+            //    : Math.Round(Minx, 1);
 
-            if (local > 0 && local < Ymin) { Ymin = local - local * 0.1; }
-            else if (local < Ymin) { Ymin = local + local * 0.1; }
+            ////Math.Round(minx, 1);
 
-            local = Math.Round(Maxy, 1) == 0 ?
-                (Math.Round(Maxy, 2) == 0 ?
-                (Math.Round(Maxy, 3) == 0 ?
-                (Math.Round(Maxy, 4) == 0 ?
-                  Math.Round(Maxy, 4)
-                : Math.Round(Maxy, 4))
-                : Math.Round(Maxy, 3))
-                : Math.Round(Maxy, 2))
-                : Math.Round(Maxy, 1);
+            //if (local > 0 && local < Xmin) { Xmin = local - local * 0.1; }
+            //else if (local < Xmin) { Xmin = local + local * 0.1; }
 
-            if (local > 0 && local > Ymax) { Ymax = local + local * 0.1; }
-            else if (local == 0 && local > Ymax)
-                Ymax = 1;
-            else if (local > Ymax) { Ymax = local - local * 0.1; }
+            //local = Math.Round(Maxx, 1) == 0 ?
+            //    (Math.Round(Maxx, 2) == 0 ?
+            //    (Math.Round(Maxx, 3) == 0 ?
+            //    (Math.Round(Maxx, 4) == 0 ?
+            //      Math.Round(Maxx, 4)
+            //    : Math.Round(Maxx, 4))
+            //    : Math.Round(Maxx, 3))
+            //    : Math.Round(Maxx, 2))
+            //    : Math.Round(Maxx, 1);
 
-            if (XTick == 0)
-                XTick = Math.Round((Xmax - Xmin) / 10, 1) == 0 ?
-                    (Math.Round((Xmax - Xmin) / 10, 2) == 0 ?
-                    (Math.Round((Xmax - Xmin) / 10, 3) == 0 ?
-                    (Math.Round((Xmax - Xmin) / 10, 4) == 0 ?
-                      Math.Round((Xmax - Xmin) / 10, 4)
-                    : Math.Round((Xmax - Xmin) / 10, 4))
-                    : Math.Round((Xmax - Xmin) / 10, 3))
-                    : Math.Round((Xmax - Xmin) / 10, 2))
-                    : Math.Round((Xmax - Xmin) / 10, 1);
+            ////Math.Round(Ds.LinePoints.Max(x => x.X), 1);
 
-            if (YTick == 0)
-                YTick = Math.Round((Ymax - Ymin) / 10, 1) == 0 ?
-                    (Math.Round((Ymax - Ymin) / 10, 2) == 0 ?
-                    (Math.Round((Ymax - Ymin) / 10, 3) == 0 ?
-                    (Math.Round((Ymax - Ymin) / 10, 4) == 0 ?
-                      Math.Round((Ymax - Ymin) / 10, 4)
-                    : Math.Round((Ymax - Ymin) / 10, 4))
-                    : Math.Round((Ymax - Ymin) / 10, 3))
-                    : Math.Round((Ymax - Ymin) / 10, 2))
-                    : Math.Round((Ymax - Ymin) / 10, 1);
+            //if (local > 0 && local > Xmax) { Xmax = local + local * 0.1; }
+            //else if (local > Xmax) { Xmax = local - local * 0.1; }
+
+            //local = Math.Round(Miny, 1) == 0 ?
+            //    (Math.Round(Miny, 2) == 0 ?
+            //    (Math.Round(Miny, 3) == 0 ?
+            //    (Math.Round(Miny, 4) == 0 ?
+            //      Math.Round(Miny, 4)
+            //    : Math.Round(Miny, 4))
+            //    : Math.Round(Miny, 3))
+            //    : Math.Round(Miny, 2))
+            //    : Math.Round(Miny, 1);
+
+            ////Math.Round(Ds.LinePoints.Min(y => y.Y), 1);
+
+            //if (local > 0 && local < Ymin) { Ymin = local - local * 0.1; }
+            //else if (local < Ymin) { Ymin = local + local * 0.1; }
+
+            //local = Math.Round(Maxy, 1) == 0 ?
+            //    (Math.Round(Maxy, 2) == 0 ?
+            //    (Math.Round(Maxy, 3) == 0 ?
+            //    (Math.Round(Maxy, 4) == 0 ?
+            //      Math.Round(Maxy, 4)
+            //    : Math.Round(Maxy, 4))
+            //    : Math.Round(Maxy, 3))
+            //    : Math.Round(Maxy, 2))
+            //    : Math.Round(Maxy, 1);
+
+            //if (local > 0 && local > Ymax) { Ymax = local + local * 0.1; }
+            //else if (local == 0 && local > Ymax)
+            //    Ymax = 1;
+            //else if (local > Ymax) { Ymax = local - local * 0.1; }
+
+            //if (XTick == 0)
+            //    XTick = Math.Round((Xmax - Xmin) / 10, 1) == 0 ?
+            //        (Math.Round((Xmax - Xmin) / 10, 2) == 0 ?
+            //        (Math.Round((Xmax - Xmin) / 10, 3) == 0 ?
+            //        (Math.Round((Xmax - Xmin) / 10, 4) == 0 ?
+            //          Math.Round((Xmax - Xmin) / 10, 4)
+            //        : Math.Round((Xmax - Xmin) / 10, 4))
+            //        : Math.Round((Xmax - Xmin) / 10, 3))
+            //        : Math.Round((Xmax - Xmin) / 10, 2))
+            //        : Math.Round((Xmax - Xmin) / 10, 1);
+
+            //if (YTick == 0)
+            //    YTick = Math.Round((Ymax - Ymin) / 10, 1) == 0 ?
+            //        (Math.Round((Ymax - Ymin) / 10, 2) == 0 ?
+            //        (Math.Round((Ymax - Ymin) / 10, 3) == 0 ?
+            //        (Math.Round((Ymax - Ymin) / 10, 4) == 0 ?
+            //          Math.Round((Ymax - Ymin) / 10, 4)
+            //        : Math.Round((Ymax - Ymin) / 10, 4))
+            //        : Math.Round((Ymax - Ymin) / 10, 3))
+            //        : Math.Round((Ymax - Ymin) / 10, 2))
+            //        : Math.Round((Ymax - Ymin) / 10, 1);
         }
 
 

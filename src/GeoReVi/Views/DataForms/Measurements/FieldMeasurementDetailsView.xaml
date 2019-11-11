@@ -161,25 +161,6 @@
                                 </i:Interaction.Triggers>
                             </Button>
                         </ToolBar>
-                        <ToolBar>
-                            <Button x:Name="btnMap"
-                                Content="{StaticResource FontAwesomeCogIcon}"
-                                    Style="{StaticResource IconButton}">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Click">
-                                        <cal:ActionMessage MethodName="MapMeasurementToFaciesFromSection">
-                                        </cal:ActionMessage>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                                <Button.ToolTip>
-                                    <StackPanel Width="100">
-                                        <TextBlock Text="Map measurements of this object to facies types from my litholog"
-                                               TextWrapping="WrapWithOverflow"/>
-
-                                    </StackPanel>
-                                </Button.ToolTip>
-                            </Button>
-                        </ToolBar>
                     </ToolBarTray>
                 </DockPanel>
             </Border>
@@ -990,12 +971,12 @@
                                     </StackPanel>
                                 </GroupBox>
                             </TabItem>
-                            <TabItem Header="Files">
+                            <!--<TabItem Header="Files">
                                 <GroupBox Header="Files">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <ScrollViewer>
                                             <ListView ItemsSource="{Binding Path=FileStore, 
@@ -1100,7 +1081,7 @@
                                         </StackPanel>
                                     </Grid>
                                 </GroupBox>
-                            </TabItem>
+                            </TabItem>-->
                             <TabItem Header="Parameter">
                                 <StackPanel Grid.Column="2"
                                     Grid.RowSpan="2"
@@ -1308,7 +1289,7 @@
                                                     <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
                                                         <TextBlock>
                                                 <Run>Value [10</Run>
-                                                <Run Typography.Variants="Superscript">-6</Run>
+                                                <Run Typography.Variants="Superscript">-4</Run>
                                                 <Run>SI]</Run>
                                                         </TextBlock>
                                                     </Label>
@@ -1319,7 +1300,7 @@
                                                     <Label Style="{StaticResource inputLabel}" Margin="3,5,0,5">
                                                         <TextBlock>
                                                 <Run>Accuracy [10</Run>
-                                                <Run Typography.Variants="Superscript">-6</Run>
+                                                <Run Typography.Variants="Superscript">-4</Run>
                                                 <Run>SI]</Run>
                                                         </TextBlock>
                                                     </Label>

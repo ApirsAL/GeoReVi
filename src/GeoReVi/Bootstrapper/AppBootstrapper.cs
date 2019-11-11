@@ -40,7 +40,7 @@ AssemblySource.Instance.Select(x => new AssemblyCatalog(x)).OfType<ComposablePar
                 {
                     new DebugLogger(),
                     new ConsoleLogger(),
-                    new FileLogger("Log.txt")
+                    new FileLogger(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\GeoReVi\Data\Log.txt")
                 }));
             batch.AddExportedValue<IShell>(new ShellViewModel(true));
             batch.AddExportedValue(container);

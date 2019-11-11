@@ -107,7 +107,7 @@ namespace GeoReVi
         /// <param name="message">The message to log</param>
         /// <param name="level">Message level</param>
         /// <param name="origin">The method this message was logged</param>
-        /// <param name="filePath">The line of code in the filename this mesasge was logged from</param>
+        /// <param name="filePath">The line of code in the filename this messasge was logged from</param>
         public async void Log(string message,
             LogLevel level = LogLevel.Informative, 
             [CallerMemberName] string origin = "", 

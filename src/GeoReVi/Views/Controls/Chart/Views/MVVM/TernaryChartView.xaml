@@ -131,7 +131,7 @@
                     <Grid Grid.Column="1"
                                   Grid.Row="0"
                                   HorizontalAlignment="Stretch">
-                        <TextBlock Text="{Binding Path=Tco.ZLabel}"
+                        <TextBlock Text="{Binding Path=Tco.ZLabel.Text}"
                                            HorizontalAlignment="Center">
                         </TextBlock>
 
@@ -185,12 +185,12 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="{Binding Path=Tco.YLabel}"
+                            <TextBlock Text="{Binding Path=Tco.YLabel.Text}"
                                                VerticalAlignment="Center"
                                        HorizontalAlignment="Left"
                                        Grid.Column="0">
                             </TextBlock>
-                            <TextBlock Text="{Binding Path=Tco.XLabel}"
+                            <TextBlock Text="{Binding Path=Tco.XLabel.Text}"
                                                    HorizontalAlignment="Right"
                                        Grid.Column="1">
                             </TextBlock>
@@ -210,6 +210,33 @@
         The data-template that defines the visuals for each rectangle is in the 
         resources section at the start of this file.
         -->
+                            <Canvas Grid.Column="1"
+                                  Grid.Row="0"
+                                  HorizontalAlignment="Stretch">
+                                <TextBlock Text="{Binding Path=Tco.Title}"
+                                   Canvas.Top="-15">
+                                </TextBlock>
+
+                            </Canvas>
+                            <Canvas>
+                                <TextBlock Text="{Binding Path=Tco.XLabel.Text}"
+                                       Canvas.Left="{Binding Path=Tco.XLabel.X}"
+                                       Canvas.Top="{Binding Path=Tco.XLabel.Y}">
+                                </TextBlock>
+
+                            </Canvas>
+                            <Canvas VerticalAlignment="Stretch">
+                                <TextBlock Text="{Binding Path=Tco.YLabel.Text}"
+                                   Canvas.Left="{Binding Path=Tco.YLabel.X}"
+                                       Canvas.Top="{Binding Path=Tco.YLabel.Y}">
+                                </TextBlock>
+                            </Canvas>
+                            <Canvas VerticalAlignment="Stretch">
+                                <TextBlock Text="{Binding Path=Tco.ZLabel.Text}"
+                                   Canvas.Left="{Binding Path=Tco.ZLabel.X}"
+                                       Canvas.Top="{Binding Path=Tco.ZLabel.Y}">
+                                </TextBlock>
+                            </Canvas>
                             <ItemsControl ItemsSource="{Binding Path=Tco.XGridlines}"
                                               VirtualizingPanel.IsVirtualizing="True"
                                               Grid.Column="0">
@@ -454,122 +481,115 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Tco.TickColor}"
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Grid Width="100"
-                                      Height="Auto"
-                                      VerticalAlignment="Top"
-                                      HorizontalAlignment="Left">
-                                <Rectangle VerticalAlignment="Stretch"
-                                           HorizontalAlignment="Stretch"
-                                           Stroke="Black"
-                                               Fill="White"
-                                           StrokeThickness="1"/>
-                                <ItemsControl ItemsSource="{Binding Path=Tco.DataCollection, NotifyOnSourceUpdated=True}"
-                                              VirtualizingPanel.IsVirtualizing="True">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <UniformGrid Columns="1"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <DockPanel>
-                                                <Grid Width="10"
-                                                          Height="10">
-                                                    <Canvas>
-                                                        <Polyline  Stroke="{Binding LineColor}"
-                                                                      StrokeThickness="{Binding LineThickness}"
-                                                                       Points="0,5 10,5">
-                                                        </Polyline>
-                                                        <Rectangle Fill="{Binding Path=Symbols.FillColor}"
-                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                            <ItemsControl ItemsSource="{Binding Path=Tco.Legend.LegendObjects, NotifyOnSourceUpdated=True}"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                          VerticalAlignment="Top"    
+                                          Visibility="{Binding Path=Tco.Legend.IsLegend, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Canvas>
+                                            <Polyline  Stroke="{Binding LineColor}"
+                                                                      StrokeThickness="2"
+                                                                       Points="0,3 10,3"
+                                                                                                                              Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}">
+                                            </Polyline>
+                                            <Rectangle Fill="{Binding Path=Rectangle.Brush}"
+                                                           Width="5"
+                                                           Height="5"
+                                                           Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                           StrokeThickness="2"
+                                                           Visibility="{Binding Path=Symbol, Converter={StaticResource EnumValueConverter}, ConverterParameter=Box}">
+                                            </Rectangle>
+                                            <Ellipse Fill="{Binding Path=Rectangle.Brush}"
+                                                         Stroke="{Binding Path=LineColor}"
+                                                       Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                         Width="5"
+                                                         Height="5"
+                                                         StrokeThickness="1"
+                                                         Visibility="{Binding Path=Symbol, Converter={StaticResource EnumValueConverter}, ConverterParameter=Dot}">
+                                            </Ellipse>
+                                            <Polygon Points="0.1,1.2 0.6,0.1 1.2,1.2"
+                                                                          Fill="{Binding Path=Rectangle.Brush}"
+                                                                          Stroke="{Binding Path=LineColor}"
+                                                                 Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
                                                                           Width="5"
                                                                           Height="5"
-                                                                          Opacity="{Binding Path=Symbols.Opacity}"
-                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
-                                                                          Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Box}">
-                                                        </Rectangle>
-                                                        <Ellipse Fill="{Binding Path=Symbols.FillColor}"
-                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
-                                                                     Canvas.Left="2"
-                                                                     Canvas.Top="2"
-                                                                          Width="5"
-                                                                          Height="5"                                                                          Opacity="{Binding Path=Symbols.Opacity}"
-                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
-                                                                          Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Dot}">
-                                                        </Ellipse>
-                                                        <Polygon Points="0.1,1.2 0.6,0.1 1.2,1.2"
-                                                                          Fill="{Binding Path=Symbols.FillColor}"
-                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
-                                                                          Width="5"
-                                                                          Height="5"
-                                                                          Opacity="{Binding Path=Symbols.Opacity}"
-                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
-                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Triangle}"/>
+                                                                          StrokeThickness="2"
+                                                                           Visibility="{Binding Path=Symbol, Converter={StaticResource EnumValueConverter}, ConverterParameter=Triangle}"/>
 
-                                                        <Polygon Points="0,0 0.5,0 0.25,0.25"
-                                                                        Fill="{Binding Path=Symbols.FillColor}"
-                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                            <Polygon Points="0,0 0.5,0 0.25,0.25"
+                                                                        Fill="{Binding Path=Rectangle.Brush}"
+                                                                          Stroke="{Binding Path=LineColor}"
                                                                           Width="5"
                                                                           Height="5"
-                                                                          Opacity="{Binding Path=Symbols.Opacity}"
-                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
-                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=InvertedTriangle}"/>
-                                                        <Polygon Points="5,2.5 7.5,5, 5,7.5 2.5,5"
-                                                                        Fill="{Binding Path=Symbols.FillColor}"
-                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                 Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                                          StrokeThickness="1"
+                                                                           Visibility="{Binding Path=Symbol, Converter={StaticResource EnumValueConverter}, ConverterParameter=InvertedTriangle}"/>
+                                            <Polygon Points="5,2.5 7.5,5, 5,7.5 2.5,5"
+                                                                        Fill="{Binding Path=Rectangle.Brush}"
+                                                                          Stroke="{Binding Path=LineColor}"
                                                                           Width="10"
                                                                           Height="10"
-                                                                          Opacity="{Binding Path=Symbols.Opacity}"
-                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
-                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Diamond}"/>
-                                                        <Polygon Points="1.0,0.2 1.0,0.7 1.7,0.7 1.2,1.0 1.4,1.5 0.9,1.2 0.4,1.5 0.6,1.0 0.1,0.7 0.7,0.7"
-                                                                         Fill="{Binding Path=Symbols.FillColor}"
-                                                                          Stroke="{Binding Path=Symbols.BorderColor}"
+                                                                 Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                                          StrokeThickness="1"
+                                                                           Visibility="{Binding Path=Symbol, Converter={StaticResource EnumValueConverter}, ConverterParameter=Diamond}"/>
+                                            <Polygon Points="1.0,0.2 1.0,0.7 1.7,0.7 1.2,1.0 1.4,1.5 0.9,1.2 0.4,1.5 0.6,1.0 0.1,0.7 0.7,0.7"
+                                                                         Fill="{Binding Path=Rectangle.Bush}"
+                                                                          Stroke="{Binding Path=LineColor}"
                                                                           Width="5"
                                                                           Height="5"
-                                                                          Opacity="{Binding Path=Symbols.Opacity}"
-                                                                          StrokeThickness="{Binding Path=Symbols.BorderThickness}"
-                                                                           Visibility="{Binding Path=Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Star}"/>
+                                                                 Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}"
+                                                                          StrokeThickness="1"
+                                                                           Visibility="{Binding Path=Symbol, Converter={StaticResource EnumValueConverter}, ConverterParameter=Star}"/>
 
 
-                                                        <Grid       Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
-                                                                                   Canvas.Left="0"
-                                                                                   Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolSize}"
-                                                                                    Canvas.Top="0"
-                                                                                       Opacity="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.Opacity}" >
-                                                            <Line X1="0" Y1="0" X2="1.00" Y2="1.0" 
+                                            <Grid  Width="10"
+                                                               Height="10"
+                                                                    Canvas.Left="{Binding Path=Rectangle.X}"
+                                                       Canvas.Top="{Binding Path=Rectangle.Y}" >
+                                                <Line X1="0" Y1="0" X2="1.00" Y2="1.0" 
                                                                           VerticalAlignment="Stretch"
-                                                                          Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
-                                                                          StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
-                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
-                                                            <Line X1="0" Y1="1" X2="1" Y2="0" 
-                                                                           HorizontalAlignment="Stretch"
-                                                                            Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
-                                                                         StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
-                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
-                                                        </Grid>
-                                                        <Grid>
-                                                            <Line X1="0" Y1="0.50" X2="1.00" Y2="0.50" 
-                                                                             VerticalAlignment="Stretch"
-                                                                          Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
-                                                                          StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
-                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
-                                                            <Line X1="0.50" Y1="0" X2="0.50" Y2="1.00" 
-                                                                             HorizontalAlignment="Stretch"
-                                                                          Stroke="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderColor}"
-                                                                          StrokeThickness="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.BorderThickness}"
-                                                                          Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Border}}, Path=DataContext.Symbols.SymbolType, Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
-                                                        </Grid>
+                                                                          Stroke="{Binding LineColor}"
+                                                                          StrokeThickness="1"
+                                                                          Visibility="{Binding Path=Symbol,Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
+                                                <Line X1="0" Y1="1" X2="1.00" Y2="0" 
+                                                                          VerticalAlignment="Stretch"
+                                                                          Stroke="{Binding LineColor}"
+                                                                          StrokeThickness="1"
+                                                                          Visibility="{Binding Path=Symbol,Converter={StaticResource EnumValueConverter}, ConverterParameter=Cross}"/>
+                                            </Grid>
+                                            <Grid>
+                                                <Line X1="0" Y1="0.5" X2="1.00" Y2="0.5" 
+                                                                          VerticalAlignment="Stretch"
+                                                                          Stroke="{Binding LineColor}"
+                                                                          StrokeThickness="1"
+                                                                          Visibility="{Binding Path=Symbol,Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
+                                                <Line X1="0.5" Y1="0" X2="0.5" Y2="1" 
+                                                                          VerticalAlignment="Stretch"
+                                                                          Stroke="{Binding LineColor}"
+                                                                          StrokeThickness="1"
+                                                                          Visibility="{Binding Path=Symbol,Converter={StaticResource EnumValueConverter}, ConverterParameter=Plus}"/>
 
-                                                    </Canvas>
-                                                </Grid>
-                                                <TextBlock Text="{Binding SeriesName}"
-                                                               Margin="10,0"/>
-                                            </DockPanel>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </Grid>
+                                            </Grid>
+                                            <TextBlock Text="{Binding Path=Label.Text}"
+                                                                   Canvas.Left="{Binding Path=Label.X}"
+                                                                   Canvas.Top="{Binding Path=Label.Y}"/>
+                                        </Canvas>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </Grid>
                     </Border>
 
@@ -604,13 +624,13 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Tco.TickColor}"
                                                 <StackPanel Margin="6">
                                                     <TextBlock Text="Left label"
                                                                        FontWeight="DemiBold"/>
-                                                    <TextBox Text="{Binding Tco.XLabel, Mode=TwoWay}"/>
+                                                    <TextBox Text="{Binding Tco.XLabel.Text, Mode=TwoWay}"/>
                                                     <TextBlock Text="Right label"
                                                                        FontWeight="DemiBold"/>
-                                                    <TextBox Text="{Binding Tco.YLabel, Mode=TwoWay}"/>
+                                                    <TextBox Text="{Binding Tco.YLabel.Text, Mode=TwoWay}"/>
                                                     <TextBlock Text="Top label"
                                                                        FontWeight="DemiBold"/>
-                                                    <TextBox Text="{Binding Tco.ZLabel, Mode=TwoWay}"/>
+                                                    <TextBox Text="{Binding Tco.ZLabel.Text, Mode=TwoWay}"/>
                                                     <DockPanel>
                                                         <TextBlock Text="Has grid"
                                                                            FontWeight="DemiBold"/>

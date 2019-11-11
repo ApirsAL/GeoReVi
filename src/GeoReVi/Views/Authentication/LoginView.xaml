@@ -90,7 +90,7 @@
                             <!---Next button-->
                             <Button Style="{StaticResource HyperlinkButton}"
                                     Grid.Column="0"
-                                    FontSize="{StaticResource FontSizeSmall}"
+                                    FontSize="{StaticResource FontSizeRegular}"
                                     Content="Local mode"
                                     Tag="Use in local mode"
                                     cal:Message.Attach="UseLocalMode">

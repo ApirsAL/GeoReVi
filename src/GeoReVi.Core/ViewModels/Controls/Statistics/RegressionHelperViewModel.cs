@@ -31,15 +31,6 @@ namespace GeoReVi
         #region MyRegion
 
         /// <summary>
-        /// constructor with data set
-        /// </summary>
-        [ImportingConstructor]
-        public RegressionHelperViewModel(IEnumerable<Mesh> _dataSet)
-        {
-            RegressionHelper = new RegressionHelper(_dataSet);
-        }
-
-        /// <summary>
         /// default constructor
         /// </summary>
         [ImportingConstructor]

@@ -42,6 +42,21 @@
                                               SelectedValue="{Binding Path=Method, Mode=TwoWay}"
                                               SelectedIndex="0"/>
                                 </DockPanel>
+                                <DockPanel>
+                                    <TextBlock Text="Missing data treatment"
+                                              FontWeight="DemiBold"
+                                               Margin="5,0"
+                                               VerticalAlignment="Center"/>
+                                    <ComboBox HorizontalAlignment="Right" 
+                                              VerticalAlignment="Center" 
+                                              MinWidth="60"
+                                              ItemsSource="{Binding Path=MissingData, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="Description"
+                                              IsSynchronizedWithCurrentItem="True"
+                                              SelectedValue="{Binding Path=MissingData, Mode=TwoWay}"
+                                              SelectedIndex="0"/>
+                                </DockPanel>
                                 <Button Style="{StaticResource MainButton}"
                                         FontSize="{StaticResource FontSizeSmall}"
                         Content="Compute"

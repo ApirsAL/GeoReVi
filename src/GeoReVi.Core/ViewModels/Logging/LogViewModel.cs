@@ -74,7 +74,7 @@ namespace GeoReVi
         {
             var watcher = new FileSystemWatcher();
 
-            FilePath = System.AppDomain.CurrentDomain.BaseDirectory;
+            FilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\GeoReVi\Data\";
 
             // Watch for changes in LastAccess and LastWrite times, and the renaming of files or directories. 
             watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName;

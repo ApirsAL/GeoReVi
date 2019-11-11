@@ -50,20 +50,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Helper class for coordinate transformations
-        /// </summary>
-        private CoordinateTransformationHelper coordinateTransformationHelper = new CoordinateTransformationHelper();
-        public CoordinateTransformationHelper CoordinateTransformationHelper
-        {
-            get => this.coordinateTransformationHelper;
-            set
-            {
-                this.coordinateTransformationHelper = value;
-                NotifyOfPropertyChange(() => CoordinateTransformationHelper);
-            }
-        }
-
-        /// <summary>
         /// Selected column that should be processed
         /// </summary>
         private ObservableCollection<string> selectedColumn = new ObservableCollection<string>();
@@ -78,6 +64,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Selected categoric column that should be processed
+        /// </summary>
+        private string selectedCategoricColumn = "";
+        public string SelectedCategoricColumn
+        {
+            get => this.selectedCategoricColumn;
+            set
+            {
+                this.selectedCategoricColumn = value;
+                NotifyOfPropertyChange(() => SelectedCategoricColumn);
+            }
+        }
+
+        /// <summary>
         /// Measurement points of a property
         /// </summary>
         private BindableCollection<Mesh> measPoints = new BindableCollection<Mesh>();
@@ -88,20 +88,6 @@ namespace GeoReVi
             {
                 this.measPoints = value;
                 NotifyOfPropertyChange(() => MeasPoints);
-            }
-        }
-
-        /// <summary>
-        /// A descriptive statistics view model
-        /// </summary>
-        private HeterogeneityStatisticsViewModel heterogeneityStatisticsViewModel = new HeterogeneityStatisticsViewModel();
-        public HeterogeneityStatisticsViewModel HeterogeneityStatisticsViewModel
-        {
-            get => this.heterogeneityStatisticsViewModel;
-            set
-            {
-                this.heterogeneityStatisticsViewModel = value;
-                NotifyOfPropertyChange(() => HeterogeneityStatisticsViewModel);
             }
         }
 
@@ -145,116 +131,6 @@ namespace GeoReVi
             }
         }
 
-        //Checks if values should be filtered by a date range
-        private bool filterByDate = false;
-        public bool FilterByDate
-        {
-            get => this.filterByDate;
-            set
-            {
-                this.filterByDate = value;
-                NotifyOfPropertyChange(() => FilterByDate);
-            }
-        }
-
-        /// <summary>
-        /// Lower time limit
-        /// </summary>
-        private DateTime? from = new DateTime(1900, 1, 1, 0, 0, 0);
-        public DateTime? From
-        {
-            get => this.from;
-            set
-            {
-                this.from = value;
-                NotifyOfPropertyChange(() => From);
-            }
-        }
-
-        /// <summary>
-        /// Upper time limit
-        /// </summary>
-        private DateTime? to = DateTime.Now;
-        public DateTime? To
-        {
-            get => this.to;
-            set
-            {
-                this.to = value;
-                NotifyOfPropertyChange(() => To);
-            }
-        }
-
-        /// <summary>
-        /// The kind of date time range
-        /// </summary>
-        private DateRangeKind? kind = DateRangeKind.Custom;
-        public DateRangeKind? Kind
-        {
-            get => this.kind;
-            set
-            {
-                this.kind = value;
-                NotifyOfPropertyChange(() => Kind);
-            }
-        }
-
-        /// <summary>
-        /// Variable to select the global or local reference system
-        /// </summary>
-        private bool global;
-        public bool Global
-        {
-            get => this.global;
-            set
-            {
-                this.global = value;
-                NotifyOfPropertyChange(() => Global);
-            }
-        }
-
-        /// <summary>
-        /// UTM zone of the data set
-        /// </summary>
-        private int utmZone = 32;
-        public int UTMZone
-        {
-            get => this.utmZone;
-            set
-            {
-                this.utmZone = value;
-                NotifyOfPropertyChange(() => UTMZone);
-            }
-        }
-
-        /// <summary>
-        /// Point series for the line series
-        /// </summary>
-        private List<List<LocationTimeValue>> spatialPointSeries = new List<List<LocationTimeValue>>();
-        public List<List<LocationTimeValue>> SpatialPointSeries
-        {
-            get => this.spatialPointSeries;
-            set
-            {
-                this.spatialPointSeries = value;
-                NotifyOfPropertyChange(() => SpatialPointSeries);
-            }
-        }
-
-        /// <summary>
-        /// An object to conduct spatial interpolations
-        /// </summary>
-        private SpatialInterpolationHelper spatialInterpolationHelper = new SpatialInterpolationHelper();
-        public SpatialInterpolationHelper SpatialInterpolationHelper
-        {
-            get => this.spatialInterpolationHelper;
-            set
-            {
-                this.spatialInterpolationHelper = value;
-                NotifyOfPropertyChange(() => SpatialInterpolationHelper);
-            }
-        }
-
         #endregion
 
         #region Constructor
@@ -273,28 +149,21 @@ namespace GeoReVi
         #region Public methods
 
         /// <summary>
-        /// Converts all coordinates in a mesh based on SRID
-        /// </summary>
-        public void ConvertCoordinates()
-        {
-            try
-            {
-
-                CoordinateTransformationHelper.ConvertCoordinates(SelectedMeasPoint);
-            }
-            catch
-            {
-                return;
-            }
-        }
-
-        /// <summary>
         /// Removing a column from the meas points data table
         /// </summary>
         public void RemoveColumn()
         {
             try
             {
+                try
+                {
+                    SelectedMeasPoint.Data.AcceptChanges();
+                }
+                catch
+                {
+
+                }
+
                 foreach (Mesh dt in MeasPoints)
                 {
                     try
@@ -308,6 +177,43 @@ namespace GeoReVi
                 }
 
                 SetDataTableNames();
+            }
+            catch
+            {
+                ((ShellViewModel)IoC.Get<IShell>()).ShowError(UserMessageValueConverter.ConvertBack(-1));
+            }
+        }
+
+        /// <summary>
+        /// Grouping task
+        /// </summary>
+        public async Task GroupBySelectedColumn()
+        {
+            try
+            {
+                try
+                {
+                    SelectedMeasPoint.Data.AcceptChanges();
+                }
+                catch
+                {
+
+                }
+
+                List<Mesh> groupedMeshes = new List<Mesh>();
+
+                List<string> names = SelectedMeasPoint.Data.AsEnumerable().Select(x => x.Field<string>(SelectedCategoricColumn)).Distinct().ToList();
+
+                names.ForEach(x =>
+                {
+                    Mesh mesh = new Mesh();
+                    mesh.Data = SelectedMeasPoint.Data.AsEnumerable().Where(y => y.Field<string>(SelectedCategoricColumn) == x).CopyToDataTable();
+                    mesh.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(SelectedMeasPoint.Vertices.Where(y => y.Name == x).ToList());
+                    mesh.Name = x;
+                    groupedMeshes.Add(mesh);
+                });
+
+                MeasPoints.AddRange(groupedMeshes);
             }
             catch
             {
@@ -361,7 +267,6 @@ namespace GeoReVi
             try
             {
                 SelectedMeasPoint.Name = newKey;
-
             }
             catch
             {
@@ -408,6 +313,7 @@ namespace GeoReVi
                 }
 
                 MeasPoints.Add(new Mesh() { Name = "New data set", Data = table });
+                SetDataTableNames();
             }
             catch (Exception ex)
             {
@@ -433,6 +339,9 @@ namespace GeoReVi
                     DataTableColumnNames.Clear();
                 });
 
+                DataCatergoricTableColumnNames.Clear();
+                DataTableColumnNames.Clear();
+
                 for (int i = 0; i < MeasPoints.Count(); i++)
                 {
                     Application.Current.Dispatcher.Invoke(() =>
@@ -448,7 +357,7 @@ namespace GeoReVi
                         if (MeasPoints.Count > 0)
                         {
                             //Getting all numeric column names
-                            columnNames = new BindableCollection<string>(dt.Columns.Cast<DataColumn>().Where(x => x.DataType == typeof(double))
+                            columnNames = new BindableCollection<string>(dt.Columns.Cast<DataColumn>()
                                      .Select(x => x.ColumnName).ToList());
 
                             //Adding all numeric column names to the collection
@@ -462,8 +371,14 @@ namespace GeoReVi
                                     DataCatergoricTableColumnNames.Add(columnCategoricName);
 
                         }
+
                         SelectedColumn.Clear();
+
                         SelectedColumn.Add(DataTableColumnNames[0]);
+                        SelectedColumn.Add(DataTableColumnNames[1]);
+                        SelectedColumn.Add(DataTableColumnNames[2]);
+
+                        SelectedCategoricColumn = DataCatergoricTableColumnNames.FirstOrDefault();
                     });
                 }
             }

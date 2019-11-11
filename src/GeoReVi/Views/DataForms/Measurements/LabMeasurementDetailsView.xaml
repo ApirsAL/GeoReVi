@@ -906,10 +906,10 @@
                                 </Grid>
 
                             </TabItem>
-                            <TabItem Header="Files">
+                            <!--<TabItem Header="Files">
                                 <StackPanel Margin="3">
 
-                                    <!---Displaying related files-->
+                                    --><!---Displaying related files--><!--
                                     <StackPanel x:Name="FileStackPan"
                                 Grid.Column="0"
                                 Grid.Row="2"
@@ -1029,7 +1029,7 @@
 
 
                                 </StackPanel>
-                            </TabItem>
+                            </TabItem>-->
                             <TabItem Header="Parameter">
                                 <Grid>
                                     <ScrollViewer MaxHeight="600"

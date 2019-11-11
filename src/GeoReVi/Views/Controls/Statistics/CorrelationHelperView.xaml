@@ -20,6 +20,21 @@
                         <Grid>
                             <StackPanel MaxWidth="400"
                                         HorizontalAlignment="Left">
+                                <DockPanel>
+                                    <TextBlock Text="Missing data treatment"
+                                              FontWeight="DemiBold"
+                                               Margin="5,0"
+                                               VerticalAlignment="Center"/>
+                                    <ComboBox HorizontalAlignment="Right" 
+                                              VerticalAlignment="Center" 
+                                              MinWidth="60"
+                                              ItemsSource="{Binding Path=CorrelationHelper.MissingData, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="Description"
+                                              IsSynchronizedWithCurrentItem="True"
+                                              SelectedValue="{Binding Path=CorrelationHelper.MissingData, Mode=TwoWay}"
+                                              SelectedIndex="0"/>
+                                </DockPanel>
                                 <Button Style="{StaticResource MainButton}"
                                         FontSize="{StaticResource FontSizeSmall}"
                         Content="Compute"
@@ -33,7 +48,7 @@
                                            FontWeight="Bold"/>
                                 <ListView Margin="10"
                                                   Grid.Row="2"
-                                                  ItemsSource="{Binding Path=DataSet}"
+                                                  ItemsSource="{Binding Path=CorrelationHelper.DataSet}"
                                                               SelectionMode="Multiple"
                                                   BorderBrush="Transparent">
                                     <ListView.ItemTemplate>
@@ -53,6 +68,7 @@
                                         FontSize="{StaticResource FontSizeSmall}"
                         Content="Clear"
                         ToolTip="Clear data sets"
+                                        cal:Bind.ModelWithoutContext="{Binding CorrelationHelper}"
                         cal:Message.Attach="ClearDataSets"
                         HorizontalAlignment="Left">
 
@@ -135,15 +151,18 @@
                     </TabItem>
                     <TabItem Header="Pearson correlation matrix">
                         <Grid>
-                            <TabControl>
-                                <TabItem Header="Matrix">
-                                    <Grid VerticalAlignment="Stretch"
-                                                                          Background="{StaticResource ForegroundLightBrush}">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <DataGrid ItemsSource="{Binding Path=CorrelationHelper.PearsonCorrelationMatrix,
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                                  VerticalScrollBarVisibility="Auto">
+                                <Grid VerticalAlignment="Stretch"
+                                          Background="{StaticResource ForegroundLightBrush}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid ItemsSource="{Binding Path=CorrelationHelper.PearsonCorrelationMatrix,
                                                                 Mode=OneWay, 
                                                                 NotifyOnSourceUpdated=True, 
                                                                 UpdateSourceTrigger=PropertyChanged}"
@@ -157,42 +176,40 @@
                                                   AlternationCount="2"
                                                   SelectionUnit="Cell"
                                                   ColumnWidth="Auto">
-                                        </DataGrid>
-                                        <Border Background="{StaticResource ApirsGrayBrush}"
+                                    </DataGrid>
+                                    <Grid Grid.Column="1" 
+                                              DataContext="{Binding CorrelationHelper}">
+                                        <ContentControl
+                                                                            cal:View.Model="{Binding PearsonBubbleChartViewModel}"/>
+                                    </Grid>
+                                    <Border Background="{StaticResource ApirsGrayBrush}"
                                         Opacity="0.60"
                                         Visibility="{Binding Path=CorrelationHelper.IsComputing, 
                                                     Converter={StaticResource BooleanToVisibilityConverter}, 
                                                     NotifyOnSourceUpdated=True}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch">
-                                            <ProgressBar IsIndeterminate="True"
+                                        <ProgressBar IsIndeterminate="True"
                                                  HorizontalAlignment="Left"
                                                  VerticalAlignment="Top"
                                                  Margin="20"
                                                  Width="100"/>
-                                        </Border>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Plot">
-                                    <Grid DataContext="{Binding CorrelationHelper}">
-                                        <ContentControl
-                                                                            cal:View.Model="{Binding PearsonBubbleChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                            </TabControl>
+                                    </Border>
+                                </Grid>
+                            </ScrollViewer>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Spearman correlation matrix">
-                        <Grid>
-                            <TabControl>
-                                <TabItem Header="Matrix">
-                                    <Grid VerticalAlignment="Stretch"
+                        <Grid VerticalAlignment="Stretch"
                                                                           Background="{StaticResource ForegroundLightBrush}">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <DataGrid ItemsSource="{Binding Path=CorrelationHelper.SpearmanCorrelationMatrix,
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <DataGrid ItemsSource="{Binding Path=CorrelationHelper.SpearmanCorrelationMatrix,
                                                                 Mode=OneWay, 
                                                                 NotifyOnSourceUpdated=True, 
                                                                 UpdateSourceTrigger=PropertyChanged}"
@@ -206,29 +223,25 @@
                                                   AlternationCount="2"
                                                   SelectionUnit="Cell"
                                                   ColumnWidth="Auto">
-                                        </DataGrid>
-                                        <Border Background="{StaticResource ApirsGrayBrush}"
+                            </DataGrid>
+                            <Grid Grid.Column="1"
+                                             DataContext="{Binding CorrelationHelper}">
+                                <ContentControl
+                                                   cal:View.Model="{Binding SpearmanBubbleChartViewModel}"/>
+                            </Grid>
+                            <Border Background="{StaticResource ApirsGrayBrush}"
                                         Opacity="0.60"
                                         Visibility="{Binding Path=CorrelationHelper.IsComputing, 
                                                     Converter={StaticResource BooleanToVisibilityConverter}, 
                                                     NotifyOnSourceUpdated=True}"
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch">
-                                            <ProgressBar IsIndeterminate="True"
+                                <ProgressBar IsIndeterminate="True"
                                                  HorizontalAlignment="Left"
                                                  VerticalAlignment="Top"
                                                  Margin="20"
                                                  Width="100"/>
-                                        </Border>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Plot">
-                                    <Grid DataContext="{Binding CorrelationHelper}">
-                                        <ContentControl
-                                                   cal:View.Model="{Binding SpearmanBubbleChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                            </TabControl>
+                            </Border>
                         </Grid>
                     </TabItem>
                 </TabControl>

@@ -603,10 +603,6 @@ namespace GeoReVi
             {
                 this.shallRender = value;
 
-                if (DataCollection != null)
-                    if (DataCollection.Count != 0)
-                        UpdateChart();
-
                 NotifyOfPropertyChange(() => ChartWidth);
             }
         }
@@ -668,28 +664,6 @@ namespace GeoReVi
             {
                 this.selectedDataSet = value;
                 NotifyOfPropertyChange(() => SelectedDataSet);
-            }
-        }
-
-        private ObservableCollection<string> columnList = new ObservableCollection<string>();
-        public ObservableCollection<string> ColumnList
-        {
-            get => this.columnList;
-            set
-            {
-                this.columnList = value;
-                NotifyOfPropertyChange(() => ColumnList);
-            }
-        }
-
-        private ObservableCollection<string> dataTableColumnNames = new ObservableCollection<string>();
-        public ObservableCollection<string> DataTableColumnNames
-        {
-            get => this.dataTableColumnNames;
-            set
-            {
-                this.dataTableColumnNames = value;
-                NotifyOfPropertyChange(() => DataTableColumnNames);
             }
         }
 
@@ -781,7 +755,7 @@ namespace GeoReVi
                         Rectangle = new Rectangle2D()
                         {
                             X = Legend.X,
-                            Y = Legend.Y + 15*i+7
+                            Y = Legend.Y + 15*i
                         }
                     });
 
@@ -942,7 +916,7 @@ namespace GeoReVi
 
                         if (dx == Xmin)
                         {
-                            XLabel.X = ChartWidth / 2 + MeasureString(XLabel.Text).Width;
+                            XLabel.X = ChartWidth / 2 - MeasureString(XLabel.Text).Width;
                             XLabel.Y = ChartHeight + 3.5*MeasureString(XLabel.Text).Height;
                         }
 
@@ -978,7 +952,7 @@ namespace GeoReVi
 
                         if (dx == Xmin)
                         {
-                            XLabel.X = ChartWidth/2 + MeasureString(XLabel.Text).Width;
+                            XLabel.X = ChartWidth/2 - MeasureString(XLabel.Text).Width;
                             XLabel.Y = ChartHeight + 3.5 * MeasureString(XLabel.Text).Height;
                         }
 
@@ -1022,6 +996,8 @@ namespace GeoReVi
 
                             foreach (Label l in YLabels)
                                 l.X = -1 * maxWidth;
+
+                            YLabel.X = -1 * maxWidth;
                         }
 
                         Label tb = new Label()
@@ -1033,8 +1009,8 @@ namespace GeoReVi
 
                         if (dy == Ymin)
                         {
-                            YLabel.X = -3.5 * maxWidth;
-                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Width / 2;
+                            YLabel.X = -1 * maxWidth;
+                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Height / 2;
                         }
 
                         YLabels.Add(tb);
@@ -1073,6 +1049,8 @@ namespace GeoReVi
 
                             foreach (Label l in YLabels)
                                 l.X = -3 * maxWidth;
+
+                            YLabel.X = -1 * maxWidth;
                         }
 
                         Label tb = new Label()
@@ -1084,8 +1062,8 @@ namespace GeoReVi
 
                         if(dy == Ymin)
                         {
-                            YLabel.X = -3.5 * maxWidth;
-                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Width / 2;
+                            YLabel.X = -1 * maxWidth;
+                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Height / 2;
                         }
 
                         YLabels.Add(tb);

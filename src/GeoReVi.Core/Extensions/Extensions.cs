@@ -5,9 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Xml.Serialization;
 
@@ -151,6 +154,52 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Transposes a data table
+        ///FROM https://stackoverflow.com/questions/14817061/transpose-a-datatable
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public static DataTable Transpose(this DataTable dt)
+        {
+            DataTable dtNew = new DataTable();
+
+            try
+            {
+                //adding columns    
+                for (int i = 0; i <= dt.Rows.Count; i++)
+                {
+                    dtNew.Columns.Add(i.ToString());
+                }
+
+                //Changing Column Captions: 
+                dtNew.Columns[0].ColumnName = " ";
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    //For dateTime columns use like below
+                    dtNew.Columns[i + 1].ColumnName = Convert.ToDateTime(dt.Rows[i].ItemArray[0].ToString()).ToString("MM/dd/yyyy");
+                    //Else just assign the ItermArry[0] to the columnName property
+                }
+
+                //Adding Row Data
+                for (int k = 1; k < dt.Columns.Count; k++)
+                {
+                    DataRow r = dtNew.NewRow();
+                    r[0] = dt.Columns[k].ToString();
+                    for (int j = 1; j <= dt.Rows.Count; j++)
+                        r[j] = dt.Rows[j - 1][k];
+                    dtNew.Rows.Add(r);
+                }
+            }
+            catch
+            {
+
+            }
+
+            return dtNew;
+        }
+
+        /// <summary>
         /// Multiplying vector3d objects
         /// </summary>
         /// <param name="a"></param>
@@ -185,6 +234,30 @@ namespace GeoReVi
         /// <returns></returns>
         public static LocationTimeValue ToLocationTimeValue(this Vector3D a)
         => new LocationTimeValue(a.X, a.Y, a.Z);
+
+        /// <summary>
+        /// Converting a list of points to a point collection
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
+        public static PointCollection ToPointCollection(this List<LocationTimeValue> points)
+        {
+            PointCollection ret = new PointCollection();
+            try
+            {
+                for(int i = 0; i < points.Count(); i++)
+                {
+                    Point pt = new Point(points[i].X, points[i].Y);
+                    ret.Add(pt);
+                }
+            }
+            catch
+            {
+
+            }
+
+            return ret;
+        }
 
         /// <summary>
         /// Calculating cross product of vector3d objects

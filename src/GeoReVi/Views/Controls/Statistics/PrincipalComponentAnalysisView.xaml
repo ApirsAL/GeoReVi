@@ -35,7 +35,22 @@
                                               SelectedIndex="0"/>
                                 </DockPanel>
                                 <DockPanel>
-                                    <TextBlock Text="NaN handling"
+                                    <TextBlock Text="Missing data treatment"
+                                              FontWeight="DemiBold"
+                                               Margin="5,0"
+                                               VerticalAlignment="Center"/>
+                                    <ComboBox HorizontalAlignment="Right" 
+                                              VerticalAlignment="Center" 
+                                              MinWidth="60"
+                                              ItemsSource="{Binding Path=MissingData, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="Description"
+                                              IsSynchronizedWithCurrentItem="True"
+                                              SelectedValue="{Binding Path=MissingData, Mode=TwoWay}"
+                                              SelectedIndex="0"/>
+                                </DockPanel>
+                                <DockPanel>
+                                    <TextBlock Text="Data Standardization"
                                               FontWeight="DemiBold"
                                                Margin="5,0"
                                                VerticalAlignment="Center"/>
@@ -208,13 +223,13 @@
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Eigenvectors">
-                                     <ScrollViewer>
+                                    <ScrollViewer>
                                         <Grid>
-                                        <TabControl>
-                                            <TabItem Header="Table">
-                                                    
+                                            <TabControl>
+                                                <TabItem Header="Table">
 
-                                                <DataGrid ItemsSource="{Binding EigenVectorsView,
+
+                                                    <DataGrid ItemsSource="{Binding EigenVectorsView,
                                                                                     Mode=OneWay, 
                                                                                     NotifyOnSourceUpdated=True, 
                                                                                     UpdateSourceTrigger=PropertyChanged}"
@@ -229,23 +244,25 @@
                                                                       SelectionUnit="Cell"
                                                                       ColumnWidth="Auto"
                                                           Grid.Column="0">
-                                            
-                                                </DataGrid>
-                                                
-                                            </TabItem>
-                                            <TabItem Header="Bi-plots">
-                                                <DockPanel>
-                                                    <ContentControl Grid.Column="1" cal:View.Model="{Binding PC12BiPlot}"/>
-                                                    <ContentControl Grid.Column="2" cal:View.Model="{Binding PC13BiPlot}"/>
-                                                </DockPanel>
-                                            </TabItem>
-                                        </TabControl>
 
-                                    </Grid>
+                                                    </DataGrid>
+
+                                                </TabItem>
+                                                <TabItem Header="Bi-plots">
+                                                    <DockPanel>
+                                                        <ContentControl Grid.Column="1" cal:View.Model="{Binding PC12BiPlot}"/>
+                                                        <ContentControl Grid.Column="2" cal:View.Model="{Binding PC13BiPlot}"/>
+                                                    </DockPanel>
+                                                </TabItem>
+                                            </TabControl>
+
+                                        </Grid>
                                     </ScrollViewer>
                                 </TabItem>
                                 <TabItem Header="Projected values">
-                                    <DataGrid ItemsSource="{Binding ProjectedValuesView,
+                                    <TabControl>
+                                        <TabItem Header="Data">
+                                            <DataGrid ItemsSource="{Binding ProjectedValuesView,
                                                                         Mode=OneWay, 
                                                                         NotifyOnSourceUpdated=True, 
                                                                         UpdateSourceTrigger=PropertyChanged}"
@@ -259,21 +276,21 @@
                                                               EnableRowVirtualization="True"
                                                           SelectionUnit="Cell"
                                                           ColumnWidth="Auto">
-                                    </DataGrid>
+                                            </DataGrid>
+                                        </TabItem>
+                                        <TabItem Header="Charts">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ContentControl Grid.Column="0" cal:View.Model="{Binding PC12}"/>
+                                                <ContentControl Grid.Column="1" cal:View.Model="{Binding PC13}"/>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
                                 </TabItem>
                             </TabControl>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Style="{StaticResource IconTabItem}"
-                             Header="{StaticResource FontAwesomeScatterChart}"
-                             Height="30">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <ContentControl Grid.Column="0" cal:View.Model="{Binding PC12}"/>
-                            <ContentControl Grid.Column="1" cal:View.Model="{Binding PC13}"/>
                         </Grid>
                     </TabItem>
                 </TabControl>

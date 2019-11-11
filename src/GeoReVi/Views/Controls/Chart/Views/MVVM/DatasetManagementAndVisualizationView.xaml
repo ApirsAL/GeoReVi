@@ -170,18 +170,30 @@
                                                     </Grid.RowDefinitions>
                                                     <StackPanel Margin="10"
                                                     Orientation="Horizontal">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Y axis"/>
                                                         <ComboBox HorizontalAlignment="Left" 
                                                                       VerticalAlignment="Center" 
                                                                       MinWidth="120"
-                                                                      ItemsSource="{Binding Path=SelectedLineChartViewModel.Lco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=SelectedLineChartViewModel.Lco.ColumnList[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateScatterCharts]"/>
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+
+                                                        <TextBlock Margin="10,0,5,0" 
+                                                                   VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="X axis"/>
                                                         <ComboBox HorizontalAlignment="Left" 
                                                                       VerticalAlignment="Center" 
                                                                       MinWidth="120"
-                                                                      ItemsSource="{Binding Path=SelectedLineChartViewModel.Lco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=SelectedLineChartViewModel.Lco.ColumnList[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateScatterCharts]"/>
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                                                Content="Create chart"
+                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                HorizontalAlignment="Left"
+                                                                cal:Message.Attach="CreateScatterCharts"/>
                                                     </StackPanel>
                                                     <ContentControl Grid.Row="1"
                                             cal:View.Model="{Binding SelectedLineChartViewModel}"/>
@@ -195,25 +207,39 @@
                                                     </Grid.RowDefinitions>
                                                     <StackPanel Margin="10"
                                                     Orientation="Horizontal">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Lower right"/>
                                                         <ComboBox HorizontalAlignment="Left" 
                                                                       VerticalAlignment="Center" 
                                                                       MinWidth="120"
-                                                                      ItemsSource="{Binding Path=TernaryChartViewModel.Tco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=TernaryChartViewModel.Tco.ColumnList[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Lower left"/>
                                                         <ComboBox HorizontalAlignment="Left" 
                                                                       VerticalAlignment="Center" 
                                                                       MinWidth="120"
-                                                                      ItemsSource="{Binding Path=TernaryChartViewModel.Tco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=TernaryChartViewModel.Tco.ColumnList[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Top"/>
                                                         <ComboBox HorizontalAlignment="Left" 
                                                                       VerticalAlignment="Center" 
                                                                       MinWidth="120"
-                                                                      ItemsSource="{Binding Path=TernaryChartViewModel.Tco.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=TernaryChartViewModel.Tco.ColumnList[2], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[2], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
 
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                                                Content="Create chart"
+                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                HorizontalAlignment="Left"
+                                                                cal:Message.Attach="CreateTernaryChart"/>
                                                     </StackPanel>
                                                     <ContentControl Grid.Row="1"
                                             cal:View.Model="{Binding TernaryChartViewModel}"/>

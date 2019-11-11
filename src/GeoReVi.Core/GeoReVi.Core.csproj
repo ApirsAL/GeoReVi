@@ -263,7 +263,6 @@
     <Compile Include="Helper\GeometryHelper\AbstractClasses\BasePropertyChanged.cs" />
     <Compile Include="Helper\GeometryHelper\CoordinateTransformation\CoordinateTransformationHelper.cs" />
     <Compile Include="Helper\GeometryHelper\CoordinateTransformation\SRIDReader.cs" />
-    <Compile Include="Helper\GeometryHelper\DataContracts\OpenElevationResult.cs" />
     <Compile Include="Helper\GeometryHelper\Dimensionality.cs" />
     <Compile Include="Helper\GeometryHelper\Hulls\BoundaryType.cs" />
     <Compile Include="Helper\GeometryHelper\Hulls\ConvexHull.cs" />
@@ -306,6 +305,7 @@
     <Compile Include="Helper\Math\StatisticsHelper\ClusteringHelper.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\DataSetType.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\MissingDataTreatment.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\RegressionFunctionBiVariate.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\SammonProjectionHelper.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\MeshStatisticsHelper.cs" />
     <Compile Include="Helper\Math\XY.cs" />

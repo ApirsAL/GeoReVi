@@ -9,10 +9,8 @@ namespace GeoReVi
     {
         [Description("Hexahedral regular grid")]
         Hexahedral = 1,
-        [Description("Random grid")]
-        Random = 2,
-        [Description("Octree grid")]
-        Octree = 3,
+        [Description("Tetrahedral grid")]
+        Random = 2
     }
 
     /// <summary>

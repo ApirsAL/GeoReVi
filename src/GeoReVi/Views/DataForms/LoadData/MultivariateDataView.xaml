@@ -42,7 +42,7 @@
                 </Grid.ColumnDefinitions>
                 <WrapPanel Grid.Column="1"
                            Grid.Row="0">
-                    <DockPanel Margin="10,5">
+                    <DockPanel Margin="10,0">
                         <fa:ImageAwesome Icon="Braille"
                                          Width="20"
                                          Height="20"
@@ -50,70 +50,6 @@
                         <CheckBox IsChecked="{Binding Path=All, Mode=TwoWay}"
                                                                           HorizontalAlignment="Right"
                                   VerticalAlignment="Center"/>
-                    </DockPanel>
-                    <DockPanel Margin="10,5">
-                        <fa:ImageAwesome Icon="Globe"
-                                         Width="20"
-                                         Height="20"
-                                         ToolTip="Use global reference system"/>
-                        <CheckBox IsChecked="{Binding Path=Global, Mode=TwoWay}"
-                                                                          HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"/>
-                        <TextBlock Text="Source EPSG:" 
-                                   Margin="10, 0"
-                                   VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDSource, Mode=TwoWay}"
-                                 VerticalAlignment="Center"/>
-                        <TextBlock Text="Target EPSG:" 
-                                   Margin="10, 0"
-                                   VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDTarget, Mode=TwoWay}"
-                                 VerticalAlignment="Center"/>
-                        <Button Style="{StaticResource HyperlinkButton}"
-                                FontSize="{StaticResource FontSizeVerySmall}"
-                                Content="Convert"
-                                cal:Message.Attach="ConvertCoordinates"/>
-                    </DockPanel>
-                    <DockPanel Margin="10,5">
-                        <fa:ImageAwesome Icon="Calendar"
-                                         Width="20"
-                                         Height="20"
-                                         ToolTip="Filter by date range"/>
-                        <CheckBox IsChecked="{Binding Path=FilterByDate, Mode=TwoWay}"
-                                                                          HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"/>
-                        <DockPanel Visibility="{Binding Path=FilterByDate, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="From" VerticalAlignment="Center"/>
-                            <DatePicker HorizontalAlignment="Right" 
-                                                    Width="129"
-                                        Height="25"
-                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
-                                <DatePicker.SelectedDate>
-                                    <Binding Path="From"
-                                                                 Mode="TwoWay"
-                                                                 NotifyOnValidationError="True"
-                                                                 UpdateSourceTrigger="PropertyChanged"
-                                                                 ValidatesOnExceptions="True">
-                                    </Binding>
-                                </DatePicker.SelectedDate>
-                            </DatePicker>
-                            <TextBox Text="{Binding Path=To, StringFormat='{}{0:hh\\:mm\\:ss tt}'}"/>
-                            <TextBlock Text="To" VerticalAlignment="Center"/>
-                            <DatePicker HorizontalAlignment="Right" 
-                                                    Width="129"
-                                        Height="25"
-                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
-                                <DatePicker.SelectedDate>
-                                    <Binding Path="To"
-                                                                 Mode="TwoWay"
-                                                                 NotifyOnValidationError="True"
-                                                                 UpdateSourceTrigger="PropertyChanged"
-                                                                 ValidatesOnExceptions="True">
-                                    </Binding>
-                                </DatePicker.SelectedDate>
-                            </DatePicker>
-                            <TextBox Text="{Binding Path=From, StringFormat='{}{1:hh\\:mm\\:ss tt}'}"/>
-                        </DockPanel>
                     </DockPanel>
                     <DockPanel Margin="10,0">
                         <fa:ImageAwesome Icon="ObjectGroup"
@@ -145,6 +81,17 @@
                                 FontSize="{StaticResource FontSizeVerySmall}"
                                 Content="Remove column"
                                 cal:Message.Attach="RemoveColumn"/>
+                    </DockPanel>
+                    <DockPanel HorizontalAlignment="Left">
+                        <ComboBox HorizontalAlignment="Left" 
+                                  VerticalAlignment="Center" 
+                                  MinWidth="120"
+                                  ItemsSource="{Binding Path=DataCatergoricTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                  SelectedValue="{Binding Path=SelectedCategoricColumn, Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                        <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Group"
+                                cal:Message.Attach="GroupBySelectedColumn"/>
                     </DockPanel>
                     <DockPanel>
                         <local:DropDownButton HorizontalAlignment="Left"

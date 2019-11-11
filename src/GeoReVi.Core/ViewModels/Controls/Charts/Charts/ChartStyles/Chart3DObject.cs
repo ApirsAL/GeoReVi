@@ -556,13 +556,11 @@ namespace GeoReVi
             Legend.IsLegend = _ch.Legend.IsLegend;
             Legend.LegendPosition = _ch.Legend.LegendPosition;
             ShallRender = _ch.ShallRender;
-            DataTableColumnNames = _ch.DataTableColumnNames;
             Elevation = _ch.Elevation;
             Azimuth = _ch.Azimuth;
 
             ChartHeight = _ch.ChartHeight;
             ChartWidth = _ch.ChartWidth;
-            ColumnList = _ch.ColumnList;
 
             Y2max = _ch.Y2max;
             Y2min = _ch.Y2min;
@@ -785,20 +783,11 @@ namespace GeoReVi
                         continue;
                     }
 
-                if (ColumnList.Count > 0)
-                {
-                    XLabel.Text = ColumnList[0];
-                    YLabel.Text = ColumnList[1];
-                    ZLabel.Text = ColumnList[2];
-                    Title = ColumnList[3];
-                }
-                else
-                {
+
                     XLabel.Text = "Local x [m]";
                     YLabel.Text = "Local y [m]";
                     ZLabel.Text = "Local z [m]";
                     Title = "Parameter";
-                }
             }
             catch
             {
@@ -814,7 +803,6 @@ namespace GeoReVi
         {
             try
             {
-
                 if (ColorMap.Ymax == 10)
                     ColorMap.Ymax = Ds.Max(x => x.Mesh.Vertices.Max(y => y.Value[0]));
 

@@ -32,11 +32,9 @@ namespace GeoReVi
             Legend.IsLegend = _tco.Legend.IsLegend;
             Legend.LegendPosition = _tco.Legend.LegendPosition;
             ShallRender = _tco.ShallRender;
-            DataTableColumnNames = _tco.DataTableColumnNames;
 
             ChartHeight = _tco.ChartHeight;
             ChartWidth = _tco.ChartWidth;
-            ColumnList = _tco.ColumnList;
 
             Y2max = _tco.Y2max;
             Y2min = _tco.Y2min;
@@ -136,9 +134,9 @@ namespace GeoReVi
                 tup.AddRange(new List<LocationTimeValue>(d.Data.AsEnumerable()
                     .Select(x => new LocationTimeValue()
                     {
-                       X = (x.Field<double>(ColumnList[0]) == -9999 || x.Field<double>(ColumnList[0]) == -999999) ? 0 : x.Field<double>(ColumnList[0]),
-                       Y = (x.Field<double>(ColumnList[1]) == -9999 || x.Field<double>(ColumnList[1]) == -999999) ? 0 : x.Field<double>(ColumnList[1]),
-                       Z = (x.Field<double>(ColumnList[2]) == -9999 || x.Field<double>(ColumnList[2]) == -999999) ? 0 : x.Field<double>(ColumnList[2])
+                       X = (x.Field<double>(1) == -9999 || x.Field<double>(1) == -999999) ? 0 : x.Field<double>(1),
+                       Y = (x.Field<double>(2) == -9999 || x.Field<double>(2) == -999999) ? 0 : x.Field<double>(2),
+                       Z = (x.Field<double>(3) == -9999 || x.Field<double>(3) == -999999) ? 0 : x.Field<double>(3)
                     }).Where(x=> x.X != 0 && x.Y != 0 && x.Z != 0)));
 
                 AddDataSeries();
@@ -147,9 +145,9 @@ namespace GeoReVi
                 SpatialPointSeries.Add(tup);
             }
 
-            XLabel.Text = ColumnList[0];
-            YLabel.Text = ColumnList[1];
-            ZLabel.Text = ColumnList[2];
+            XLabel.Text = DataSet[0].Data.Columns[1].ColumnName;
+            YLabel.Text = DataSet[0].Data.Columns[2].ColumnName;
+            ZLabel.Text = DataSet[0].Data.Columns[3].ColumnName;
 
             CreateChart();
         }
@@ -276,6 +274,32 @@ namespace GeoReVi
             {
 
             }
+        }
+
+        /// <summary>
+        /// Adding ticks and labels to the chart
+        /// </summary>
+        public override void AddTicksAndLabels()
+        {
+            try
+            {
+                //Adding x label
+                XLabel.X = ChartWidth  - MeasureString(XLabel.Text).Width;
+                XLabel.Y = ChartHeight + 3.5 * MeasureString(XLabel.Text).Height;
+
+                //Adding y label
+                YLabel.X = 0;
+                YLabel.Y = ChartHeight + 3.5 * MeasureString(YLabel.Text).Height;
+
+                //Adding z label
+                ZLabel.X = ChartWidth/2 - 0.5 * MeasureString(ZLabel.Text).Width;
+                ZLabel.Y = 0 - 3.5 * MeasureString(XLabel.Text).Height;
+            }
+            catch
+            {
+
+            }
+
         }
     }
 }

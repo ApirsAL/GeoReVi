@@ -52,7 +52,36 @@ namespace GeoReVi
         {
             get
             {
-                return this.EigenVectors.ToTable();
+                //Preparing the view
+                string[] columnNames = new string[Merge.Columns.Count];
+                string[] eigenVectorNames = new string[Merge.Columns.Count];
+
+                for (int i = 0; i < Merge.Columns.Count; i++)
+                {
+                    columnNames[i] = Merge.Columns[i].ColumnName.ToString();
+                    eigenVectorNames[i] = "Eigenvector " + i.ToString();
+                }
+
+                DataTable data = EigenVectors.ToTable(eigenVectorNames);
+
+                DataColumn rowNames = new DataColumn("RowNames", typeof(string));
+
+                data.Columns.Add(rowNames.ColumnName, typeof(string));
+
+                try
+                { 
+                    for (int i = 0; i < columnNames.Length; i++)
+                    {
+                        data.Rows[i][rowNames.ColumnName] = columnNames[i].ToString();
+                    }
+
+                }
+                catch
+                {
+
+                }
+
+                return data;
             }
         }
 
@@ -165,7 +194,7 @@ namespace GeoReVi
         {
             get
             {
-                return this.ProjectedValues.ToTable();
+                return ProjectedValues.ToTable();
             }
         }
 
@@ -259,153 +288,169 @@ namespace GeoReVi
         /// </summary>
         public async override Task Compute()
         {
-            AnalysisMethod = AnalysisMethod.Standardize;
-
-            CommandHelper ch = new CommandHelper();
-
-            await ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsComputing, async () =>
+            try
             {
+                DataTable dat = new DataTable();
 
-                try
+                foreach (Mesh dt in DataSet)
+                    dat.Merge(dt.Data, true, MissingSchemaAction.Add);
+
+                dat.RemoveNonNumericColumns();
+                CollectionHelper.ProcessNumericDataTable(dat);
+                dat.RemoveNanRowsAndColumns();
+                dat.TreatMissingValues(MissingData);
+
+                Merge = dat;
+                //Converting the data set to a matrix
+                CalculationDataSet = dat.ToMatrix();
+
+                //Normalizing the dataset
+                NormalizeDataSet();
+
+                switch (Method)
                 {
-                    DataTable dat = new DataTable();
+                    case PrincipalComponentMethod.Eigendecomposition:
 
-                    foreach (Mesh dt in DataSet)
-                        dat.Merge(dt.Data, true, MissingSchemaAction.Add);
+                        // Let's create an analysis with centering (covariance method)
+                        // but no standardization (correlation method) and whitening:
+                        var pca = new PrincipalComponentAnalysis()
+                        {
+                            Method = ConvertMethod(AnalysisMethod),
+                            Whiten = true
+                        };
 
-                    dat.RemoveNonNumericColumns();
-                    CollectionHelper.ProcessNumericDataTable(dat);
-                    dat.RemoveNanRowsAndColumns();
-                    dat.TreatMissingValues(MissingData);
+                        // Now we can learn the linear projection from the data
+                        MultivariateLinearRegression transform = pca.Learn(CalculationDataSet.ToJagged());
 
-                    Merge = dat;
-                    //Converting the data set to a matrix
-                    CalculationDataSet = dat.ToMatrix();
+                        EigenValues = pca.Eigenvalues;
+                        EigenValuesVariance = EigenValues.Select(x => x / EigenValues.Sum()).ToArray();
+                        EigenVectors = pca.ComponentVectors.Transpose();
+                        ProjectedValues = pca.Transform(CalculationDataSet.ToJagged());
 
-                    //Normalizing the dataset
-                    NormalizeDataSet();
+                        try
+                        {
+                            List<Mesh> projectedData = new List<Mesh>();
 
-                    switch (Method)
-                    {
-                        case PrincipalComponentMethod.Eigendecomposition:
+                            string[] columnNames = new string[Merge.Columns.Count];
 
-                            // Let's create an analysis with centering (covariance method)
-                            // but no standardization (correlation method) and whitening:
-                            var pca = new PrincipalComponentAnalysis()
+                            for (int i = 0; i < Merge.Columns.Count; i++)
                             {
-                                Method = ConvertMethod(AnalysisMethod),
-                                Whiten = true
-                            };
+                                columnNames[i] = Merge.Columns[i].ColumnName.ToString();
+                            }
 
-                            // Now we can learn the linear projection from the data
-                            MultivariateLinearRegression transform = pca.Learn(CalculationDataSet.ToJagged());
-
-                            EigenValues = pca.Eigenvalues;
-                            EigenValuesVariance = EigenValues.Select(x => x / EigenValues.Sum()).ToArray();
-                            EigenVectors = pca.ComponentVectors;
-                            ProjectedValues = pca.Transform(CalculationDataSet.ToJagged());
-
-                            try
+                            int j = 0;
+                            for (int i = 0; i < DataSet.Count(); i++)
                             {
-                                List<Mesh> projectedData = new List<Mesh>();
-
-                                int j = 0;
-                                for(int i = 0; i<DataSet.Count();i++)
+                                try
                                 {
-                                    try
-                                    {
-                                        projectedData.Add(new Mesh() { Name = DataSet[i].Name, Data = ProjectedValues.ToTable().AsEnumerable().Skip(j).Take(DataSet[i].Data.Rows.Count).CopyToDataTable() });
+                                    projectedData.Add(new Mesh() { Name = DataSet[i].Name, Data = ProjectedValues.ToTable().AsEnumerable().Skip(j).Take(DataSet[i].Data.Rows.Count).CopyToDataTable() });
 
-                                        for (int k = 0; k < projectedData[i].Data.Columns.Count - 1; k++)
-                                            if(k!=0 && k!=2)
-                                                projectedData[i].Data.Columns.RemoveAt(k);
+                                    for (int k = 0; k < projectedData[i].Data.Columns.Count - 1; k++)
+                                        if (k != 0 && k != 2)
+                                            projectedData[i].Data.Columns.RemoveAt(k);
 
-                                        j += DataSet[i].Data.Rows.Count;
-                                    }
-                                    catch
-                                    {
-                                        continue;
-                                    }
+                                    j += DataSet[i].Data.Rows.Count;
                                 }
-
-                                EigenValueBarChart.Barco.ShallRender = true;
-
-                                List<string> eigenvalues = new List<string>();
-                                List<string> eigenvectors = new List<string>();
-
-                                for (int i = 0; i < EigenValues.Count(); i++)
-                                    eigenvalues.Add("Eigenvalue " + i);
-
-                                EigenValueBarChart.Barco.XLabels.Clear();
-
-                                foreach (string eig in eigenvalues)
-                                    EigenValueBarChart.Barco.XLabels.Add(new Label() { Text = eig });
-
-                                EigenValueBarChart.Barco.YLabel.Text = "Loading";
-                                EigenValueBarChart.Barco.Ymax = EigenValues.Max() + 2;
-                                EigenValueBarChart.Barco.Xmax = EigenValues.Count() + 1;
-                                EigenValueBarChart.Barco.CreateCategoricHistogram(eigenvalues.ToArray(), EigenValues);
-                                EigenValueBarChart.Barco.XLabel.Text = "Eigenvalue#";
-                                EigenValueBarChart.Barco.YLabel.Text = "Eigenvalue";
-
-                                PC12.Lco.ShallRender = true;
-                                PC12.Lco.XLabel.Text = "PC1";
-                                PC12.Lco.YLabel.Text = "PC2";
-                                PC12.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
-                                PC12.Lco.CreateLineChart("","");
-
-                                PC13.Lco.ShallRender = true;
-                                PC13.Lco.Direction = DirectionEnum.XZ;
-                                PC13.Lco.XLabel.Text = "PC1";
-                                PC13.Lco.YLabel.Text = "PC3";
-                                PC13.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
-                                PC13.Lco.CreateLineChart("", "");
-
-                                foreach (DataColumn column in dat.Columns)
+                                catch
                                 {
-                                    eigenvectors.Add(column.ColumnName);
+                                    continue;
                                 }
+                            }
 
-                                PC12BiPlot.Lco.ShallRender = true;
-                                PC12BiPlot.Lco.XLabel.Text = "PC1";
-                                PC12BiPlot.Lco.YLabel.Text = "PC2";
-                                PC12BiPlot.Lco.Direction= DirectionEnum.X;
-                                
-                                Mesh biplot = new Mesh() { Data = EigenVectors.ToTable() };
+                            EigenValueBarChart.Barco.ShallRender = true;
 
-                                DataRow dr = biplot.Data.NewRow();
-                                for (int k = 0; k < dr.Table.Columns.Count(); k++)
-                                    dr[k] = 0.0;
+                            List<string> eigenvalues = new List<string>();
+                            List<string> eigenvectors = new List<string>();
 
-                                for (int i = 1; i<biplot.Data.Rows.Count()*2;i+=2)
-                                {
-                                    biplot.Data.Rows.InsertAt(dr, i);
-                                }
+                            for (int i = 0; i < EigenValues.Count(); i++)
+                                eigenvalues.Add("Eigenvalue " + i);
+
+                            EigenValueBarChart.Barco.XLabels.Clear();
+
+                            foreach (string eig in eigenvalues)
+                                EigenValueBarChart.Barco.XLabels.Add(new Label() { Text = eig });
+
+                            ///Creating eigen value bar chart
+                            EigenValueBarChart.Barco.YLabel.Text = "Loading";
+                            EigenValueBarChart.Barco.Ymax = EigenValues.Max() + 2;
+                            EigenValueBarChart.Barco.Xmax = EigenValues.Count() + 1;
+                            EigenValueBarChart.Barco.CreateCategoricHistogram(eigenvalues.ToArray(), EigenValues);
+                            EigenValueBarChart.Barco.XLabel.Text = "Eigenvalue#";
+                            EigenValueBarChart.Barco.YLabel.Text = "Eigenvalue";
+
+                            //Creating visualization of the projected values
+                            PC12.Lco.ShallRender = true;
+                            PC12.Lco.XLabel.Text = "PC1";
+                            PC12.Lco.YLabel.Text = "PC2";
+                            PC12.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
+                            PC12.Lco.CreateLineChart();
+
+                            //Creating visualization of the projected values
+                            PC13.Lco.ShallRender = true;
+                            PC13.Lco.Direction = DirectionEnum.XZ;
+                            PC13.Lco.XLabel.Text = "PC1";
+                            PC13.Lco.YLabel.Text = "PC3";
+                            PC13.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
+                            PC13.Lco.CreateLineChart();
+
+                            foreach (DataColumn column in dat.Columns)
+                            {
+                                eigenvectors.Add(column.ColumnName);
+                            }
+
+                            //Creating visualization of the eigenvectors
+                            PC12BiPlot.Lco.ShallRender = true;
+                            PC12BiPlot.Lco.XLabel.Text = "PC1";
+                            PC12BiPlot.Lco.YLabel.Text = "PC2";
+                            PC12BiPlot.Lco.Direction = DirectionEnum.X;
+                            PC12BiPlot.Lco.DataSet.Clear();
+
+                            //Creating visualization of the projected values
+                            PC13BiPlot.Lco.ShallRender = true;
+                            PC13BiPlot.Lco.DataSet.Clear();
+                            PC13BiPlot.Lco.Direction = DirectionEnum.Y;
+                            PC13BiPlot.Lco.XLabel.Text = "PC1";
+                            PC13BiPlot.Lco.YLabel.Text = "PC3";
+
+                            //Adding a data series for each biplot member
+                            for (int i = 1; i < EigenVectorsView.Rows.Count; i++)
+                            {
+                                Mesh biplot = new Mesh() { Name = columnNames[i] };
+                                DataTable dt = EigenVectorsView.Clone();
+                                dt.Rows.Add(EigenVectorsView.Rows[i].ItemArray);
+
+                                for (int f = 0; f < dt.Columns.Count; f++)
+                                    dt.Rows[0][f] = 0;
+
+                                dt.Rows.Add(EigenVectorsView.Rows[i].ItemArray);
+
+                                biplot.Data = dt;
 
                                 PC12BiPlot.Lco.DataSet.Add(biplot);
-
-                                PC12BiPlot.Lco.CreateLineChart("", "");
-
-                                PC13BiPlot.Lco.ShallRender = true;
-                                PC13BiPlot.Lco.Direction = DirectionEnum.Y;
-                                PC13BiPlot.Lco.XLabel.Text = "PC1";
-                                PC13BiPlot.Lco.YLabel.Text = "PC3";
-                                PC13BiPlot.Lco.CreateLineChart("","");
+                                PC13BiPlot.Lco.DataSet.Add(biplot);
                             }
-                            catch
+
+                            PC12BiPlot.Lco.CreateLineChart();
+                            PC13BiPlot.Lco.CreateLineChart();
+
+                            for(int i = 0; i< PC12BiPlot.Lco.DataCollection.Count(); i++)
                             {
-                                return;
+                                PC12BiPlot.Lco.DataCollection[i].Symbols.FillColor = ColorHelper.PickBrush();
+                                PC13BiPlot.Lco.DataCollection[i].Symbols.FillColor = ColorHelper.PickBrush();
                             }
-                            break;
-                    }
-
+                        }
+                        catch
+                        {
+                            return;
+                        }
+                        break;
                 }
-                catch
-                {
-                    return;
-                }
 
-            });
+            }
+            catch
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -415,7 +460,7 @@ namespace GeoReVi
         /// <returns></returns>
         public Accord.Statistics.Analysis.PrincipalComponentMethod ConvertMethod(Accord.Statistics.Analysis.AnalysisMethod method)
         {
-            switch(method)
+            switch (method)
             {
                 case AnalysisMethod.Center:
                     return Accord.Statistics.Analysis.PrincipalComponentMethod.Center;

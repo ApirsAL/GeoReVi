@@ -24,6 +24,7 @@ OS: Windows 7 - 10
 * [GeoAPI](https://github.com/NetTopologySuite/GeoAPI) - Coordinate conversion and projection framework
 * [MoreLinq](https://morelinq.github.io) - Helpful Query Framework
 * [Extended WPF Toolkit™](https://github.com/xceedsoftware/wpftoolkit) - Providing nice UI controls like the AvalonDock
+* [Math.NET](https://www.mathdotnet.com/) - Math magic
 
 
 ## Getting started
@@ -49,12 +50,12 @@ If bugs or any other issues are identified we would be grateful for reporting th
 ### Reservoir scale temperature distribution
 <img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="50%">
 
-### Three-dimensional Outcrop Model
+### Three-dimensional outcrop model
 <img src="docs/Samples/Meshes/OutcropModeling.png" width="50%">
 
 ### Meter-scale permeability distribution
 <img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
 
-### Three-dimensional Principal Component Analysis
+### Three-dimensional principal component analysis
 <img src="docs/Samples/MultivariateAnalyses/3D_Principal_Component_Analysis.png" width="50%">
 
