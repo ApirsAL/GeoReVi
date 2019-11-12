@@ -1,1 +1,0 @@
-The file "GeoReVi.exe" that you find in this folder is the installation file for Windows-based systems. Simply run it and accept the terms and conditions for installation.

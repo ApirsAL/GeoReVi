@@ -7,10 +7,10 @@ GeoReVi (Geological Reservoir Virtualization) is an open-source data management 
 
 This project is licensed under the GNU General Public License v3.0 License - see the [LICENSE.md](LICENSE.md) file for details
 
-The LOCAL ONLY version of the software is freely available. To setup a multi-user-environment you have to change the section including the connection string in your GeoReVi.config.xml file in the installation folder to the according database. However, you need a properly structured database with many stored procedures. Concact us under contact@georevi.com for more information.
+The *LOCAL ONLY* version of the software is freely available. To setup a multi-user-environment you have to change the section including the connection string in your GeoReVi.exe.config.xml file in the installation folder to the according database. However, then a properly structured database with many stored procedures is needed. Concact us under contact@georevi.com for more information.
 
 ## Requirements
-OS: Windows 7 - 10
+OS: Microsoft Windows
 
 ## Built With
 * [Windows Presentation Foundation](https://docs.microsoft.com/de-de/dotnet/framework/wpf/) - Main application framework
@@ -28,13 +28,15 @@ OS: Windows 7 - 10
 
 
 ## Getting started
-To get started with GeoReVi you have to download the installer file (GeoReVi.exe) in the docs folder and run the installation. Tutorials can be found in the user manual. Exemplary datasets and samples are provided in the docs folders.
+To get started with GeoReVi you have to download the packed file (GeoReVi.zip) in the **binaries** folder, unpack it and run the installation file (GeoReVi.exe). Tutorials can be found in the user manual. Exemplary datasets and samples are provided in the docs folders.
 
+### Three-dimensional outcrop model
+<img src="docs/Samples/Meshes/OutcropModeling.png" width="50%">
 
 ## Contributing
 Individual view-models and views can be developed and integrated into GeoReVi.
 
-If bugs or any other issues are identified we would be grateful for reporting those in the [Issues](https://github.com/ApirsAL/GeoReVi/issues).
+If bugs or any other issues are identified we would be grateful for reporting those in the [Issues](https://github.com/ApirsAL/GeoReVi/issues) or via [email]{contact@georevi.com}.
 
 ## Authors
 
@@ -42,16 +44,12 @@ If bugs or any other issues are identified we would be grateful for reporting th
 
 ## Acknowledgments
 
-* Thanks go to all the people that contributed to the test datasets of GeoReVi!
-
+* Thanks go to all the people that contributed to the test data sets of GeoReVi!
 
 ## Samples
 
 ### Reservoir scale temperature distribution
 <img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="50%">
-
-### Three-dimensional outcrop model
-<img src="docs/Samples/Meshes/OutcropModeling.png" width="50%">
 
 ### Meter-scale permeability distribution
 <img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
