@@ -219,20 +219,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// The location values that should be included in the mesh
-        /// </summary>
-        private BindableCollection<LocationTimeValue> includedLocationValues = new BindableCollection<LocationTimeValue>();
-        public BindableCollection<LocationTimeValue> IncludedlLocationValues
-        {
-            get => includedLocationValues;
-            set
-            {
-                this.includedLocationValues = value;
-                NotifyOfPropertyChange(() => IncludedlLocationValues);
-            }
-        }
-
-        /// <summary>
         /// The original data set
         /// </summary>
         private BindableCollection<LocationTimeValue> originalLocationValues = new BindableCollection<LocationTimeValue>();
@@ -249,7 +235,7 @@ namespace GeoReVi
         /// <summary>
         /// The discretized values
         /// </summary>
-        private Mesh discretizedLocationValues;
+        private Mesh discretizedLocationValues = new Mesh();
         public Mesh DiscretizedLocationValues
         {
             get => this.discretizedLocationValues;
@@ -261,16 +247,44 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Regression parameters
+        /// </summary>
+        private List<double> regressionParameter = new List<double>();
+        public List<double> RegressionParameter
+        {
+            get => this.regressionParameter;
+            set
+            {
+                this.regressionParameter = value;
+                NotifyOfPropertyChange(() => RegressionParameter);
+            }
+        }
+
+        /// <summary>
         /// The location values used for drift
         /// </summary>
-        private List<LocationTimeValue> driftLocationValues;
-        public List<LocationTimeValue> DriftLocationValues
+        private Mesh driftLocationValues;
+        public Mesh DriftLocationValues
         {
             get => this.driftLocationValues;
             set
             {
                 this.driftLocationValues = value;
                 NotifyOfPropertyChange(() => DriftLocationValues);
+            }
+        }
+
+        /// <summary>
+        /// The residual mesh for cross-validation
+        /// </summary>
+        private Mesh residuals;
+        public Mesh Residuals
+        {
+            get => this.residuals;
+            set
+            {
+                this.residuals = value;
+                NotifyOfPropertyChange(() => Residuals);
             }
         }
 
@@ -297,21 +311,6 @@ namespace GeoReVi
 
         }
 
-
-        /// <summary>
-        /// Measurement points of a property
-        /// </summary>
-        private BindableCollection<KeyValuePair<string, DataTable>> measPoints = new BindableCollection<KeyValuePair<string, DataTable>>();
-        public BindableCollection<KeyValuePair<string, DataTable>> MeasPoints
-        {
-            get => this.measPoints;
-            set
-            {
-                this.measPoints = value;
-                NotifyOfPropertyChange(() => MeasPoints);
-            }
-        }
-
         #endregion
 
         #region Constructor
@@ -327,8 +326,6 @@ namespace GeoReVi
             DiscretizationMethod _discretizationMethod = DiscretizationMethod.Hexahedral,
             Refinement _refinement = Refinement.None)
         {
-            DiscretizedLocationValues = new Mesh();
-            MeasPoints = locationValues;
             BinsX = binsX;
             BinsY = binsY;
             BinsZ = binsZ;
@@ -570,9 +567,9 @@ namespace GeoReVi
                                     IsDiscretized = true,
                                     IsExterior = (surfaceDimension == "x" ? l == xMinIndex : i == xMinIndex)
                                             || (surfaceDimension == "x" ? l == xArray.Length - 1 : i == xMaxIndex - 1)
-                                            || (surfaceDimension == "y" ? l == yMinIndex : i == yMinIndex)
+                                            || (surfaceDimension == "y" ? l == yMinIndex : j == yMinIndex)
                                             || (surfaceDimension == "y" ? l == yArray.Length - 1 : j == yMaxIndex - 1)
-                                            || (surfaceDimension == "z" ? l == zMinIndex : i == zMinIndex)
+                                            || (surfaceDimension == "z" ? l == zMinIndex : k == zMinIndex)
                                             || (surfaceDimension == "z" ? l == zArray.Length - 1 : k == zMaxIndex - 1)
                                 };
                                 //new index

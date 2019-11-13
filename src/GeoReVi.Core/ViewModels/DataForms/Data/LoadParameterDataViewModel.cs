@@ -698,6 +698,8 @@ namespace GeoReVi
             {
                 var a = await SpatialInterpolationHelper.ComputeInterpolation();
                 MeasPoints.Add(a);
+                if(SpatialInterpolationHelper.ExportResiduals)
+                     MeasPoints.Add(new Mesh(SpatialInterpolationHelper.Residuals));
             }
             catch
             {

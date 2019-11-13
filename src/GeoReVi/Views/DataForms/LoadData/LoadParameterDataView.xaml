@@ -668,13 +668,13 @@
                                                             <StackPanel Margin="6">
                                                                 <TextBlock Text="Nugget"
                                                                        FontWeight="DemiBold"/>
-                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Nugget, Mode=TwoWay}"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.Nugget, Mode=TwoWay}"/>
                                                                 <TextBlock Text="Sill"
                                                                        FontWeight="DemiBold"/>
-                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Sill, Mode=TwoWay}"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.Sill, Mode=TwoWay}"/>
                                                                 <TextBlock Text="Range"
                                                                        FontWeight="DemiBold"/>
-                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Range, Mode=TwoWay}"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.Range, Mode=TwoWay}"/>
                                                                 <TextBlock Text="Model"
                                                                        FontWeight="DemiBold"/>
                                                                 <TextBlock Text="{Binding Path=SpatialInterpolationHelper.Vh.Model, Mode=TwoWay}"/>
@@ -682,13 +682,26 @@
                                                             </StackPanel>
                                                         </Expander>
                                                         <Expander ExpandDirection="Down"
-                                              Header="Universal kriging"
+                                              Header="Residuals"
                                              Visibility="{Binding Path=SpatialInterpolationHelper.IsUniversalKriging, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
                                               FontWeight="Bold"
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
                                                             <StackPanel Margin="6">
                                                                 <DockPanel>
+                                                                    <TextBlock Text="Drift type"
+                                                                           FontWeight="DemiBold"
+                                                                       VerticalAlignment="Center"/>
+                                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.DriftType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.DriftType, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                </DockPanel>
+                                                                <DockPanel Visibility="{Binding Path=SpatialInterpolationHelper.DriftType, ConverterParameter=SpatialFunction}">
                                                                     <Button Style="{StaticResource HyperlinkButton}"
                                             cal:Message.Attach="AddPolynomial"
                                                                  cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
@@ -699,12 +712,9 @@
                                                                  cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
                                                             FontSize="{StaticResource FontSizeVerySmall}"
                                             Content="Remove"/>    
-                                                                    <Button Style="{StaticResource HyperlinkButton}"
-                                            cal:Message.Attach="ComputeResiduals"
-                                                            FontSize="{StaticResource FontSizeVerySmall}"
-                                            Content="Calculate residuals"/>
                                                                     </DockPanel>
                                                                 <ListView Margin="10"
+                                                                          Visibility="{Binding Path=SpatialInterpolationHelper.DriftType, ConverterParameter=SpatialFunction}"
                                                                           ItemsSource="{Binding Path=SpatialInterpolationHelper.SpatialFunction}"
                                                                           SelectionMode="Single"
                                                                           SelectedItem="{Binding Path=SpatialInterpolationHelper.SelectedPolynomial}"
@@ -760,7 +770,69 @@
                                                                         </DataTemplate>
                                                                     </ListView.ItemTemplate>
                                                                 </ListView>
-
+                                                                <StackPanel Visibility="{Binding Path=SpatialInterpolationHelper.DriftType, ConverterParameter=DriftParameter}">
+                                                                    <TextBlock Text="Drift variable"
+                                                                           FontWeight="DemiBold"/>
+                                                                    <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=MeasPoints}"
+                                                                      SelectionMode="Single"
+                                                  BorderBrush="Transparent">
+                                                                        <i:Interaction.Behaviors>
+                                                                            <local:SelectedMeasPointsBehaviour
+                                                    SelectedItemCollection="{Binding Path=SpatialInterpolationHelper.DriftLocationValues, Mode=TwoWay}">
+                                                                            </local:SelectedMeasPointsBehaviour>
+                                                                        </i:Interaction.Behaviors>
+                                                                        <ListView.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                                                            </DataTemplate>
+                                                                        </ListView.ItemTemplate>
+                                                                    </ListView>
+                                                                    <TextBlock Text="Regression parameter"
+                                                                           FontWeight="DemiBold"/>
+                                                                    <DockPanel>
+                                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="AddRegressionParameter"
+                                                                 cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Add"/>
+                                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="RemoveRegressionParameter"
+                                                                 cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Remove"/>
+                                                                    </DockPanel>
+                                                                    <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=SpatialInterpolationHelper.RegressionParameters}"
+                                                                      SelectionMode="Single"
+                                                  BorderBrush="Transparent">
+                                                                        <ListView.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                                                            </DataTemplate>
+                                                                        </ListView.ItemTemplate>
+                                                                    </ListView>
+                                                                </StackPanel>
+                                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="ComputeResiduals"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Calculate residuals"/>
                                                             </StackPanel>
                                                         </Expander>
                                                         <Expander ExpandDirection="Down"
@@ -777,7 +849,15 @@
                                                                 <TextBlock Text="{Binding Path=SpatialInterpolationHelper.MAE, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
                                                             </StackPanel>
                                                         </Expander>
-                                                                <Button Style="{StaticResource HyperlinkButton}"
+                                                        <DockPanel>
+                                                            <TextBlock Text="Export residuals"
+                                                                           FontWeight="DemiBold"
+                                                                       VerticalAlignment="Center"/>
+                                                            <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.ExportResiduals, Mode=TwoWay}"
+                                                                              HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"/>
+                                                        </DockPanel>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
                                                     cal:Message.Attach="ComputeInterpolation"
                                                                     FontSize="{StaticResource FontSizeVerySmall}"
                                                     Content="Compute interpolation"/>

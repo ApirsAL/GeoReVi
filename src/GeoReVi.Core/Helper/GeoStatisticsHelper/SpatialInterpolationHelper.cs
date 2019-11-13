@@ -123,6 +123,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Check if the residuals should be exported
+        /// </summary>
+        private bool exportResiduals = false;
+        public bool ExportResiduals
+        {
+            get => this.exportResiduals;
+            set
+            {
+                this.exportResiduals = value;
+                NotifyOfPropertyChange(() => ExportResiduals);
+            }
+        }
+
+        /// <summary>
         /// Defines whether all values of the selected source grids should be 
         /// used for interpolation or only those where the target vertex name fits the source grid name
         /// </summary>
@@ -210,8 +224,6 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => SelectedInterpolationMeasPoints);
             }
         }
-
-
 
         /// <summary>
         /// The search radius in X-Direction
@@ -404,8 +416,6 @@ namespace GeoReVi
             int binsZ = 20,
             DiscretizationMethod _discretizationMethod = DiscretizationMethod.Hexahedral)
         {
-            DiscretizedLocationValues = new Mesh();
-            MeasPoints = locationValues;
             BinsX = binsX;
             BinsY = binsY;
             BinsZ = binsZ;
@@ -433,6 +443,7 @@ namespace GeoReVi
         public async Task<Mesh> ComputeInterpolation()
         {
             DiscretizedLocationValues = new Mesh();
+            Residuals = new Mesh();
             OriginalLocationValues.Clear();
 
             //Adding selected source meshes to a data collection
@@ -565,6 +576,20 @@ namespace GeoReVi
                 DiscretizedLocationValues.Dimensionality = SelectedInterpolationMeasPoints[0].Dimensionality;
                 DiscretizedLocationValues.Faces = SelectedInterpolationMeasPoints[0].Faces;
 
+                //Adding interpolated values and variances to the original data set
+                Residuals.Name = "Residuals";
+                Residuals.Data =
+                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
+                        new List<Tuple<double, double, double, double, DateTime, string>>(Residuals.Vertices.Select(a =>
+                           new Tuple<double, double, double, double, DateTime, string>(
+                               a.Value[0],
+                               a.X,
+                               a.Y,
+                               a.Z,
+                               a.Date,
+                               a.Name
+                               )).ToList()));
+
                 return DiscretizedLocationValues;
             }
             catch
@@ -581,7 +606,6 @@ namespace GeoReVi
             CommandHelper ch = new CommandHelper();
 
             OriginalLocationValues.Clear();
-            MeasPoints.Clear();
 
             await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsComputing, async () =>
             {
@@ -602,7 +626,6 @@ namespace GeoReVi
             CommandHelper ch = new CommandHelper();
 
             OriginalLocationValues.Clear();
-            MeasPoints.Clear();
 
             await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsComputing, async () =>
             {
@@ -1117,6 +1140,8 @@ namespace GeoReVi
                     {
                         double interpolatedValue = (value / weightSum);
                         pointPairs.Add(new List<double>() { OriginalLocationValues[i].Value[0], interpolatedValue });
+                        Residuals.Vertices.Add(new LocationTimeValue(OriginalLocationValues[i]));
+                        Residuals.Vertices[i].Value[0] = OriginalLocationValues[i].Value[0] - interpolatedValue;
                     }
 
                     validationPoints = OriginalLocationValues.ToList();
@@ -1134,6 +1159,7 @@ namespace GeoReVi
                     for (int i = 0; i < pointPairs.Count(); i++)
                     {
                         pointPairs[i][1] = ((pointPairs[i][1] - zMin) / (zMax - zMin)) * (tMax - tMin) + tMin;
+                        Residuals.Vertices[i].Value[0] = Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                     }
                 }
 
@@ -1454,7 +1480,7 @@ namespace GeoReVi
                     }
 
                     pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], value });
-
+                    Residuals.Vertices.Add(new LocationTimeValue(OriginalLocationValues[k]));
                    
                 }
 
@@ -1470,6 +1496,7 @@ namespace GeoReVi
                     for (int i = 0; i < pointPairs.Count(); i++)
                     {
                         pointPairs[i][1] = ((pointPairs[i][1] - zMin) / (zMax - zMin)) * (tMax - tMin) + tMin;
+                        Residuals.Vertices[i].Value[0] = Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                     }
                 }
 
@@ -1816,8 +1843,7 @@ namespace GeoReVi
                     value += globalMean;
 
                     pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], value });
-
-
+                    Residuals.Vertices.Add(new LocationTimeValue(OriginalLocationValues[k]));
                 }
 
                 //Transforming to the range of the original distribution
@@ -1833,11 +1859,13 @@ namespace GeoReVi
                     for (int i = 0; i < pointPairs.Count(); i++)
                     {
                         pointPairs[i][1] = ((pointPairs[i][1] - zMin) / (zMax - zMin)) * (tMax - tMin) + tMin;
+                        Residuals.Vertices[i].Value[0] = Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                     }
                 }
 
                 for (int i = 0; i < pointPairs.Count(); i++)
                 {
+
                     switch (InterpolationFeature)
                     {
                         case InterpolationFeature.Value:
@@ -2282,13 +2310,31 @@ namespace GeoReVi
                 }
             }
 
+            //Creating the residuals with respect to a spatial polynomial function 
             foreach (LocationTimeValue loc in DiscretizedLocationValues.Vertices)
             {
-                double drift = 0;
-                for (int j = 0; j < SpatialFunction.Count(); j++)
-                    drift += SpatialFunction[j].Solve(loc);
+                try
+                {
+                    double drift = 0;
+                    switch(DriftType)
+                    {
+                        case Drift.SpatialFunction:
+                            for (int j = 0; j < SpatialFunction.Count(); j++)
+                                drift += SpatialFunction[j].Solve(loc);
+                            break;
+                        case Drift.DriftParameter:
+                            for (int j = 0; j < RegressionParameter.Count(); j++)
+                                drift += RegressionParameter[j] * Math.Pow(loc.Value[0], j);
+                            break;
+                    }
 
-                loc.Value = new List<double>() { loc.Value[0] - drift };
+                    loc.Value = new List<double>() { loc.Value[0] - drift };
+                }
+                catch
+                {
+
+                }
+
             }
 
             try
@@ -2654,6 +2700,36 @@ namespace GeoReVi
             try
             {
                 SpatialFunction.Remove(SelectedPolynomial);
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Adds a regression parameter
+        /// </summary>
+        public void AddRegressionParameter()
+        {
+            try
+            {
+                RegressionParameter.Add(0);
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Clears the regression parameters
+        /// </summary>
+        public void RemoveRegressionParameter()
+        {
+            try
+            {
+                RegressionParameter.Clear();
             }
             catch
             {
