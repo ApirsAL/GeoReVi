@@ -36,7 +36,7 @@ To get started with GeoReVi you have to download the packed file (GeoReVi.zip) i
 ## Contributing
 Individual view-models and views can be developed and integrated into GeoReVi.
 
-If bugs or any other issues are identified we would be grateful for reporting those in the [Issues](https://github.com/ApirsAL/GeoReVi/issues) or via [email]{contact@georevi.com}.
+If bugs or any other issues are identified we would be grateful for reporting those in the [Issues](https://github.com/ApirsAL/GeoReVi/issues) or via [email](contact@georevi.com).
 
 ## Authors
 
