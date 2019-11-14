@@ -791,7 +791,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Vco.TickColor}"
                                                             <DockPanel Margin="0,5">
                                                                 <TextBlock Text="Has legend"
                                                                            FontWeight="DemiBold"/>
-                                                                <CheckBox IsChecked="{Binding Vco.HasLegend, Mode=TwoWay}"
+                                                                <CheckBox IsChecked="{Binding Vco.Legend.IsLegend, Mode=TwoWay}"
                                                                                       HorizontalAlignment="Right"/>
                                                             </DockPanel>
                                                             <TextBlock Text="Legend position"
@@ -800,10 +800,10 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Vco.TickColor}"
                                                             <ComboBox HorizontalAlignment="Left" 
                                                               VerticalAlignment="Center" 
                                                               MinWidth="60"
-                                                              ItemsSource="{Binding Path=Vco.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              ItemsSource="{Binding Path=Vco.Legend.LegendPosition, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
                                                               SelectedValuePath="Value"
                                                               DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=Vco.LegendPosition, Mode=TwoWay}"
+                                                              SelectedValue="{Binding Path=Vco.Legend.LegendPosition, Mode=TwoWay}"
                                                                               SelectedIndex="0"/>
 
                                                         </StackPanel>

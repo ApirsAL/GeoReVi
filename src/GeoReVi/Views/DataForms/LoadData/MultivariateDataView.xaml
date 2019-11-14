@@ -86,7 +86,7 @@
                         <ComboBox HorizontalAlignment="Left" 
                                   VerticalAlignment="Center" 
                                   MinWidth="120"
-                                  ItemsSource="{Binding Path=DataCatergoricTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                  ItemsSource="{Binding Path=DataCatergoricTableColumnNames, Mode=TwoWay, NotifyOnSourceUpdated=True}" 
                                   SelectedValue="{Binding Path=SelectedCategoricColumn, Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
                         <Button Style="{StaticResource HyperlinkButton}"
                                 FontSize="{StaticResource FontSizeVerySmall}"

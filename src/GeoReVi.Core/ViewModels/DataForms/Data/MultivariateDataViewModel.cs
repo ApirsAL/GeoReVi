@@ -41,7 +41,7 @@ namespace GeoReVi
         private ObservableCollection<string> dataCatergoricTableColumnNames = new ObservableCollection<string>();
         public ObservableCollection<string> DataCatergoricTableColumnNames
         {
-            get => this.dataTableColumnNames;
+            get => this.dataCatergoricTableColumnNames;
             set
             {
                 this.dataCatergoricTableColumnNames = value;
