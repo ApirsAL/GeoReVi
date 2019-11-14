@@ -1,1 +1,1 @@
-The file "GeoReVi.exe" that you find in this folder is the installation file for Windows-based systems. Simply run it and accept the terms and conditions for installation.
+The file *GeoReVi.zip* contains the installation file for Windows-based systems, tutorial samples and the GeoReVi user manual. Simply run the *GeoReVi.exe* that you find in the zip archive and accept the terms and conditions for installation.
