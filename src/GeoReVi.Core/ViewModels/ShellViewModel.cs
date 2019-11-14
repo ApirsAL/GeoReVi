@@ -442,7 +442,7 @@ namespace GeoReVi
         {
             try
             {
-                System.Diagnostics.Process.Start("https://github.com/ApirsAL/GeoReVi/blob/master/docs/GeoReVi%20user%20manual.pdf");
+                System.Diagnostics.Process.Start("https://github.com/ApirsAL/GeoReVi/blob/master/docs/GeoReViUserManual.pdf");
             }
             catch (Exception e)
             {
