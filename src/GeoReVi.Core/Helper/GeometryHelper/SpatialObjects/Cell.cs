@@ -156,6 +156,14 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Getting the shape function of the element
+        /// </summary>
+        public virtual double[,] GetElementShapeFunctions()
+        {
+            return new double[,] { };
+        }
+
+        /// <summary>
         /// Getting the element stiffness matrix necessary for finite element simulations
         /// </summary>
         /// <returns></returns>

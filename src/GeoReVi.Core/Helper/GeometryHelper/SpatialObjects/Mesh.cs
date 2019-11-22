@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using MathNet.Numerics.LinearAlgebra;
 using MIConvexHull;
 using System;
 using System.Collections.Generic;
@@ -604,6 +605,84 @@ namespace GeoReVi
             catch
             {
                 throw new Exception("Meshes are not identical");
+            }
+        }
+
+        /// <summary>
+        /// Finds the equivalent location time value
+        /// </summary>
+        /// <returns></returns>
+        public LocationTimeValue FindLocationEquivalent(LocationTimeValue loc)
+        {
+            try
+            {
+                ///Finding value with the same location
+                return Vertices.Where(a =>
+                    a.X == loc.X &&
+                    a.Y == loc.Y &&
+                    a.Z == loc.Z
+                ).First();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns the coordinate matrix of the vertices
+        /// </summary>
+        /// <returns></returns>
+        public Matrix<double> GetCoordinateMatrix()
+        {
+            try
+            {
+                //Getting dimensionality of the problem
+                int dim = Dimensionality == Dimensionality.OneD ? 1 : (Dimensionality == Dimensionality.TwoD ? 2 : (Dimensionality == Dimensionality.ThreeD ? 3 : 0));
+
+                Matrix<double> g_coord = Matrix<double>.Build.Dense(dim, Vertices.Count(), 0);
+
+                //Getting all coordinates
+                for(int i = 0; i<Vertices.Count();i++)
+                {
+                    g_coord[0, i] = Vertices[i].X;
+                    g_coord[1, i] = Vertices[i].Y;
+                    g_coord[2, i] = Vertices[i].Z;
+                }
+
+                return g_coord;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns the connectivity matrix of the vertices
+        /// </summary>
+        /// <returns></returns>
+        public Matrix<double> GetConnectivityMatrix()
+        {
+            try
+            {
+                //Getting dimensionality of the problem
+                int dim = Dimensionality == Dimensionality.OneD ? 1 : (Dimensionality == Dimensionality.TwoD ? 2 : (Dimensionality == Dimensionality.ThreeD ? 3 : 0));
+
+                Matrix<double> g_num = Matrix<double>.Build.Dense(Cells[0].Vertices.Count(), Cells.Count(), 0);
+
+                for (int i = 0; i<Cells.Count();i++)
+                {
+                    for (int j = 0; j < Cells[i].Vertices.Count(); j++)
+                        g_num[j, i] = Vertices.IndexOf(Cells[i].Vertices[j]);
+
+                }
+
+                return g_num;
+            }
+            catch
+            {
+                return null;
             }
         }
 

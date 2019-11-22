@@ -893,12 +893,111 @@
                                                     Content="Compute categorization"/>
                                                     </StackPanel>
                                                 </Expander>
+                                                <Expander ExpandDirection="Down"
+                                              Header="Process simulation"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                        <StackPanel Margin="6">
+                                                            <TextBlock Text="Initial conditions"
+                                                                           FontWeight="DemiBold"/>
+                                                            <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=MeasPoints}"
+                                                                      SelectedItem="{Binding Path=NumericalSolverHelper.InitialConditions, Mode=TwoWay}"
+                                                                      SelectionMode="Single"
+                                                  BorderBrush="Transparent">
+                                                                <ListView.ItemTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                                                    </DataTemplate>
+                                                                </ListView.ItemTemplate>
+                                                            </ListView>
+
+                                                            <Expander ExpandDirection="Down"
+                                              Header="Method"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                                <StackPanel Margin="6">
+                                                                    <TextBlock Text="Boundary type"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=NumericalSolverHelper.SolvingMethod, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=NumericalSolverHelper.SolvingMethod, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                    <TextBlock Text="Boundary type"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=NumericalSolverHelper.PhysicalProblem, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=NumericalSolverHelper.PhysicalProblem, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                                </StackPanel>
+                                                            </Expander>
+                                                            <Expander ExpandDirection="Down"
+                                              Header="Time discretization"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                                <StackPanel Margin="6">
+                                                                    <TextBlock Text="Simulation time [s]"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding Path=NumericalSolverHelper.SimulationTime, Mode=TwoWay}"/>
+                                                                    <TextBlock Text="Time steps [-]"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding Path=NumericalSolverHelper.TimeSteps, Mode=TwoWay}"/>
+                                                                </StackPanel>
+                                                            </Expander>
+                                                            <Expander ExpandDirection="Down"
+                                              Header="Thermal properties"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                                <StackPanel Margin="6">
+                                                                    <TextBlock Text="Thermal diffusivity [x direction, m^2/s]"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding Path=NumericalSolverHelper.ThermalConductionHelper.ThermalDiffusivity[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                                    <TextBlock Text="Thermal diffusivity [y direction, m^2/s]"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding Path=NumericalSolverHelper.ThermalConductionHelper.ThermalDiffusivity[1], Mode=TwoWay}"/>
+                                                                    <TextBlock Text="Thermal diffusivity [z direction, m^2/s]"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding Path=NumericalSolverHelper.ThermalConductionHelper.ThermalDiffusivity[2], Mode=TwoWay}"/>
+
+                                                                </StackPanel>
+                                                            </Expander>
+                                                        </StackPanel>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                                        cal:Message.Attach="ComputeNumericalSolution"
+                                                                        FontSize="{StaticResource FontSizeVerySmall}"
+                                                        Content="Compute solution"/>
+                                                    </StackPanel>
+                                                </Expander>
                                             </StackPanel>
                                             <Grid Background="Gray"
                       Opacity="0.4"
                       Visibility="{Binding Path=SpatialInterpolationHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
+                                            <Grid Background="Gray"
+                      Opacity="0.4"
+                      Visibility="{Binding Path=NumericalSolverHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
                                         </Grid>
-
+                                      
                                     </Border>
                                 </ScrollViewer>
                             </TabItem>

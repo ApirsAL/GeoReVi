@@ -207,7 +207,7 @@ namespace GeoReVi
         /// <summary>
         /// Type of spatial operation
         /// </summary>
-        private SpatialOperationType spatialOperationType = SpatialOperationType.Union;
+        private SpatialOperationType spatialOperationType = SpatialOperationType.Join;
         public SpatialOperationType SpatialOperationType
         {
             get => this.spatialOperationType;
@@ -652,8 +652,95 @@ namespace GeoReVi
 
                         }
                         break;
+                    case SpatialOperationType.Addition:
+                    case SpatialOperationType.Substraction:
+
+                        if (SelectedMeasPoints.Count() != 2)
+                        {
+                            throw new Exception("Only two input meshes allowed.");
+                        }
+
+                        Mesh operationMesh = new Mesh(SelectedMeasPoints[0]);
+
+                        ///Conducting the subtraction
+                        for(int i =0; i< operationMesh.Vertices.Count();i++)
+                        {
+                            if(SpatialOperationType == SpatialOperationType.Substraction)
+                                operationMesh.Vertices[i].Value[0] -= SelectedMeasPoints[1].FindLocationEquivalent(operationMesh.Vertices[i]).Value[0];
+                            else if (SpatialOperationType == SpatialOperationType.Addition)
+                                operationMesh.Vertices[i].Value[0] -= SelectedMeasPoints[1].FindLocationEquivalent(operationMesh.Vertices[i]).Value[0];
+                        }
+
+                        DiscretizedLocationValues.Vertices.AddRange(operationMesh.Vertices);
+
+                        DiscretizedLocationValues.Data =
+                CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
+                    new List<Tuple<double, double, double, double, DateTime, string>>(DiscretizedLocationValues.Vertices.Select(a =>
+                       new Tuple<double, double, double, double, DateTime, string>(
+                           a.Value[0],
+                           a.X,
+                           a.Y,
+                           a.Z,
+                           a.Date,
+                           a.Name
+                           )).ToList()));
+
+                        break;
+                    case SpatialOperationType.ArithmeticMean:
+
+                        if (SelectedMeasPoints.Count() != 2)
+                        {
+                            throw new Exception("Only two input meshes allowed.");
+                        }
+
+                        Mesh meanMesh = new Mesh(SelectedMeasPoints[0]);
+
+
+                        ///Conducting the subtraction
+                        for (int i = 0; i < meanMesh.Vertices.Count(); i++)
+                        {
+
+                            double sum = 0;
+                            double product = 0;
+
+                            for (int j = 0;j<SelectedMeasPoints.Count();j++)
+                            {
+                                if (j == 0)
+                                {
+                                    sum = meanMesh.Vertices[i].Value[0];
+                                    product = meanMesh.Vertices[i].Value[0];
+                                }
+
+                                sum += SelectedMeasPoints[j].FindLocationEquivalent(meanMesh.Vertices[i]).Value[0];
+                                product *= SelectedMeasPoints[j].FindLocationEquivalent(meanMesh.Vertices[i]).Value[0];
+                            }
+
+
+                            if (SpatialOperationType == SpatialOperationType.ArithmeticMean)
+                                meanMesh.Vertices[i].Value[0] = sum / SelectedMeasPoints.Count();
+                            else if (SpatialOperationType == SpatialOperationType.GeometricMean)
+                                meanMesh.Vertices[i].Value[0] = Math.Pow(sum, -1 * (1.0 / Convert.ToDouble(SelectedMeasPoints.Count())));
+                        }
+
+
+                        DiscretizedLocationValues.Vertices.AddRange(meanMesh.Vertices);
+
+                        DiscretizedLocationValues.Data =
+                CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
+                    new List<Tuple<double, double, double, double, DateTime, string>>(DiscretizedLocationValues.Vertices.Select(a =>
+                       new Tuple<double, double, double, double, DateTime, string>(
+                           a.Value[0],
+                           a.X,
+                           a.Y,
+                           a.Z,
+                           a.Date,
+                           a.Name
+                           )).ToList()));
+
+                        break;
                 }
 
+                //Producing mesh
                 if (SelectedMeasPoints[0].Dimensionality == Dimensionality.ThreeD)
                     DiscretizedLocationValues.CellsFromPointCloud();
                 else if (SelectedMeasPoints[0].Dimensionality == Dimensionality.TwoD)

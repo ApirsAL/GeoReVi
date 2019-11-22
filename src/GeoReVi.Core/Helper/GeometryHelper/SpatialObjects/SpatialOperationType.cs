@@ -7,7 +7,9 @@
     {
         Substraction = 1,
         Intersection = 2,
-        Union = 3,
-        Join = 4
+        Addition = 3,
+        Join = 4,
+        ArithmeticMean = 5,
+        GeometricMean = 6
     }
 }

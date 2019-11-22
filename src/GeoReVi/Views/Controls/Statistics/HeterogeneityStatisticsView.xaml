@@ -179,6 +179,14 @@
                                                                                        HorizontalAlignment="Right"
                                                                                        Margin="5"/>
                                                 </DockPanel>
+                                                <DockPanel>
+                                                    <TextBlock Text="Entropy:"
+                                                                                       Margin="5"
+                                                                                       FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding Path=Entropy}"
+                                                                                       HorizontalAlignment="Right"
+                                                                                       Margin="5"/>
+                                                </DockPanel>
                                             </StackPanel>
                                         </Grid>
                                     </ScrollViewer>

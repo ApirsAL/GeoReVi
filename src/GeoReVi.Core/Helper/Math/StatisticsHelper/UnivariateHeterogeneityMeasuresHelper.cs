@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace GeoReVi
 {
@@ -36,6 +37,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Entropy
+        /// </summary>
+        private double entropy = 0;
+        public double Entropy
+        {
+            get => this.entropy;
+            private set
+            {
+                this.entropy = value;
+                NotifyOfPropertyChange(() => Entropy);
+            }
+        }
+
+        /// <summary>
         /// Coefficient of variation
         /// </summary>
         private double lorenzCoefficient = 0;
@@ -64,6 +79,7 @@ namespace GeoReVi
             {
                 CoefficientOfVariation = ComputeCoefficientOfVariation(DataSet);
                 DykstraParsonsCoefficient = ComputeDykstraParsonsCoefficient(DataSet);
+                Entropy = ComputeEntropy(DataSet);
             }
             catch
             {
@@ -97,6 +113,29 @@ namespace GeoReVi
             return 1 - p16/p50;
         }
 
+        /// <summary>
+        /// Computes the entropy of a data set
+        /// </summary>
+        /// <param name="dataSet"></param>
+        /// <returns></returns>
+        private double ComputeEntropy(double[] dataSet)
+        {
+            double ret = 0;
+
+            try
+            {
+                for (int i = 0; i < dataSet.Length; i++)
+                    if(dataSet[i] > 0)
+                        ret += dataSet[i] * Math.Log(dataSet[i], 2);
+
+                return ret;
+            }
+            catch
+            {
+                return double.NaN;
+            }
+
+        }
 
 
         #endregion

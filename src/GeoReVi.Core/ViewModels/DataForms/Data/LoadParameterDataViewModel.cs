@@ -80,6 +80,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Solver class for differential equations
+        /// </summary>
+        private NumericalSolver numericalSolverHelper = new NumericalSolver();
+        public NumericalSolver NumericalSolverHelper
+        {
+            get => this.numericalSolverHelper;
+            set
+            {
+                this.numericalSolverHelper = value;
+                NotifyOfPropertyChange(() => NumericalSolverHelper);
+            }
+        }
+
+        /// <summary>
         /// The selected Item
         /// </summary>
         private Mesh selectedMeasPoint = new Mesh();
@@ -424,6 +438,7 @@ namespace GeoReVi
             for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
             {
                 SelectedMeasPoint.Data.Rows[i][0] = Math.Log10((double)SelectedMeasPoint.Data.Rows[i][0]);
+                SelectedMeasPoint.Vertices[i].Value[0] = Math.Log10((double)SelectedMeasPoint.Vertices[i].Value[0]);
             }
         }
 
@@ -437,6 +452,7 @@ namespace GeoReVi
             for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
             {
                 SelectedMeasPoint.Data.Rows[i][0] = Math.Pow(10, (double)SelectedMeasPoint.Data.Rows[i][0]);
+                SelectedMeasPoint.Vertices[i].Value[0] = Math.Pow(10, (double)SelectedMeasPoint.Vertices[i].Value[0]);
             }
         }
 
@@ -450,6 +466,8 @@ namespace GeoReVi
             for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
             {
                 SelectedMeasPoint.Data.Rows[i][0] = (double)SelectedMeasPoint.Data.Rows[i][3];
+                SelectedMeasPoint.Vertices[i].Value[0] = (double)SelectedMeasPoint.Vertices[i].Z;
+                
             }
         }
 
@@ -468,6 +486,7 @@ namespace GeoReVi
                 for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
                 {
                     SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg)/standardDeviation;
+                    SelectedMeasPoint.Vertices[i].Value[0] = (SelectedMeasPoint.Vertices[i].Value[0] - avg)/standardDeviation;
                 }
             }
         }
@@ -488,6 +507,7 @@ namespace GeoReVi
                 for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
                 {
                     SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - min) / (max-min);
+                    SelectedMeasPoint.Vertices[i].Value[0] = ((double)SelectedMeasPoint.Vertices[i].Value[0] - min) / (max-min);
                 }
             }
         }
@@ -508,6 +528,7 @@ namespace GeoReVi
                 for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
                 {
                     SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg) / (max - min);
+                    SelectedMeasPoint.Vertices[i].Value[0] = ((SelectedMeasPoint.Vertices[i].Value[0] - avg) / (max - min));
                 }
             }
         }
@@ -526,6 +547,7 @@ namespace GeoReVi
                 for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
                 {
                     SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg);
+                    SelectedMeasPoint.Vertices[i].Value[0] = ((double)SelectedMeasPoint.Vertices[i].Value[0] - avg);
                 }
             }
         }
@@ -692,6 +714,23 @@ namespace GeoReVi
         /// Computes the interpolation of the selected data sets
         /// </summary>
         /// <returns></returns>
+        public async Task ComputeNumericalSolution()
+        {
+            try
+            {
+                MeasPoints.Add(await NumericalSolverHelper.ComputeNumericalSolution());
+            }
+            catch
+            {
+
+            }
+
+        }
+
+        /// <summary>
+        /// Computes the interpolation of the selected data sets
+        /// </summary>
+        /// <returns></returns>
         public async Task ComputeInterpolation()
         {
             try
@@ -700,6 +739,22 @@ namespace GeoReVi
                 MeasPoints.Add(a);
                 if(SpatialInterpolationHelper.ExportResiduals)
                      MeasPoints.Add(new Mesh(SpatialInterpolationHelper.Residuals));
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Building a slice of the selected model
+        /// </summary>
+        /// <returns></returns>
+        public async Task GetSlice()
+        {
+            try
+            {
+
             }
             catch
             {

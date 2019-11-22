@@ -8,6 +8,7 @@
         None = 1,
         Dirichlet = 2,
         Neumann = 3,
-        Robin = 4
+        Robin = 4,
+        Source = 5
     }
 }

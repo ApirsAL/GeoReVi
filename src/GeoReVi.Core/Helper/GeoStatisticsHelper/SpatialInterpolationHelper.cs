@@ -1251,7 +1251,7 @@ namespace GeoReVi
                         {
                             semivarianceMatrix[i, k] = Vh.CalculateSemivariance(includedPoints[i], includedPoints[k]);
                             if (i == k && IncludeErrorVariance)
-                                semivarianceMatrix[i, k] += ErrorVariance;
+                                semivarianceMatrix[i, k] += includedPoints[i].Value[0]*ErrorVariance;
 
                         }
                     }
@@ -1409,7 +1409,7 @@ namespace GeoReVi
                         {
                             semivarianceMatrix[i, j] = Vh.CalculateSemivariance(includedPoints[i], includedPoints[j]);
                             if (i == j && IncludeErrorVariance)
-                                semivarianceMatrix[i, k] += ErrorVariance;
+                                semivarianceMatrix[i, k] += includedPoints[i].Value[0] * ErrorVariance;
                         }
                     }
 
@@ -1612,7 +1612,7 @@ namespace GeoReVi
                                 semivarianceMatrix[i, k] = Vh.CalculateCovariance(includedPoints[i], includedPoints[k]);
 
                                 if (i == k && IncludeErrorVariance)
-                                    semivarianceMatrix[i, k] += ErrorVariance;
+                                    semivarianceMatrix[i, k] += includedPoints[i].Value[0] * ErrorVariance;
                             }
                         }
 
@@ -1789,7 +1789,7 @@ namespace GeoReVi
                         {
                             semivarianceMatrix[i, j] = Vh.CalculateCovariance(includedPoints[i], includedPoints[j]);
                             if (i == j && IncludeErrorVariance)
-                                semivarianceMatrix[i, j] += ErrorVariance;
+                                semivarianceMatrix[i, j] += includedPoints[i].Value[0] * ErrorVariance;
                         }
                     }
 
@@ -1955,7 +1955,7 @@ namespace GeoReVi
                             semivarianceMatrix[i, k] = Vh.CalculateSemivariance(includedPoints[i], includedPoints[k]);
 
                             if (i == k && IncludeErrorVariance)
-                                semivarianceMatrix[i, k] += ErrorVariance;
+                                semivarianceMatrix[i, k] += includedPoints[i].Value[0] * ErrorVariance;
                         }
                     }
 
@@ -2116,7 +2116,7 @@ namespace GeoReVi
                         {
                             semivarianceMatrix[i, j] = Vh.CalculateSemivariance(includedPoints[i], includedPoints[j]);
                             if (i == j && IncludeErrorVariance)
-                                semivarianceMatrix[i, j] += ErrorVariance;
+                                semivarianceMatrix[i, j] += includedPoints[i].Value[0] * ErrorVariance;
                         }
                     }
 
@@ -2559,7 +2559,7 @@ namespace GeoReVi
                         {
                             semivarianceMatrix[i, j] = Vh.CalculateCovariance(includedPoints[i], includedPoints[j]);
                             if (i == j && IncludeErrorVariance)
-                                semivarianceMatrix[i, j] += ErrorVariance;
+                                semivarianceMatrix[i, j] += includedPoints[i].Value[0] * ErrorVariance;
                         }
                     }
 

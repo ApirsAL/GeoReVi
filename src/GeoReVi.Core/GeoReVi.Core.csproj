@@ -249,9 +249,12 @@
     <Compile Include="Helper\DifferentialEquationHelper\BoundaryCondition.cs" />
     <Compile Include="Helper\DifferentialEquationHelper\BoundaryConditionType.cs" />
     <Compile Include="Helper\DifferentialEquationHelper\ConstantField.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\FiniteDifferencesHelper.cs" />
     <Compile Include="Helper\DifferentialEquationHelper\NumericalSolver.cs" />
     <Compile Include="Helper\DifferentialEquationHelper\PhysicalProblem.cs" />
     <Compile Include="Helper\DifferentialEquationHelper\Solver.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\SolvingMethod.cs" />
+    <Compile Include="Helper\DifferentialEquationHelper\ThermalConductionHelper.cs" />
     <Compile Include="Helper\EnumHelper\EnumHelper.cs" />
     <Compile Include="Helper\Export\ExportHelper.cs" />
     <Compile Include="Helper\FileHandler\FileHelper.cs" />
