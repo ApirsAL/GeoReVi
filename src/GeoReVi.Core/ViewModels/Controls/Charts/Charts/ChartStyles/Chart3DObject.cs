@@ -784,10 +784,10 @@ namespace GeoReVi
                     }
 
 
-                    XLabel.Text = "Local x [m]";
-                    YLabel.Text = "Local y [m]";
-                    ZLabel.Text = "Local z [m]";
-                    Title = "Parameter";
+                XLabel.Text = "Local x [m]";
+                YLabel.Text = "Local y [m]";
+                ZLabel.Text = "Local z [m]";
+                Title = "Parameter";
             }
             catch
             {
@@ -841,7 +841,7 @@ namespace GeoReVi
 
             Model = new Model3DGroup();
 
-            await Task.WhenAll(await Application.Current.Dispatcher.InvokeAsync(async ()=>
+            await Task.WhenAll(await Application.Current.Dispatcher.InvokeAsync(async () =>
             {
                 // Create a model group
                 // Create a mesh builder and add a box to it
@@ -957,13 +957,13 @@ namespace GeoReVi
                             Task.WaitAll(ls3D.Mesh.CreateVerticeArray());
 
                             //Adding all points to the model group
-                            for(int i = 0; i< ls3D.Mesh.Vertices.Count(); i += 4)
+                            for (int i = 0; i < ls3D.Mesh.Vertices.Count(); i += 4)
                             {
                                 await Task.Delay(0);
 
                                 try
                                 {
-                                    switch(ls3D.Mesh.Dimensionality)
+                                    switch (ls3D.Mesh.Dimensionality)
                                     {
                                         case Dimensionality.ThreeD:
                                             if (ls3D.Mesh.Vertices[i].IsExterior)
@@ -971,12 +971,12 @@ namespace GeoReVi
 
                                             Point3D central = ls3D.Mesh.Vertices[i].ToPoint3D();
 
-                                            gradients.Add(new Tuple<Point3D, double[]>(central,ls3D.Mesh.CalculateGradientFunction(ls3D.Mesh.Vertices[i])));
+                                            gradients.Add(new Tuple<Point3D, double[]>(central, ls3D.Mesh.CalculateGradientFunction(ls3D.Mesh.Vertices[i])));
                                             break;
                                         case Dimensionality.TwoD:
                                             Point3D central1 = ls3D.Mesh.Vertices[i].ToPoint3D();
                                             Vector3D vec = ls3D.Mesh.CalculateGradient2D(ls3D.Mesh.Vertices[i]);
-                                            gradients.Add(new Tuple<Point3D, double[]>(central1, new double[3] { vec.X, vec.Y, vec.Z } ));
+                                            gradients.Add(new Tuple<Point3D, double[]>(central1, new double[3] { vec.X, vec.Y, vec.Z }));
                                             break;
 
                                     }
@@ -999,25 +999,25 @@ namespace GeoReVi
 
                             double max = maxGradients.Max();
 
-                           gradients.ForEach(x =>
-                           {
+                            gradients.ForEach(x =>
+                            {
                                //Normalizing each vector based on the symbol size
-                               x.Item2[0] = 0.5*(x.Item2[0] / max) * ls3D.Symbols.SymbolSize;
-                               x.Item2[1] = 0.5*(x.Item2[1] / max) * ls3D.Symbols.SymbolSize;
-                               x.Item2[2] = 0.5*(x.Item2[2] / max) * ls3D.Symbols.SymbolSize;
+                               x.Item2[0] = 0.5 * (x.Item2[0] / max) * ls3D.Symbols.SymbolSize;
+                                x.Item2[1] = 0.5 * (x.Item2[1] / max) * ls3D.Symbols.SymbolSize;
+                                x.Item2[2] = 0.5 * (x.Item2[2] / max) * ls3D.Symbols.SymbolSize;
 
                                //Adding arrow to the mesh builder
                                meshBuilder.AddArrow(
-                                    new Point3D(x.Item1.X - 0.5 * x.Item2[0],
-                                                x.Item1.Y - 0.5 * x.Item2[1],
-                                                x.Item1.Z - 0.5 * x.Item2[2]),
-                                    new Point3D(x.Item1.X + 0.5 * x.Item2[0],
-                                                x.Item1.Y + 0.5 * x.Item2[1],
-                                                x.Item1.Z + 0.5 * x.Item2[2]),
-                                    ls3D.WireframeThickness,
-                                    ls3D.WireframeThickness,
-                                    18);
-                           });
+                                     new Point3D(x.Item1.X - 0.5 * x.Item2[0],
+                                                 x.Item1.Y - 0.5 * x.Item2[1],
+                                                 x.Item1.Z - 0.5 * x.Item2[2]),
+                                     new Point3D(x.Item1.X + 0.5 * x.Item2[0],
+                                                 x.Item1.Y + 0.5 * x.Item2[1],
+                                                 x.Item1.Z + 0.5 * x.Item2[2]),
+                                     ls3D.WireframeThickness,
+                                     ls3D.WireframeThickness,
+                                     18);
+                            });
 
                             mesh = meshBuilder.ToMesh(true);
                             ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = mat, BackMaterial = mat });
@@ -1092,7 +1092,7 @@ namespace GeoReVi
                                     if (average < MinimumVisibility || average > MaximumVisibility)
                                         continue;
 
-                                if(cell.Faces.Count < 1)
+                                if (cell.Faces.Count < 1)
                                     cell.CreateFaces();
 
 
@@ -1146,6 +1146,41 @@ namespace GeoReVi
                                         }
 
                                     }
+                                else if (Plane3D.IsActive == true)
+                                {
+                                    int verticesCut = 0;
+
+                                    foreach (var vertice in cell.Vertices)
+                                        switch (Plane3D.RelativeOrientation)
+                                        {
+                                            case RelativeOrientation.Above:
+                                                if (Plane3D.PointRelativeToPlane(vertice.ToVector3D()) > 0)
+                                                    verticesCut += 1;
+                                                break;
+                                            case RelativeOrientation.Below:
+                                                if (Plane3D.PointRelativeToPlane(vertice.ToVector3D()) < 0)
+                                                    verticesCut += 1;
+                                                break;
+                                            default:
+                                                if (Plane3D.PointRelativeToPlane(vertice.ToVector3D()) == 0)
+                                                    verticesCut += 1;
+                                                break;
+                                        }
+
+                                        if ((verticesCut > 0 && verticesCut < cell.Vertices.Count()) || (cell.Vertices.Any(x => x.IsExterior) && verticesCut < cell.Vertices.Count()))
+                                        {
+                                            foreach (var face in cell.Faces)
+                                            {
+                                                SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+
+                                                    faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
+
+                                                    if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                        materials.Add(m);
+                                                }
+                                            }
+                                    
+                                }
                             }
                         }
                         //Add image
@@ -1558,32 +1593,32 @@ namespace GeoReVi
                 model.Children.Add(txt.Content);
             }
 
-            if(IsZGrid)
-            for (dx = Zmin; dx <= Zmax; dx += ZTick)
-            {
-                if (double.IsInfinity(Zmax) || Zmax == Zmin)
-                    Zmax = Zmin + 1;
+            if (IsZGrid)
+                for (dx = Zmin; dx <= Zmax; dx += ZTick)
+                {
+                    if (double.IsInfinity(Zmax) || Zmax == Zmin)
+                        Zmax = Zmin + 1;
 
-                if ((Zmax - Zmin) / ZTick > 10000 || Double.IsInfinity(ZTick))
-                    ZTick = (Zmax - Zmin) / 100;
+                    if ((Zmax - Zmin) / ZTick > 10000 || Double.IsInfinity(ZTick))
+                        ZTick = (Zmax - Zmin) / 100;
 
-                TextVisual3D txt = new TextVisual3D();
-                txt.Background = new SolidColorBrush(Colors.Transparent);
-                txt.Height = LabelFontSize * 0.8;
-                txt.Position = new Point3D((Xmin - minEast) - txt.Height, Ymax - minNorth, dx - minAltitude);
-                if (txt.Text == "0" && dx != Zmin)
-                    txt.Text = dx.ToString("E0");
-                txt.Text = Math.Round(dx, 2).ToString();
-                txt.TextDirection = new Vector3D(1, 0, 0);                      // Set text to run in line with X axis
-                txt.UpDirection = new Vector3D(0, 0, 1);                             // Set text to Point Up on Y axis
-                txt.Foreground = new SolidColorBrush(Colors.Black);
-                txt.Padding = new Thickness(2);
+                    TextVisual3D txt = new TextVisual3D();
+                    txt.Background = new SolidColorBrush(Colors.Transparent);
+                    txt.Height = LabelFontSize * 0.8;
+                    txt.Position = new Point3D((Xmin - minEast) - txt.Height, Ymax - minNorth, dx - minAltitude);
+                    if (txt.Text == "0" && dx != Zmin)
+                        txt.Text = dx.ToString("E0");
+                    txt.Text = Math.Round(dx, 2).ToString();
+                    txt.TextDirection = new Vector3D(1, 0, 0);                      // Set text to run in line with X axis
+                    txt.UpDirection = new Vector3D(0, 0, 1);                             // Set text to Point Up on Y axis
+                    txt.Foreground = new SolidColorBrush(Colors.Black);
+                    txt.Padding = new Thickness(2);
 
-                if (ZTick == 0)
-                    ZTick += 1;
+                    if (ZTick == 0)
+                        ZTick += 1;
 
-                model.Children.Add(txt.Content);
-            }
+                    model.Children.Add(txt.Content);
+                }
 
         }
 

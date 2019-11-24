@@ -16,7 +16,8 @@ namespace GeoReVi
     {
         #region Public properties
 
-        private LocationTimeValue[,,] locs = new LocationTimeValue[,,] { };
+        [XmlIgnore]
+        public LocationTimeValue[,,] locs = new LocationTimeValue[,,] { };
 
         /// <summary>
         /// Name of the mesh
@@ -671,11 +672,22 @@ namespace GeoReVi
 
                 Matrix<double> g_num = Matrix<double>.Build.Dense(Cells[0].Vertices.Count(), Cells.Count(), 0);
 
-                for (int i = 0; i<Cells.Count();i++)
-                {
-                    for (int j = 0; j < Cells[i].Vertices.Count(); j++)
-                        g_num[j, i] = Vertices.IndexOf(Cells[i].Vertices[j]);
 
+                for (int i = 0; i < Cells.Count(); i++)
+                {
+                    int[] lowest = Cells[i].Vertices.OrderBy(x => x.MeshIndex[0]).OrderBy(x => x.MeshIndex[1]).OrderBy(x => x.MeshIndex[2]).Select(x => x.MeshIndex).First();
+                    int xMinIndex = lowest[0];
+                    int yMinIndex = lowest[1];
+                    int zMinIndex = lowest[2];
+
+                    g_num[0, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex, zMinIndex]); // node 1
+                    g_num[1, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex, zMinIndex + 1]); //node 2
+                    g_num[2, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex, zMinIndex + 1]); // node 3
+                    g_num[3, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex, zMinIndex]); // node 4
+                    g_num[4, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex + 1, zMinIndex]); // node 5
+                    g_num[5, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex + 1, zMinIndex + 1]); // node 6
+                    g_num[6, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex + 1, zMinIndex + 1]); // node 7
+                    g_num[7, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex + 1, zMinIndex]); // node 8
                 }
 
                 return g_num;

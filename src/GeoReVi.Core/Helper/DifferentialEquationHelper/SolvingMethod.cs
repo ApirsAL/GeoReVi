@@ -8,7 +8,7 @@ namespace GeoReVi
         FiniteDifferenceMethod = 0,
         [Description("Finite volume method")]
         FiniteVolumeMethod = 1,
-        [Description("Finite elements method")]
+        [Description("Finite element method")]
         FiniteElementsMethod=2
     }
 }

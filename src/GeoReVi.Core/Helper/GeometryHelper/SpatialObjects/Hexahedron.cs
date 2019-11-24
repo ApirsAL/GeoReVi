@@ -174,6 +174,40 @@ namespace GeoReVi
             return ret;
         }
 
+        /// <summary>
+        /// Returns the node indices
+        /// </summary>
+        /// <returns></returns>
+        public override double[] GetNodeIndices(Mesh mesh)
+        {
+            double[] g_num = new double[8];
+
+            try
+            {
+                if (mesh.locs.Length == 0)
+                    mesh.CreateVerticeArray();
+
+                int xMinIndex = Vertices.Min(x => x.MeshIndex[0]);
+                int yMinIndex = Vertices.Min(x => x.MeshIndex[1]);
+                int zMinIndex = Vertices.Min(x => x.MeshIndex[2]);
+
+                g_num[0] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex, zMinIndex]); // node 1
+                g_num[1] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex, zMinIndex + 1]); //node 2
+                g_num[2] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex, zMinIndex + 1]); // node 3
+                g_num[3] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex, zMinIndex]); // node 4
+                g_num[4] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex + 1, zMinIndex]); // node 5
+                g_num[5] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex + 1, zMinIndex + 1]); // node 6
+                g_num[6] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex + 1, zMinIndex + 1]); // node 7
+                g_num[7] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex + 1, zMinIndex]); // node 8
+            }
+            catch
+            {
+
+            }
+
+            return g_num;
+        }
+
         #endregion
     }
 }

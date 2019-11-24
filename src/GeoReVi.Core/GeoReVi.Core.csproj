@@ -234,6 +234,12 @@
     <Compile Include="Data\DirectionEnum.cs" />
     <Compile Include="Data\Repository\ApirsRepository.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Helper\Alglib\alglibinternal.cs" />
+    <Compile Include="Helper\Alglib\alglibmisc.cs" />
+    <Compile Include="Helper\Alglib\alglib_info.cs" />
+    <Compile Include="Helper\Alglib\ap.cs" />
+    <Compile Include="Helper\Alglib\linalg.cs" />
+    <Compile Include="Helper\Alglib\solvers.cs" />
     <Compile Include="Helper\AsyncHelper\AsyncAwaiter.cs" />
     <Compile Include="Helper\AsyncHelper\DispatchService.cs" />
     <Compile Include="Helper\Collection\CollectionHelper.cs" />

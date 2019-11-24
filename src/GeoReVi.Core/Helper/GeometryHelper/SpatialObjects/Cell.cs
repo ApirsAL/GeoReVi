@@ -171,6 +171,16 @@ namespace GeoReVi
         {
             return new double[,] { };
         }
+
+        /// <summary>
+        /// Returns  the node indices
+        /// </summary>
+        /// <returns></returns>
+        public virtual double[] GetNodeIndices(Mesh mesh)
+        {
+            return new double[] { };
+        }
+
         #endregion
     }
 }

@@ -1,12 +1,9 @@
 ﻿using Accord.Math;
 using Caliburn.Micro;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double.Solvers;
-using MathNet.Numerics.LinearAlgebra.Solvers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace GeoReVi
@@ -263,7 +260,7 @@ namespace GeoReVi
                 BoundaryConditions.Add(new BoundaryCondition()
                 {
                     Type = BoundaryConditionType.Dirichlet,
-                    Value = 20
+                    Value = 0
                 });
 
                 BoundaryConditions[0].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.IsExterior));
@@ -278,7 +275,10 @@ namespace GeoReVi
 
                 globalSolutionVector = Vector<double>.Build.Dense(InitialConditions.Vertices.Count(), 0);
 
-                lhsMatrix = Matrix<double>.Build.Sparse(InitialConditions.Vertices.Count(), InitialConditions.Vertices.Count());
+                alglib.sparsematrix lhsMatrix;
+                alglib.sparsecreate(InitialConditions.Vertices.Count(), InitialConditions.Vertices.Count(), out lhsMatrix);
+
+                //lhsMatrix = Matrix<double>.Build.Sparse(InitialConditions.Vertices.Count(), InitialConditions.Vertices.Count());
 
                 rhsMatrix = Matrix<double>.Build.Sparse(InitialConditions.Vertices.Count(), InitialConditions.Vertices.Count());
 
@@ -296,15 +296,8 @@ namespace GeoReVi
                 //Intitialising Gauss integration points
                 BuildGaussIntegrationPoints(dimensionality);
 
-                //Build global node indices and connectivity matrix
-                this.coordinates = InitialConditions.GetCoordinateMatrix();
-                this.connectivity = InitialConditions.GetConnectivityMatrix();
-
                 //Intitialising weights
                 weights = Vector<double>.Build.Dense(numberOfIntegrationPoints, 1.0);
-
-                //Initializing the solution
-                Solution = new Mesh(InitialConditions);
 
                 double timeStep = SimulationTime / Convert.ToDouble((TimeSteps - 1));
 
@@ -314,15 +307,22 @@ namespace GeoReVi
                     case PhysicalProblem.HeatConduction:
                         for (int i = 0; i < InitialConditions.Cells.Count(); i++)
                         {
-                            Matrix<double> num = connectivity.SubMatrix(0, nodesPerElement, i, 1);
-                            Matrix<double> coords = Matrix<double>.Build.Dense(dimensionality, nodesPerElement);
+                            Vector<double> num = Vector<double>.Build.DenseOfArray(InitialConditions.Cells[i].GetNodeIndices(InitialConditions));
+                            Matrix<double> coords = Matrix<double>.Build.Dense(nodesPerElement, dimensionality);
 
-                            for (int j = 0; j<num.RowCount;j++)
+                            for (int j = 0; j<num.Count;j++)
                             {
-                                coords.SetSubMatrix(0,j, coordinates.SubMatrix(0, dimensionality, Convert.ToInt32(num[j,0]), 1));
-                            }
+                                int index = Convert.ToInt32(num[j]);
 
-                            coords = coords.Transpose();
+                                LocationTimeValue loc = InitialConditions.Vertices[Convert.ToInt32(num[j])];
+
+                                if(dimensionality == 3)
+                                {
+                                    coords[j, 0] = loc.X;
+                                    coords[j, 1] = loc.Y;
+                                    coords[j, 2] = loc.Z;
+                                }
+                            }
 
                             //Initialize elements for global matrix
                             Matrix<double> KM = Matrix<double>.Build.Dense(nodesPerElement, nodesPerElement, 0);
@@ -355,21 +355,47 @@ namespace GeoReVi
                                 F = F.Add(shapeFunction.Multiply(H).Multiply(determinantJacobi).Multiply(weights[j]));
                             }
 
-                            Matrix<double> elementLhsMatrix = MM.Divide(timeStep).Add(KM);
-                            Matrix<double> elementRhsMatrix = MM.Divide(timeStep);
+                            Matrix<double> elementLhsMatrix = MM.Divide(SimulationTime).Add(KM);
+                            Matrix<double> elementRhsMatrix = MM.Divide(SimulationTime);
 
-                            //Inserting the element matrice values in the global sparse matrices
-                            for (int j = 0; j < num.RowCount; j++)
+                            //Inserting the element matrix values in the global sparse matrices
+                            for (int j = 0; j < num.Count; j++)
                             {
-                                int coordinateIndex = Convert.ToInt32(num[j, 0]);
-                                lhsMatrix[coordinateIndex, coordinateIndex] += elementLhsMatrix[j, j];
-                                rhsMatrix[coordinateIndex, coordinateIndex] += elementRhsMatrix[j, j];
+                                for(int k = 0; k<num.Count;k++)
+                                {
+                                    int coordinateIndex1 = Convert.ToInt32(num[j]);
+                                    int coordinateIndex2 = Convert.ToInt32(num[k]);
+                                    alglib.sparseset(lhsMatrix, coordinateIndex1, coordinateIndex2, alglib.sparseget(lhsMatrix, coordinateIndex1, coordinateIndex2) + elementLhsMatrix[j, k]);
+                                    rhsMatrix[coordinateIndex1, coordinateIndex2] += elementRhsMatrix[j, k];
+                                }
+                                //lhsMatrix[coordinateIndex, coordinateIndex] += elementLhsMatrix[j, j];
                             }
                         }
 
-                        //Setting intial conditions
+                        //Setting initial conditions
                         globalSolutionVector = Vector<double>.Build.DenseOfEnumerable(InitialConditions.Vertices.Select(x => x.Value[0]));
 
+                        //Impose boundary conditions
+                        for (int i = 0; i < BoundaryConditions.Count(); i++)
+                        {
+                            BoundaryConditions[i].BuildBoundaryConditionMatrix(lhsMatrix.innerobj.n);
+                            BoundaryConditions[i].BuildIndices(InitialConditions);
+
+                            for (int j = 0; j < BoundaryConditions[i].Indices.RowCount; j++)
+                            {
+                                int index = Convert.ToInt32(BoundaryConditions[i].Indices[j, 0]);
+
+                                for (int k = 0; k < lhsMatrix.innerobj.m; k++)
+                                {
+                                    if(k!=index)
+                                        alglib.sparseset(lhsMatrix, index, k, 0);
+                                    else
+                                        alglib.sparseset(lhsMatrix, k, k, 1);
+                                }
+
+                            }
+                        }
+                        
                         //Initializing actual time
                         double actualTime = 0;
 
@@ -382,30 +408,46 @@ namespace GeoReVi
                             //Impose boundary conditions
                             for(int i =0; i<BoundaryConditions.Count();i++)
                             {
-                                BoundaryConditions[i].BuildBoundaryConditionMatrix(lhsMatrix.RowCount);
-                                BoundaryConditions[i].BuildIndices(InitialConditions);
+                                BoundaryConditions[i].BuildBoundaryConditionMatrix(lhsMatrix.innerobj.n);
 
                                 for (int j = 0; j<BoundaryConditions[i].Indices.RowCount;j++)
                                 {
-                                    switch(BoundaryConditions[i].Type)
-                                    {
-                                        case BoundaryConditionType.Dirichlet:
-                                            lhsMatrix.SetSubMatrix(Convert.ToInt32(BoundaryConditions[i].Indices[j,0]), 0, BoundaryConditions[i].BoundaryConditionMatrix);
-                                            lhsMatrix[Convert.ToInt32(BoundaryConditions[i].Indices[j, 0]), Convert.ToInt32(BoundaryConditions[i].Indices[j, 0])] = 1;
-                                            globalRHSVector[Convert.ToInt32(BoundaryConditions[i].Indices[j, 0])] = BoundaryConditions[i].Value;
-                                            break;
-                                    }
+                                    globalRHSVector[Convert.ToInt32(BoundaryConditions[i].Indices[j, 0])] = BoundaryConditions[i].Value;
                                 }
                             }
 
+                            //Solving the LSE with the alglib sparse linear algebra library
+                            alglib.sparseconverttocrs(lhsMatrix);
+                            double[] solution;
+                            alglib.lincgstate s;
+                            alglib.lincgreport rep;
+                            alglib.lincgcreate(globalRHSVector.Count, out s);
+                            alglib.lincgsolvesparse(s, lhsMatrix, true, globalRHSVector.ToArray());
+                            alglib.lincgresults(s, out solution, out rep);
+                            globalSolutionVector = Vector<double>.Build.DenseOfArray(solution);
+
                             // 1. Solve the matrix equation
-                            globalSolutionVector = lhsMatrix.Solve(globalRHSVector);
+                            //globalSolutionVector = lhsMatrix.Solve(globalRHSVector);
                         }
 
                         Solution = new Mesh(InitialConditions);
 
                         for (int i = 0; i < globalSolutionVector.Count; i++)
                             Solution.Vertices[i].Value[0] = globalSolutionVector[i];
+
+                        Solution.CellsFromPointCloud();
+
+                        Solution.Data =
+                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
+                        new List<Tuple<double, double, double, double, DateTime, string>>(Solution.Vertices.Select(b =>
+                           new Tuple<double, double, double, double, DateTime, string>(
+                               b.Value[0],
+                               b.X,
+                               b.Y,
+                               b.Z,
+                               b.Date,
+                               b.Name
+                               )).ToList()));
 
                         break;
                 }
