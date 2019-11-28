@@ -541,6 +541,7 @@ namespace GeoReVi
                         case GeostatisticalInterpolationMethod.SequentialGaussianSimulation:
                             Task.WaitAll(ComputeSimpleKriging());
                             Task.WaitAll(ComputeSequentialGaussianSimulation());
+                            Task.WaitAll(ComputeSequentialGaussianSimulationCrossValidation());
                             type = "Sequential Gaussian Simulation";
                             break;
                     }
@@ -1349,7 +1350,7 @@ namespace GeoReVi
         /// <returns></returns>
         public async Task ComputeOrdinaryKrigingCrossValidation()
         {
-            double rmse = 0;
+            double rmseSum = 0;
             double mae = 0;
             List<List<double>> pointPairs = new List<List<double>>();
 
@@ -1507,25 +1508,25 @@ namespace GeoReVi
                         case InterpolationFeature.Value:
                             //Increasing the value by the constrain value and it's weight
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Longitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Latitutde:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Elevation:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                     }
                 }
 
                 MAE = mae / OriginalLocationValues.Count();
-                RMSE = Math.Sqrt(RMSE / OriginalLocationValues.Count());
+                RMSE = Math.Sqrt(rmseSum / OriginalLocationValues.Count());
             }
             catch
             {
@@ -1871,25 +1872,25 @@ namespace GeoReVi
                         case InterpolationFeature.Value:
                             //Increasing the value by the constrain value and it's weight
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Longitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Latitutde:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Elevation:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                     }
                 }
 
                 MAE = mae / OriginalLocationValues.Count();
-                RMSE = Math.Sqrt(RMSE / OriginalLocationValues.Count());
+                RMSE = Math.Sqrt(rmseSum / OriginalLocationValues.Count());
             }
             catch
             {
@@ -2234,19 +2235,19 @@ namespace GeoReVi
                         case InterpolationFeature.Value:
                             //Increasing the value by the constrain value and it's weight
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Longitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Latitutde:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Elevation:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                     }
                 }
@@ -2527,19 +2528,35 @@ namespace GeoReVi
                 {
                     await Task.Delay(0);
 
-                    //Buffer of the original data values where the number of points defined for validation will be removed before kriging
-                    BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>(OriginalLocationValues
-                        .Where(x =>
-                                OriginalLocationValues[k].X - x.X <= SearchRadiusX &&
-                                OriginalLocationValues[k].Y - x.Y <= SearchRadiusY &&
-                                OriginalLocationValues[k].Z - x.Z <= SearchRadiusZ)
-                                .OrderBy(x => GeographyHelper.EuclideanDistance(OriginalLocationValues[k].X - x.X,
-                                                                                OriginalLocationValues[k].Y - x.Y,
-                                                                                OriginalLocationValues[k].Z - x.Z)).ToList());
+                    List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
+
+                    for (int f = 0; f < OriginalLocationValues.Count(); f++)
+                    {
+                        try
+                        {
+                            double[] distances = new double[3] { Math.Abs(OriginalLocationValues[k].X - OriginalLocationValues[f].X), Math.Abs(OriginalLocationValues[k].Y - OriginalLocationValues[f].Y), Math.Abs(OriginalLocationValues[k].Z - OriginalLocationValues[f].Z) };
+
+                            if (OriginalLocationValues[k].Equals(OriginalLocationValues[f]))
+                                continue;
+
+                            if (distances[0] > SearchRadiusX)
+                                continue;
+                            if (distances[1] > SearchRadiusY)
+                                continue;
+                            if (distances[2] > SearchRadiusZ)
+                                continue;
+
+                            includedPoints.Add(OriginalLocationValues[f]);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
 
                     if (includedPoints.Count > MaximumNeighborCount)
-                        includedPoints = new BindableCollection<LocationTimeValue>(includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList());
-
+                        includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList();
+                    
                     //Semivariance matrix for the ordinary kriging system
                     double[,] semivarianceMatrix = new double[includedPoints.Count(), includedPoints.Count()];
 
@@ -2618,7 +2635,7 @@ namespace GeoReVi
 
                     variance = Vh.CalculateCovariance(OriginalLocationValues[k], OriginalLocationValues[k]) - variance;
 
-                    double stdDev = Math.Sqrt((!IncludeLocalVariance ? variance : LocalVariance));
+                    double stdDev = Math.Sqrt((!IncludeLocalVariance ? Math.Abs(variance) : LocalVariance));
 
                     pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], DistributionHelper.SampleFromGaussian(value, stdDev)});
                 }
@@ -2646,25 +2663,25 @@ namespace GeoReVi
                         case InterpolationFeature.Value:
                             //Increasing the value by the constrain value and it's weight
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Longitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Latitutde:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                         case InterpolationFeature.Elevation:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
-                            RMSE += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
+                            rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
                     }
                 }
 
                 MAE = mae / OriginalLocationValues.Count();
-                RMSE = Math.Sqrt(RMSE / OriginalLocationValues.Count());
+                RMSE = Math.Sqrt(rmseSum / OriginalLocationValues.Count());
             }
             catch
             {

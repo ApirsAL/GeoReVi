@@ -3,6 +3,8 @@ using Caliburn.Micro;
 using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -159,7 +161,7 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// All points that are assigned as boundary conditions
+        /// All boundary conditions
         /// </summary>
         private BindableCollection<BoundaryCondition> boundaryConditions = new BindableCollection<BoundaryCondition>();
         public BindableCollection<BoundaryCondition> BoundaryConditions
@@ -224,14 +226,12 @@ namespace GeoReVi
         /// </summary>
         public NumericalSolver()
         {
-
+            AddBoundaryConditions();
         }
 
         #endregion
 
         #region Public Methods
-
-        #endregion
 
         /// <summary>
         /// Computes the numerical solution of the problem
@@ -256,17 +256,11 @@ namespace GeoReVi
         {
             try
             {
-                BoundaryConditions.Clear();
-                BoundaryConditions.Add(new BoundaryCondition()
-                {
-                    Type = BoundaryConditionType.Dirichlet,
-                    Value = 0
-                });
-
-                BoundaryConditions[0].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.IsExterior));
-
-                //Heat source
-                double H = 0 * 1e-9; //K / s
+                //Validation variables
+                DataTable dat = new DataTable();
+                dat.Columns.Add(new DataColumn("Time", typeof(double)));
+                dat.Columns.Add(new DataColumn("Value", typeof(double)));
+                int validationPointIndex = InitialConditions.Vertices.IndexOf(InitialConditions.Vertices.Where(x => x.MeshIndex[0] == 1 && x.MeshIndex[1] == 10 && x.MeshIndex[2] == 10).First());
 
                 //Initializing all elements needed for the solution
                 globalLoadVector = Vector<double>.Build.Dense(InitialConditions.Vertices.Count(), 0);
@@ -291,7 +285,7 @@ namespace GeoReVi
                 int numberOfIntegrationPoints = GetNumberOfIntegrationPoints(dimensionality);
 
                 //Building the boundary conditions
-                BuildBoundaryConditions(); //TODO
+                BuildBoundaryConditions();
 
                 //Intitialising Gauss integration points
                 BuildGaussIntegrationPoints(dimensionality);
@@ -352,7 +346,7 @@ namespace GeoReVi
                                 //Element mass matrix
                                 MM = MM.Add(shapeFuntionMatrix.Multiply(shapeFuntionRowMatrix).Multiply(determinantJacobi).Multiply(weights[j]));
                                 //Element load vector
-                                F = F.Add(shapeFunction.Multiply(H).Multiply(determinantJacobi).Multiply(weights[j]));
+                                F = F.Add(shapeFunction.Multiply(ThermalConductionHelper.HeatSoruce).Multiply(determinantJacobi).Multiply(weights[j]));
                             }
 
                             Matrix<double> elementLhsMatrix = MM.Divide(SimulationTime).Add(KM);
@@ -378,7 +372,6 @@ namespace GeoReVi
                         //Impose boundary conditions
                         for (int i = 0; i < BoundaryConditions.Count(); i++)
                         {
-                            BoundaryConditions[i].BuildBoundaryConditionMatrix(lhsMatrix.innerobj.n);
                             BoundaryConditions[i].BuildIndices(InitialConditions);
 
                             for (int j = 0; j < BoundaryConditions[i].Indices.RowCount; j++)
@@ -408,11 +401,14 @@ namespace GeoReVi
                             //Impose boundary conditions
                             for(int i =0; i<BoundaryConditions.Count();i++)
                             {
-                                BoundaryConditions[i].BuildBoundaryConditionMatrix(lhsMatrix.innerobj.n);
+                                BoundaryConditions[i].BuildIndices(InitialConditions);
 
                                 for (int j = 0; j<BoundaryConditions[i].Indices.RowCount;j++)
                                 {
-                                    globalRHSVector[Convert.ToInt32(BoundaryConditions[i].Indices[j, 0])] = BoundaryConditions[i].Value;
+                                    if(BoundaryConditions[i].Type == BoundaryConditionType.Dirichlet)
+                                        globalRHSVector[Convert.ToInt32(BoundaryConditions[i].Indices[j, 0])] = BoundaryConditions[i].Value;
+                                    else if(BoundaryConditions[i].Type == BoundaryConditionType.Neumann)
+                                        globalRHSVector[Convert.ToInt32(BoundaryConditions[i].Indices[j, 0])] += BoundaryConditions[i].Value;
                                 }
                             }
 
@@ -424,19 +420,23 @@ namespace GeoReVi
                             alglib.lincgcreate(globalRHSVector.Count, out s);
                             alglib.lincgsolvesparse(s, lhsMatrix, true, globalRHSVector.ToArray());
                             alglib.lincgresults(s, out solution, out rep);
+
+                            //Reassign values back to the global solution vector
                             globalSolutionVector = Vector<double>.Build.DenseOfArray(solution);
 
-                            // 1. Solve the matrix equation
-                            //globalSolutionVector = lhsMatrix.Solve(globalRHSVector);
+                            dat.Rows.Add(actualTime, globalSolutionVector[validationPointIndex]);
                         }
 
+                        //Initializing the solution mesh
                         Solution = new Mesh(InitialConditions);
 
                         for (int i = 0; i < globalSolutionVector.Count; i++)
                             Solution.Vertices[i].Value[0] = globalSolutionVector[i];
 
+                        //Building the mesh
                         Solution.CellsFromPointCloud();
 
+                        //Build data table
                         Solution.Data =
                     CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
                         new List<Tuple<double, double, double, double, DateTime, string>>(Solution.Vertices.Select(b =>
@@ -457,6 +457,68 @@ namespace GeoReVi
 
             }
         }
+
+        /// <summary>
+        /// Adding the base classes of boundary conditions
+        /// </summary>
+        private void AddBoundaryConditions()
+        {
+            try
+            {
+                BoundaryConditions.Clear();
+
+                BoundaryConditions.Add(new BoundaryCondition()
+                {
+                    Region = "Min x",
+                    Type = BoundaryConditionType.Dirichlet,
+                    Value = 0
+                });
+
+                BoundaryConditions.Add(new BoundaryCondition()
+                {
+                    Region = "Max x",
+                    Type = BoundaryConditionType.Dirichlet,
+                    Value = 0
+                });
+
+                BoundaryConditions.Add(new BoundaryCondition()
+                {
+                    Region = "Min y",
+                    Type = BoundaryConditionType.Dirichlet,
+                    Value = 0
+                });
+
+                BoundaryConditions.Add(new BoundaryCondition()
+                {
+                    Region = "Max y",
+                    Type = BoundaryConditionType.Dirichlet,
+                    Value = 0
+                });
+
+                BoundaryConditions.Add(new BoundaryCondition()
+                {
+                    Region = "Min z",
+                    Type = BoundaryConditionType.Dirichlet,
+                    Value = 0
+                });
+
+                BoundaryConditions.Add(new BoundaryCondition()
+                {
+                    Region = "Max z",
+                    Type = BoundaryConditionType.Dirichlet,
+                    Value = 0
+                });
+
+            }
+            catch
+            {
+
+            }
+        }
+
+        #endregion
+
+        #region Helpers
 
         /// <summary>
         /// Building the Shape functions and derivatives
@@ -571,28 +633,45 @@ namespace GeoReVi
         {
             try
             {
+                int xMinIndex = InitialConditions.Vertices.Min(x => x.MeshIndex[0]);
+                int xMaxIndex = InitialConditions.Vertices.Max(x => x.MeshIndex[0]);
+                int yMinIndex = InitialConditions.Vertices.Min(x => x.MeshIndex[1]);
+                int yMaxIndex = InitialConditions.Vertices.Max(x => x.MeshIndex[1]);
+                int zMinIndex = InitialConditions.Vertices.Min(x => x.MeshIndex[2]);
+                int zMaxIndex = InitialConditions.Vertices.Max(x => x.MeshIndex[2]);
 
+                for (int i =0;i<BoundaryConditions.Count();i++)
+                {
+                    BoundaryConditions[i].BoundaryPoints.Clear();
+
+                    switch(BoundaryConditions[i].Region)
+                    {
+                        case "Min x":
+                            BoundaryConditions[i].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.MeshIndex[0] == xMinIndex));
+                            break;
+                        case "Max x":
+                            BoundaryConditions[i].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.MeshIndex[0] == xMaxIndex));
+                            break;
+                        case "Min y":
+                            BoundaryConditions[i].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.MeshIndex[1] == yMinIndex));
+                            break;
+                        case "Max y":
+                            BoundaryConditions[i].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.MeshIndex[1] == yMaxIndex));
+                            break;
+                        case "Min z":
+                            BoundaryConditions[i].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.MeshIndex[2] == zMinIndex));
+                            break;
+                        case "Max z":
+                            BoundaryConditions[i].BoundaryPoints.AddRange(InitialConditions.Vertices.Where(x => x.MeshIndex[2] == zMaxIndex));
+                            break;
+                    }
+                }
             }
             catch
             {
                 throw new Exception("Building boundary conditions was not successful");
             }
 
-        }
-
-        /// <summary>
-        /// Makes the front x face to a dirichlet boundary condition 
-        /// </summary>
-        public void MakeXFrontDirichlet()
-        {
-            try
-            {
-
-            }
-            catch
-            {
-
-            }
         }
 
         /// <summary>
@@ -651,8 +730,6 @@ namespace GeoReVi
                 throw new Exception("Building gauss integration matrix was not successful");
             }
         }
-
-        #region Helpers
 
         /// <summary>
         /// Returns the number of integration points

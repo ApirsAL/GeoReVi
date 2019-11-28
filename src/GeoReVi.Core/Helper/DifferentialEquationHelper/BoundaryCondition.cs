@@ -10,6 +10,20 @@ namespace GeoReVi
         #region Public properties
 
         /// <summary>
+        /// Region of the properties
+        /// </summary>
+        private string region = "";
+        public string Region
+        {
+            get => this.region;
+            set
+            {
+                this.region = value;
+                NotifyOfPropertyChange(() => Region);
+            }
+        }
+
+        /// <summary>
         /// Type of the boundary condition
         /// </summary>
         private BoundaryConditionType type = BoundaryConditionType.Dirichlet;

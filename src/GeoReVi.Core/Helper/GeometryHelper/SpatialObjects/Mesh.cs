@@ -14,6 +14,41 @@ namespace GeoReVi
 {
     public class Mesh : PropertyChangedBase, IGeometry
     {
+
+        #region Private Properties
+
+        /// <summary>
+        /// Time steps resulting from a numerical solution in seconds
+        /// </summary>
+        private List<double> timeSteps = new List<double>();
+        [XmlIgnore]
+        private List<double> TimeSteps
+        {
+            get => this.timeSteps;
+            set
+            {
+                this.timeSteps = value;
+                NotifyOfPropertyChange(() => TimeSteps);
+            }
+        }
+
+        /// <summary>
+        /// Vertice values resulting from a numerical solution
+        /// </summary>
+        private double[,] timeStepValues = new double[,] { };
+        [XmlIgnore]
+        public double[,] TimeStepValues
+        {
+            get => this.timeStepValues;
+            set
+            {
+                this.timeStepValues = value;
+                NotifyOfPropertyChange(() => TimeStepValues);
+            }
+        }
+
+        #endregion
+
         #region Public properties
 
         [XmlIgnore]

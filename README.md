@@ -32,7 +32,7 @@ OS: Microsoft Windows
 
 
 ## Getting started
-To get started with GeoReVi you have to download the packed file (GeoReVi.zip) in the **binaries** folder, unpack it and run the installation file (GeoReVi.exe). Tutorials can be found in the user manual. Exemplary datasets and samples are provided in the **docs** folders and in the zip archive. To setup a multi-user-environment you have to change the section including the connection string in your GeoReVi.exe.config file in the installation folder to the according database. However, then a properly structured database with many stored procedures is needed. Contact us under contact@georevi.com for more information.
+To get started with GeoReVi you have to download the packed file [GeoReVi.zip](https://github.com/ApirsAL/GeoReVi/blob/master/binaries/GeoReVi.zip) in the **binaries** folder, unpack it and run the installation file (GeoReVi.exe). Tutorials can be found in the user manual. Exemplary datasets and samples are provided in the **docs** folders and in the zip archive. To setup a multi-user-environment you have to change the section including the connection string in your GeoReVi.exe.config file in the installation folder to the according database. However, then a properly structured database with many stored procedures is needed. Contact us under contact@georevi.com for more information.
 
 ### Three-dimensional outcrop model
 <img src="docs/Samples/Meshes/OutcropModeling.png" width="50%">

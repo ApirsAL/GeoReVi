@@ -928,7 +928,7 @@
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
                                                                 <StackPanel Margin="6">
-                                                                    <TextBlock Text="Boundary type"
+                                                                    <TextBlock Text="Method"
                                                                        FontWeight="DemiBold"/>
                                                                     <ComboBox HorizontalAlignment="Left" 
                                                               VerticalAlignment="Center" 
@@ -938,7 +938,7 @@
                                                               DisplayMemberPath="Description"
                                                               SelectedValue="{Binding Path=NumericalSolverHelper.SolvingMethod, Mode=TwoWay}"
                                                                               SelectedIndex="0"/>
-                                                                    <TextBlock Text="Boundary type"
+                                                                    <TextBlock Text="Physical problem"
                                                                        FontWeight="DemiBold"/>
                                                                     <ComboBox HorizontalAlignment="Left" 
                                                               VerticalAlignment="Center" 
@@ -956,7 +956,7 @@
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
                                                                 <StackPanel Margin="6">
-                                                                    <TextBlock Text="Simulation time [s]"
+                                                                    <TextBlock Text="Simulation time per step [s]"
                                                                        FontWeight="DemiBold"/>
                                                                     <TextBox Text="{Binding Path=NumericalSolverHelper.SimulationTime, Mode=TwoWay}"/>
                                                                     <TextBlock Text="Time steps [-]"
@@ -970,9 +970,46 @@
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
                                                                 <StackPanel Margin="6">
-                                                                    <TextBlock Text="X min"
-                                                                       FontWeight="DemiBold"/>
-                                                                    <TextBox Text="{Binding Path=NumericalSolverHelper.ThermalConductionHelper.ThermalDiffusivity[0].Num, Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                                    <TextBlock Text="Initial conditions"
+                                                                           FontWeight="DemiBold"/>
+                                                                    <ListView Margin="10"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=NumericalSolverHelper.BoundaryConditions}"
+                                                                      SelectionMode="Single"
+                                                  BorderBrush="Transparent">
+                                                                        <ListView.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <StackPanel>
+                                                                                    <TextBlock TextAlignment="Left"
+                                                                                   Text="{Binding Path=Region}"
+                                                                                   VerticalAlignment="Center"
+                                                                                   HorizontalAlignment="Left"
+                                                                                   FontSize="{StaticResource FontSizeVerySmall}"
+                                                                                   Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                                   Style="{StaticResource HeaderText}"
+                                                                                   Focusable="False"/>
+                                                                                    <DockPanel>
+                                                                                        <TextBlock Text="Value" 
+                                                                                                   VerticalAlignment="Center"/>
+                                                                                        <TextBox Text="{Binding Value}"/>
+                                                                                    </DockPanel>
+                                                                                    <DockPanel>
+                                                                                        <TextBlock Text="Boundary condition type"
+                                                                                                   FontWeight="DemiBold"
+                                                                                                   VerticalAlignment="Center"/>
+                                                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                                                  VerticalAlignment="Center" 
+                                                                                                  MinWidth="100"
+                                                                                                  ItemsSource="{Binding Path=Type, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                                                  SelectedValuePath="Value"
+                                                                                                  DisplayMemberPath="Description"
+                                                                                                  SelectedValue="{Binding Path=Type, Mode=TwoWay}"
+                                                                                                  SelectedIndex="0"/>
+                                                                                    </DockPanel>
+                                                                                </StackPanel>
+                                                                            </DataTemplate>
+                                                                        </ListView.ItemTemplate>
+                                                                    </ListView>
                                                                 </StackPanel>
                                                             </Expander>
                                                             <Expander ExpandDirection="Down"

@@ -102,20 +102,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Point series for the line series
-        /// </summary>
-        private List<List<LocationTimeValue>> spatialPointSeries;
-        public List<List<LocationTimeValue>> SpatialPointSeries
-        {
-            get => this.spatialPointSeries;
-            set
-            {
-                this.spatialPointSeries = value;
-                NotifyOfPropertyChange(() => SpatialPointSeries);
-            }
-        }
-
-        /// <summary>
         /// Tick step width in z direction
         /// </summary>
         private double zTick = 0.5;
@@ -618,15 +604,10 @@ namespace GeoReVi
 
         public override void Initialize()
         {
-            Xmax = 0;
-            Xmin = 0;
-            Ymax = 0;
-            Ymin = 0;
             Maxx = 0;
             Minx = 0;
             Maxy = 0;
             Miny = 0;
-            SpatialPointSeries = new List<List<LocationTimeValue>>();
         }
 
         /// <summary>
@@ -748,7 +729,6 @@ namespace GeoReVi
                 if (!ShallRender)
                     return;
 
-                Initialize();
                 DataCollection = new BindableCollection<Series3D>(DataCollection.Where(x => x.Chart3DDisplayType == Chart3DDisplayType.Model).ToList());
 
                 Ds.Clear();
@@ -769,13 +749,17 @@ namespace GeoReVi
                                 }));
                         }
 
-                        var ds = new Series3D();
+                        ///Only add the mesh to the chart series if it is not yet included
+                        if (!Ds.Any(x => x.Mesh.Equals(DataSet[i])))
+                        {
+                            var ds = new Series3D();
 
-                        ds.Mesh = DataSet[i];
+                            ds.Mesh = DataSet[i];
 
-                        Ds.Add(ds);
+                            Ds.Add(ds);
 
-                        Ds[i].SeriesName = DataSet[i].Name;
+                            Ds[i].SeriesName = DataSet[i].Name;
+                        }
                     }
                     catch
                     {
@@ -798,7 +782,9 @@ namespace GeoReVi
         }
 
 
-        //Creates the chart
+        /// <summary>
+        /// Creates the chart
+        /// </summary>
         public virtual void CreateChart()
         {
             try
@@ -843,10 +829,8 @@ namespace GeoReVi
 
             await Task.WhenAll(await Application.Current.Dispatcher.InvokeAsync(async () =>
             {
-                // Create a model group
                 // Create a mesh builder and add a box to it
                 var meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
-
 
                 var mesh = meshBuilder.ToMesh(true);
 
@@ -857,6 +841,7 @@ namespace GeoReVi
                 MinNorth = 999999999999999999;
                 MinAltitude = 999999999999999999;
 
+                //Define minimum and maximum values for scaling
                 DataCollection.ForEach(x =>
                 {
                     if (x.Display != false)
@@ -885,6 +870,7 @@ namespace GeoReVi
 
                     await Task.Delay(0);
 
+                    //Instantiating objects that hold the visual objects that should be added to the chart
                     List<Tuple<LocationTimeValue, SolidColorBrush>> pointMaterials = new List<Tuple<LocationTimeValue, SolidColorBrush>>();
                     List<Tuple<Face, SolidColorBrush>> faceMaterials = new List<Tuple<Face, SolidColorBrush>>();
                     List<SolidColorBrush> materials = new List<SolidColorBrush>();
@@ -895,7 +881,7 @@ namespace GeoReVi
                         if (ls3D.Chart3DDisplayType != Chart3DDisplayType.Model)
                             ls3D.Model = new Model3DGroup();
 
-                        //Add irregular grid
+                        //Adding point clould of the series
                         if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Scatter)
                         {
                             //Adding all points to the model group
@@ -1087,6 +1073,7 @@ namespace GeoReVi
                             {
 
                                 double average = cell.Vertices.Select(x => x.Value[0]).Average();
+
                                 //Filtering values based on minimum and maximum visibility
                                 if (ColorMapFilterActive)
                                     if (average < MinimumVisibility || average > MaximumVisibility)
@@ -1133,10 +1120,13 @@ namespace GeoReVi
                                             if (isFiltered)
                                                 continue;
 
+                                            //Defining the color for the face
                                             SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
 
+                                            //Adding the face to the face objects
                                             faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
 
+                                            //Adding color to new materials if it is not included yet
                                             if (materials.Where(x => x.Color == m.Color).Count() == 0)
                                                 materials.Add(m);
                                         }

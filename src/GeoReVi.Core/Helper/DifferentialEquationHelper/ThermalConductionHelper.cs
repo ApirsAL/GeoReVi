@@ -41,6 +41,19 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// Heat source for each node
+        /// </summary>
+        private double heatSource = 0;
+        public double HeatSoruce
+        {
+            get => heatSource;
+            set
+            {
+                this.heatSource = value;
+                NotifyOfPropertyChange(() => HeatSoruce);
+            }
+        }
 
         #endregion
 
