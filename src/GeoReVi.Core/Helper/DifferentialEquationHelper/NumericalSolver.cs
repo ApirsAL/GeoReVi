@@ -414,7 +414,9 @@ namespace GeoReVi
 
                             //Solving the LSE with the alglib sparse linear algebra library
                             alglib.sparseconverttocrs(lhsMatrix);
+
                             double[] solution;
+
                             alglib.lincgstate s;
                             alglib.lincgreport rep;
                             alglib.lincgcreate(globalRHSVector.Count, out s);
@@ -454,7 +456,7 @@ namespace GeoReVi
             }
             catch
             {
-
+                throw new Exception("Numerical solution failed.");
             }
         }
 
@@ -512,7 +514,7 @@ namespace GeoReVi
             }
             catch
             {
-
+                throw new Exception("The construction of boundary conditions failed.");
             }
         }
 

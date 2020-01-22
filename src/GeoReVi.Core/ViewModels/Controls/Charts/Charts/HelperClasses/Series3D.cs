@@ -397,11 +397,34 @@ namespace GeoReVi
                         case ".stl":
                             using (FileStream stream = File.Create(saveFileDialog1.FileName))
                             {
+                                Int32Collection triangleIndices = new Int32Collection();
+                                Point3DCollection points = new Point3DCollection();
+                                int k = 0;
+
+                                for (int i = 0; i < this.Model.Children.Count; ++i)
+                                {
+                                    for (int j = k; j < ((MeshGeometry3D)((GeometryModel3D)((Model3D)this.Model.Children[i])).Geometry).Positions.Count; j++)
+                                    {
+                                        triangleIndices.Add(j);
+                                        points.Add(((MeshGeometry3D)((GeometryModel3D)((Model3D)this.Model.Children[i])).Geometry).Positions[j-k]);
+                                        k++;
+                                    }
+                                }
+                                MeshGeometry3D exportingMesh = new MeshGeometry3D()
+                                {
+                                    Positions = points,
+                                    TriangleIndices = triangleIndices
+                                };
+                                Model3D modelToExport = new GeometryModel3D
+                                {
+                                    Geometry = exportingMesh
+                                };
+
                                 var exp = new StlExporter()
                                 {
                                     
                                 };
-                                exp.Export(this.Model, stream);
+                                exp.Export(modelToExport, stream);
 
                             }
                                 break;

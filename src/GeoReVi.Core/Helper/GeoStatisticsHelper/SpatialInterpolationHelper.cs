@@ -1624,7 +1624,7 @@ namespace GeoReVi
 
                         //Calculating the weights of the original data values on the interpolated value
                         double[] weights = Matrix.Solve(semivarianceMatrix, semivarianceVector, true);
-
+                        
                         double weightSum = weights.Sum();
 
                         //Calculating the value at the point which is the sum of the weights times values in the original data table
