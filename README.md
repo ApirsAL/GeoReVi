@@ -34,8 +34,35 @@ OS: Microsoft Windows
 ## Getting started
 To get started with GeoReVi you have to download the packed file [GeoReVi.zip](https://github.com/ApirsAL/GeoReVi/blob/master/binaries/GeoReVi.zip) in the **binaries** folder, unpack it and run the installation file (GeoReVi.exe). Tutorials can be found in the user manual. Exemplary datasets and samples are provided in the **docs** folders and in the zip archive. To setup a multi-user-environment you have to change the section including the connection string in your GeoReVi.exe.config file in the installation folder to the according database. However, then a properly structured database with many stored procedures is needed. Contact us under contact@georevi.com for more information.
 
-### Three-dimensional outcrop model
-<img src="docs/Samples/Meshes/OutcropModeling.png" width="50%">
+
+## The Scope
+* Multi-tiered, extendable software application that aims to support geoscientists in common workflows during subsurface characterization
+* Geoscientific data management and analysis including petrophysical, geochemical, hydraulic, granulometric, magnetic, mechanical, sedimentary, elastic and radiogenic properties eased by a graphical user interface
+* Providing a rich selection of data mining algorithms and visualization techniques specifically aimed to characterize subsurface regions
+
+## Types of charts
+* scatter charts
+* bubble charts
+* bar charts
+* box-whisker-charts
+* semivariogram charts
+* ternary charts
+* 3D charts
+
+## Algorithms
+* Semivariogram
+* Indicator variogram
+* p-value Inverse Distance Weighting
+* Simple Kriging
+* Ordinary Kriging
+* Universal Kriging
+* Direct Sequential Simulation
+* Leave p-out cross-validation
+* Correlation (Spearman and Pearson)
+* Regression (linear and curvilinear)
+* Principal Component Analysis
+* Cluster Analysis
+* Self-organizing Maps
 
 ## Contributing
 Individual view-models and views can be developed and integrated into GeoReVi.
@@ -52,8 +79,11 @@ If bugs or any other issues are identified we would be grateful for reporting th
 
 ## Samples
 
-### Reservoir scale temperature distribution
-<img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="50%">
+### Three-dimensional outcrop model
+<img src="docs/Samples/Meshes/OutcropModeling.png" width="60%">
+
+### Reservoir-scale temperature distribution
+<img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="60%">
 
 ### Meter-scale permeability distribution
 <img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
