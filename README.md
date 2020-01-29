@@ -40,7 +40,7 @@ To get started with GeoReVi you have to download the packed file [GeoReVi.zip](h
 * Geoscientific data management and analysis including petrophysical, geochemical, hydraulic, granulometric, magnetic, mechanical, sedimentary, elastic and radiogenic properties eased by a graphical user interface
 * Providing a rich selection of data mining algorithms and visualization techniques specifically aimed to characterize subsurface regions
 
-<img src="docs/Samples/Interpolations/CubeMeasurements.gif" width="50%">
+<img src="docs/Samples/Interpolations/CubeMeasurements.gif" width="60%">
 
 ## Types of charts
 * scatter charts
@@ -50,6 +50,9 @@ To get started with GeoReVi you have to download the packed file [GeoReVi.zip](h
 * semivariogram charts
 * ternary charts
 * 3D charts
+
+### Three-dimensional principal component analysis
+<img src="docs/Samples/MultivariateAnalyses/PCA.gif" width="50%">
 
 ## Algorithms
 * Semivariogram
@@ -79,7 +82,7 @@ If bugs or any other issues are identified we would be grateful for reporting th
 
 * Thanks go to all the people that contributed to the test data sets of GeoReVi!
 
-## Samples
+## Other Samples
 
 ### Three-dimensional outcrop model
 <img src="docs/Samples/Meshes/OutcropModeling.png" width="60%">
@@ -90,7 +93,5 @@ If bugs or any other issues are identified we would be grateful for reporting th
 ### Meter-scale permeability distribution
 <img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
 
-### Three-dimensional principal component analysis
-<img src="docs/Samples/MultivariateAnalyses/3D_Principal_Component_Analysis.png" width="50%">
-<img src="docs/Samples/MultivariateAnalyses/PCA.gif" width="50%">
+
 

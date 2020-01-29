@@ -539,7 +539,6 @@ namespace GeoReVi
                             Task.WaitAll(ComputeSimulatedAnnealing());
                             break;
                         case GeostatisticalInterpolationMethod.SequentialGaussianSimulation:
-                            Task.WaitAll(ComputeSimpleKriging());
                             Task.WaitAll(ComputeSequentialGaussianSimulation());
                             Task.WaitAll(ComputeSequentialGaussianSimulationCrossValidation());
                             type = "Sequential Gaussian Simulation";
@@ -2475,15 +2474,197 @@ namespace GeoReVi
         /// <returns></returns>
         public async Task ComputeSequentialGaussianSimulation()
         {
+            if (OriginalLocationValues.Count >= 1)
+
+                try
+                {
+                    double globalMean = 0;
+
+                    //Calculating global mean for error treatment
+                    switch (InterpolationFeature)
+                    {
+                        case InterpolationFeature.Value:
+                            globalMean = OriginalLocationValues.ToArray().Average(x => x.Value[0]);
+                            break;
+                        case InterpolationFeature.Longitude:
+                            globalMean = OriginalLocationValues.ToArray().Average(x => x.X);
+                            break;
+                        case InterpolationFeature.Latitutde:
+                            globalMean = OriginalLocationValues.ToArray().Average(x => x.Y);
+                            break;
+                        case InterpolationFeature.Elevation:
+                            globalMean = OriginalLocationValues.ToArray().Average(x => x.Z);
+                            break;
+                    }
+
+                    int[] randomPath = Enumerable.Range(0, DiscretizedLocationValues.Vertices.Count()).Shuffle().ToArray();
+                    List<LocationTimeValue> simulatedValues = new List<LocationTimeValue>();
+
+                    //Performing the kriging calculation for each point
+                    //Parallel.For(0, DiscretizedLocationValues.Count(), j =>
+                    for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
+                    {
+                        DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = 0;
+
+                        int p = j;
+
+                        List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
+
+                        for (int f = 0; f < OriginalLocationValues.Count(); f++)
+                        {
+                            try
+                            {
+                                double[] distances = new double[3] { Math.Abs(DiscretizedLocationValues.Vertices[randomPath[j]].X - OriginalLocationValues[f].X), Math.Abs(DiscretizedLocationValues.Vertices[randomPath[j]].Y - OriginalLocationValues[f].Y), Math.Abs(DiscretizedLocationValues.Vertices[randomPath[j]].Z - OriginalLocationValues[f].Z) };
+
+                                if (distances[0] > SearchRadiusX)
+                                    continue;
+                                if (distances[1] > SearchRadiusY)
+                                    continue;
+                                if (distances[2] > SearchRadiusZ)
+                                    continue;
+
+                                includedPoints.Add(OriginalLocationValues[f]);
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
+
+                        for (int f = 0; f < simulatedValues.Count(); f++)
+                        {
+                            try
+                            {
+                                double[] distances = new double[3] {
+                                    Math.Abs(DiscretizedLocationValues.Vertices[randomPath[j]].X - simulatedValues[f].X),
+                                    Math.Abs(DiscretizedLocationValues.Vertices[randomPath[j]].Y - simulatedValues[f].Y),
+                                    Math.Abs(DiscretizedLocationValues.Vertices[randomPath[j]].Z - simulatedValues[f].Z) };
+
+                                if (distances[0] > SearchRadiusX)
+                                    continue;
+                                if (distances[1] > SearchRadiusY)
+                                    continue;
+                                if (distances[2] > SearchRadiusZ)
+                                    continue;
+
+                                includedPoints.Add(simulatedValues[f]);
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
+
+                        if (includedPoints == null || includedPoints.Count() == 0)
+                            includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[randomPath[j]].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
+                        else if (includedPoints.Count() > MaximumNeighborCount)
+                            includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
+
+                         double mean = includedPoints.Average(x => x.Value[0]);
+
+                        //Covariance vector
+                        double[] semivarianceVector = new double[includedPoints.Count()];
+                        //Semivariance matrix for the ordinary kriging system
+                        double[,] semivarianceMatrix = new double[includedPoints.Count(), includedPoints.Count()];
+
+                        //Calculating the semivariance matrix based on the variogram model
+                        for (int i = 0; i < includedPoints.Count(); i++)
+                        {
+                            for (int k = 0; k < includedPoints.Count(); k++)
+                            {
+                                semivarianceMatrix[i, k] = Vh.CalculateCovariance(includedPoints[i], includedPoints[k]);
+
+                                if (i == k && IncludeErrorVariance)
+                                    semivarianceMatrix[i, k] += includedPoints[i].Value[0] * ErrorVariance;
+                            }
+                        }
+
+                        for (int i = 0; i < includedPoints.Count(); i++)
+                        {
+                            semivarianceVector[i] = Vh.CalculateCovariance(DiscretizedLocationValues.Vertices[randomPath[j]], includedPoints[i]);
+                        }
+
+                        //Calculating the weights of the original data values on the interpolated value
+                        double[] weights = Matrix.Solve(semivarianceMatrix, semivarianceVector, true);
+
+                        double weightSum = weights.Sum();
+
+                        //Calculating the value at the point which is the sum of the weights times values in the original data table
+                        for (int i = 0; i < includedPoints.Count(); i++)
+                        {
+
+                            //Calculating global mean for error treatment
+                            switch (InterpolationFeature)
+                            {
+                                case InterpolationFeature.Value:
+                                    DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] += weights[i] * (includedPoints[i].Value[0] - mean);
+                                    break;
+                                case InterpolationFeature.Longitude:
+                                    DiscretizedLocationValues.Vertices[randomPath[j]].X += weights[i] * (includedPoints[i].X - mean);
+                                    break;
+                                case InterpolationFeature.Latitutde:
+                                    DiscretizedLocationValues.Vertices[randomPath[j]].Y += weights[i] * (includedPoints[i].Y - mean);
+                                    break;
+                                case InterpolationFeature.Elevation:
+                                    DiscretizedLocationValues.Vertices[randomPath[j]].Z += weights[i] * (includedPoints[i].Z - mean);
+                                    break;
+                            }
+
+                            //Calculating variance
+                            DiscretizedLocationValues.Vertices[randomPath[j]].Value[1] += weights[i] * Vh.CalculateCovariance(includedPoints[i], DiscretizedLocationValues.Vertices[randomPath[j]]);
+
+                        }
+
+                        //Calculating global mean for error treatment
+                        switch (InterpolationFeature)
+                        {
+                            case InterpolationFeature.Value:
+                                DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] += mean;
+                                break;
+                            case InterpolationFeature.Longitude:
+                                DiscretizedLocationValues.Vertices[randomPath[j]].X += mean;
+                                break;
+                            case InterpolationFeature.Latitutde:
+                                DiscretizedLocationValues.Vertices[randomPath[j]].Y += mean;
+                                break;
+                            case InterpolationFeature.Elevation:
+                                DiscretizedLocationValues.Vertices[randomPath[j]].Z += mean;
+                                break;
+                        }
+
+                        //Calculating variance
+                        DiscretizedLocationValues.Vertices[randomPath[j]].Value[1] = Vh.CalculateCovariance(DiscretizedLocationValues.Vertices[randomPath[j]], DiscretizedLocationValues.Vertices[randomPath[j]]) - DiscretizedLocationValues.Vertices[randomPath[j]].Value[1];
+
+                        double krigingMean = DiscretizedLocationValues.Vertices[randomPath[j]].Value[0];
+                        double stdDev = Math.Sqrt((!IncludeLocalVariance ? DiscretizedLocationValues.Vertices[randomPath[j]].Value[1] : LocalVariance));
+
+                        //Using the Box-Muller algorithm to produce Gaussian random number
+                        DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = DistributionHelper.SampleFromGaussian(krigingMean, stdDev);
+
+                        simulatedValues.Add(new LocationTimeValue(DiscretizedLocationValues.Vertices[randomPath[j]]));
+                    }
+
+                    
+                }
+                catch
+                {
+
+                }
+            try
+            {
+                if (MaximumNeighborCount > CrossValidationRemovePointCount)
+                    ComputeSimpleKrigingCrossValidation().AsResult();
+            }
+            catch
+            {
+
+            }
+
             try
             {
                 for (int i = 0; i < DiscretizedLocationValues.Vertices.Count(); i++)
                 {
-                    double mean = DiscretizedLocationValues.Vertices[i].Value[0];
-                    double stdDev = Math.Sqrt((!IncludeLocalVariance ? DiscretizedLocationValues.Vertices[i].Value[1] : LocalVariance));
-
-                    //Using the Box-Muller algorithm to produce Gaussian random number
-                    DiscretizedLocationValues.Vertices[i].Value[0] = DistributionHelper.SampleFromGaussian(mean, stdDev);
+                    
                 }
             }
             catch
