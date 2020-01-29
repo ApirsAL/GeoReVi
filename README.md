@@ -40,6 +40,8 @@ To get started with GeoReVi you have to download the packed file [GeoReVi.zip](h
 * Geoscientific data management and analysis including petrophysical, geochemical, hydraulic, granulometric, magnetic, mechanical, sedimentary, elastic and radiogenic properties eased by a graphical user interface
 * Providing a rich selection of data mining algorithms and visualization techniques specifically aimed to characterize subsurface regions
 
+<img src="docs/Samples/Interpolations/CubeMeasurements.gif" width="50%">
+
 ## Types of charts
 * scatter charts
 * bubble charts
