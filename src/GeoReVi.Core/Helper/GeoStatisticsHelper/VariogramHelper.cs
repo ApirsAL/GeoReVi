@@ -110,6 +110,48 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Checks whether the variogram should be optimized or not
+        /// </summary>
+        private bool optimize = false;
+        public bool Optimize
+        {
+            get => this.optimize;
+            set
+            {
+                this.optimize = value;
+                NotifyOfPropertyChange(() => Optimize);
+            }
+        }
+
+        /// <summary>
+        /// Calculates the number of iterations
+        /// </summary>
+        private int numberOfIterations = 1000;
+        public int NumberOfIterations
+        {
+            get => this.numberOfIterations;
+            set
+            {
+                this.numberOfIterations = value;
+                NotifyOfPropertyChange(() => NumberOfIterations);
+            }
+        }
+
+        /// <summary>
+        /// The maximum error of the approximation
+        /// </summary>
+        private double maximumError = 1.0;
+        public double MaximumError
+        {
+            get => this.maximumError;
+            set
+            {
+                this.maximumError = value;
+                NotifyOfPropertyChange(() => MaximumError);
+            }
+        }
+
+        /// <summary>
         /// Data set used for the analysis
         /// </summary>
         public BindableCollection<LocationTimeValue> DataSet
@@ -221,62 +263,6 @@ namespace GeoReVi
         /// </summary>
         /// <param name="variogram"></param>
         /// <returns></returns>
-        public void OptimizeVariogramModel()
-        {
-            try
-            {
-                //Optimizing the variogram model
-                double xmin = Variogram.Min(x => x.X);
-                double xmax = Variogram.Max(x => x.X);
-                double yNugget = Variogram.Where(x => x.X == 0).Select(x => x.Y).FirstOrDefault();
-                double yMean = Variogram.Select(x => x.Y).Average();
-
-                Nugget = yNugget;
-                Sill = yMean - yNugget;
-                double previousAverageDeviation = 0;
-
-                List<double> gradients = new List<double>();
-
-                for (int i = 0; i < Variogram.Count;i++)
-                {
-                    if(i!=0)
-                    {
-                        double diff = Variogram[i].Y - Variogram[i - 1].Y;
-                        gradients.Add(diff);
-
-                        double actualAverageDeviation = gradients.GetRange(0, i).Average() - gradients.GetRange(0, i).Average();
-
-                        if (previousAverageDeviation == 0)
-                            previousAverageDeviation = actualAverageDeviation;
-                        else
-                        {
-                            if (actualAverageDeviation / previousAverageDeviation <= 10)
-                            {
-                                Range = Variogram[i].X;
-                                break;
-                            }
-                            else
-                            {
-                                if (i == Variogram.Count)
-                                    Range = Variogram.Select(x => x.X).Average();
-                            }
-                        }
-                    }
-                    else
-                        continue;
-                }
-            }
-            catch
-            {
-                return;
-            }
-            
-        }
-        /// <summary>
-        /// Calculates a variogram model
-        /// </summary>
-        /// <param name="variogram"></param>
-        /// <returns></returns>
         public void CalculateVariogramModel()
         {
             double xmin = Variogram.Min(x => x.X);
@@ -319,6 +305,7 @@ namespace GeoReVi
 
             //Calculating the model error
             double error = 0;
+            int itters = 0;
 
             Variogram.ForEach(x =>
                 {
@@ -328,6 +315,27 @@ namespace GeoReVi
             );
 
             SquaredDifferences = error;
+            double learningRate = 0.01;
+
+            if(Optimize)
+                while(itters < NumberOfIterations && SquaredDifferences > MaximumError)
+                {
+                    double previousNugget = Nugget;
+                    double previousSill = Sill;
+                    double previousRange = Range;
+
+
+                    error = 0;
+
+                    Variogram.ForEach(x =>
+                    {
+                        if (!Double.IsNaN(x.Y))
+                            error += Math.Pow(x.Y - CalculateSemivariance(new LocationTimeValue(x.X, 0, 0), new LocationTimeValue()), 2);
+                    });
+
+                    SquaredDifferences = error;
+                }
+
         }
 
         /// <summary>

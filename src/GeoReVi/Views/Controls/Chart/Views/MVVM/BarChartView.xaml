@@ -133,21 +133,27 @@
                                   Grid.Row="0"
                                   HorizontalAlignment="Stretch">
                         <TextBlock Text="{Binding Path=Barco.Title}"
-                                   Canvas.Top="-15">
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   Canvas.Top="-20"
+                                   FontWeight="Bold">
                         </TextBlock>
 
                     </Canvas>
                     <Canvas>
                         <TextBlock Text="{Binding Path=Barco.XLabel.Text}"
                                        Canvas.Left="{Binding Path=Barco.XLabel.X}"
-                                       Canvas.Top="{Binding Path=Barco.XLabel.Y}">
+                                       Canvas.Top="{Binding Path=Barco.XLabel.Y}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   FontWeight="Bold">
                         </TextBlock>
 
                     </Canvas>
                     <Canvas VerticalAlignment="Stretch">
                         <TextBlock Text="{Binding Path=Barco.YLabel.Text}"
                                    Canvas.Left="{Binding Path=Barco.YLabel.X}"
-                                       Canvas.Top="{Binding Path=Barco.YLabel.Y}">
+                                   Canvas.Top="{Binding Path=Barco.YLabel.Y}"
+                                   FontSize="{StaticResource FontSizeSmall}"
+                                   FontWeight="Bold">
                             <TextBlock.LayoutTransform>
                                 <RotateTransform Angle="270"/>
                             </TextBlock.LayoutTransform>

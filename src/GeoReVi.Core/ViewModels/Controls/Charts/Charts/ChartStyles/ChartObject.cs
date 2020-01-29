@@ -888,87 +888,15 @@ namespace GeoReVi
             if ((Ymax - Ymin) / YTick > 100)
                 YTick = (Ymax - Ymin) / 10;
 
+            Size xlabelSize = MeasureString(XLabel.Text);
+            Size ylabelSize = MeasureString(YLabel.Text);
+
             try
             {
+                //Meta data for the placement of the controls
                 int i = 0;
-
-                // Create x-axis tick marks: 
-                if (!IsXLog)
-                    for (dx = Xmin; dx <= Xmax; dx += xTick)
-                    {
-                        if (xTick == 0)
-                            xTick += 1;
-
-                        LocationTimeValue pt = NormalizePoint(new LocationTimeValue(dx, Ymin));
-                        tick = new Gridline();
-                        tick.X1 = pt.X;
-                        tick.Y1 = pt.Y;
-                        tick.X2 = pt.X;
-                        tick.Y2 = pt.Y - 5;
-                        XTicks.Add(tick);
-
-                        Label tb = new Label()
-                        {
-                            Text = dx.ToString(),
-                            X = pt.X - MeasureString(dx.ToString()).Width - 5,
-                            Y = pt.Y + MeasureString(dx.ToString()).Height
-                        };
-
-                        if (dx == Xmin)
-                        {
-                            XLabel.X = ChartWidth / 2 - MeasureString(XLabel.Text).Width;
-                            XLabel.Y = ChartHeight + 3.5*MeasureString(XLabel.Text).Height;
-                        }
-
-                        if (tb.Text == "0" && dx != Xmin)
-                            tb.Text = dx.ToString("E0");
-
-                        XLabels.Add(tb);
-
-                        i++;
-                    }
-                else
-                {
-                    double a = Xmin == 0 ? 0.1 : Xmin;
-                    for (dx = a; dx <= Xmax; dx += 9 * dx)
-                    {
-                        if (a == 0)
-                            break;
-
-                        LocationTimeValue pt = NormalizePoint(new LocationTimeValue(dx, Ymin));
-                        tick = new Gridline();
-                        tick.X1 = pt.X;
-                        tick.Y1 = pt.Y;
-                        tick.X2 = pt.X;
-                        tick.Y2 = pt.Y - 5;
-                        XTicks.Add(tick);
-
-                        Label tb = new Label()
-                        {
-                            Text = dx.ToString(),
-                            X = pt.X - MeasureString(Math.Round(dx, 2).ToString()).Width - 5,
-                            Y = pt.Y + MeasureString(Math.Round(dx, 2).ToString()).Height
-                        };
-
-                        if (dx == Xmin)
-                        {
-                            XLabel.X = ChartWidth/2 - MeasureString(XLabel.Text).Width;
-                            XLabel.Y = ChartHeight + 3.5 * MeasureString(XLabel.Text).Height;
-                        }
-
-                        if (tb.Text == "0" && dx != Xmin)
-                            tb.Text = a.ToString("E0");
-
-                        XLabels.Add(tb);
-
-                        i++;
-                    }
-                }
-
-                i = 0;
-
-                    double width = 0;
-                    double maxWidth = 0;
+                double width = 0;
+                double maxWidth = 0;
 
                 // Create y-axis tick marks: 
                 if (!IsYLog)
@@ -1010,7 +938,7 @@ namespace GeoReVi
                         if (dy == Ymin)
                         {
                             YLabel.X = -1 * maxWidth;
-                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Height / 2;
+                            YLabel.Y = ChartHeight / 2 - MeasureString(YLabel.Text).Height / 2 - 3.5 * xlabelSize.Height;
                         }
 
                         YLabels.Add(tb);
@@ -1070,6 +998,84 @@ namespace GeoReVi
 
                     }
                 }
+
+
+
+                i = 0;
+
+                // Create x-axis tick marks: 
+                if (!IsXLog)
+                    for (dx = Xmin; dx <= Xmax; dx += xTick)
+                    {
+                        if (xTick == 0)
+                            xTick += 1;
+
+                        LocationTimeValue pt = NormalizePoint(new LocationTimeValue(dx, Ymin));
+                        tick = new Gridline();
+                        tick.X1 = pt.X;
+                        tick.Y1 = pt.Y;
+                        tick.X2 = pt.X;
+                        tick.Y2 = pt.Y - 5;
+                        XTicks.Add(tick);
+
+                        Label tb = new Label()
+                        {
+                            Text = dx.ToString(),
+                            X = pt.X - MeasureString(dx.ToString()).Width,
+                            Y = pt.Y + MeasureString(dx.ToString()).Height
+                        };
+
+                        if (dx == Xmin)
+                        {
+                            XLabel.X = ChartWidth / 2 - xlabelSize.Width + maxWidth + 5;
+                            XLabel.Y = ChartHeight + 3.5 * xlabelSize.Height;
+                        }
+
+                        if (tb.Text == "0" && dx != Xmin)
+                            tb.Text = dx.ToString("E0");
+
+                        XLabels.Add(tb);
+
+                        i++;
+                    }
+                else
+                {
+                    double a = Xmin == 0 ? 0.1 : Xmin;
+                    for (dx = a; dx <= Xmax; dx += 9 * dx)
+                    {
+                        if (a == 0)
+                            break;
+
+                        LocationTimeValue pt = NormalizePoint(new LocationTimeValue(dx, Ymin));
+                        tick = new Gridline();
+                        tick.X1 = pt.X;
+                        tick.Y1 = pt.Y;
+                        tick.X2 = pt.X;
+                        tick.Y2 = pt.Y - 5;
+                        XTicks.Add(tick);
+
+                        Label tb = new Label()
+                        {
+                            Text = dx.ToString(),
+                            X = pt.X - MeasureString(Math.Round(dx, 2).ToString()).Width - 5,
+                            Y = pt.Y + MeasureString(Math.Round(dx, 2).ToString()).Height
+                        };
+
+                        if (dx == Xmin)
+                        {
+                            XLabel.X = ChartWidth / 2 - MeasureString(XLabel.Text).Width;
+                            XLabel.Y = ChartHeight + 3.5 * MeasureString(XLabel.Text).Height;
+                        }
+
+                        if (tb.Text == "0" && dx != Xmin)
+                            tb.Text = a.ToString("E0");
+
+                        XLabels.Add(tb);
+
+                        i++;
+                    }
+                }
+
             }
             catch
             {

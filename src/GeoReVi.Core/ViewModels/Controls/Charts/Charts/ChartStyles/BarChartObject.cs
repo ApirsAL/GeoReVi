@@ -379,53 +379,9 @@ namespace GeoReVi
 
         public void SubdivideAxes()
         {
-            double local;
-
-            local = Math.Round(AllValues.Min(), 1) == 0 ?
-                (Math.Round(AllValues.Min(), 2) == 0 ?
-                (Math.Round(AllValues.Min(), 3) == 0 ?
-                (Math.Round(AllValues.Min(), 4) == 0 ?
-                  Math.Round(AllValues.Min(), 4)
-                : Math.Round(AllValues.Min(), 4))
-                : Math.Round(AllValues.Min(), 3))
-                : Math.Round(AllValues.Min(), 2))
-                : Math.Round(AllValues.Min(), 1);
-
-            //Math.Round(Bs.BarPoints.Min(x => x.X), 1);
-
-            if (local > 0 && local < Xmin) { Xmin = local - local * 0.1; }
-            else if (local < 0 && local > Xmin) { Xmin = local - local * 0.1; }
-
-            local = Math.Round(AllValues.Max(), 1) == 0 ?
-                (Math.Round(AllValues.Max(), 2) == 0 ?
-                (Math.Round(AllValues.Max(), 3) == 0 ?
-                (Math.Round(AllValues.Max(), 4) == 0 ?
-                  Math.Round(AllValues.Max(), 4)
-                : Math.Round(AllValues.Max(), 4))
-                : Math.Round(AllValues.Max(), 3))
-                : Math.Round(AllValues.Max(), 2))
-                : Math.Round(AllValues.Max(), 1);
-
-            //Math.Round(Bs.BarPoints.Max(x => x.X), 1);
-
-            if (local > 0 && local > Xmax) { Xmax = local + local * 0.1; }
-            else if (local > Xmax) { Xmax = local - local * 0.1; }
-            else if (local < Xmax) { Xmax = local; }
-
-            local = Math.Round(Bs[0].BarPoints.Min(y => y.Y), 1) == 0 ?
-                (Math.Round(Bs[0].BarPoints.Min(y => y.Y), 2) == 0 ?
-                (Math.Round(Bs[0].BarPoints.Min(y => y.Y), 3) == 0 ?
-                (Math.Round(Bs[0].BarPoints.Min(y => y.Y), 4) == 0 ?
-                  Math.Round(Bs[0].BarPoints.Min(y => y.Y), 4)
-                : Math.Round(Bs[0].BarPoints.Min(y => y.Y), 4))
-                : Math.Round(Bs[0].BarPoints.Min(y => y.Y), 3))
-                : Math.Round(Bs[0].BarPoints.Min(y => y.Y), 2))
-                : Math.Round(Bs[0].BarPoints.Min(y => y.Y), 1);
-
-            //Math.Round(Bs.BarPoints.Min(y => y.Y), 1);
-
             Ymin = 0;
-            Ymax = Convert.ToDouble(maxCount);
+            Ymax = AllValues.Count();
+            Xmax = AllValues.Max();
 
             YTick = Math.Round((Ymax - Ymin) / 10, 0);
 

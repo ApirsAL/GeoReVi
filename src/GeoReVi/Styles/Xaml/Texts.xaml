@@ -16,7 +16,7 @@
     <Style TargetType="{x:Type TextBlock}" x:Key="HeaderText" BasedOn="{StaticResource BaseTextBlockStyle}">
         <Style.Setters>
             <Setter Property="FontSize" Value="16"></Setter>
-            <!--<Setter Property="FontFamily" Value="Pescadero"></Setter>-->
+            <Setter Property="FontFamily" Value="Arial, Century Gothic"></Setter>
             <Setter Property="FontWeight" Value="DemiBold"></Setter>
             <!--<Setter Property="Typography.Capitals" Value="SmallCaps"/>-->
             <Setter Property="Margin" Value="3"></Setter>
@@ -30,7 +30,7 @@
     <Style TargetType="{x:Type TextBlock}" x:Key="GridViewColumnTextStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
         <Style.Setters>
             <Setter Property="FontSize" Value="12"></Setter>
-            <Setter Property="FontFamily" Value="Segoue UI"></Setter>
+            <Setter Property="FontFamily" Value="Arial, Century Gothic"></Setter>
             <Setter Property="Margin" Value="3"></Setter>
             <Setter Property="FontWeight" Value="SemiBold"></Setter>
             <Setter Property="Foreground" Value="{StaticResource ForegroundVeryDarkBrush}"></Setter>

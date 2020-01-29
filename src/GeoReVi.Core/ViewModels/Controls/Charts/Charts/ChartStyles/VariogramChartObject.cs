@@ -166,8 +166,6 @@ namespace GeoReVi
         /// </summary>
         public void OptimizeModel()
         {
-            vh.OptimizeVariogramModel();
-
             CreateChart();
         }
 

@@ -10,11 +10,11 @@
 
 
     <Style TargetType="{x:Type Control}" x:Key="BaseStyle">
-        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontFamily" Value="Arial, Century Gothic"/>
     </Style>
 
     <Style TargetType="{x:Type TextBlock}" x:Key="BaseTextBlockStyle">
-        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontFamily" Value="Arial, Century Gothic"/>
     </Style>
 
     <Style TargetType="{x:Type Label}" BasedOn="{StaticResource BaseStyle}"/>

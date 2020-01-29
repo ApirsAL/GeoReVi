@@ -16,14 +16,13 @@
         <ControlTemplate TargetType="UserControl">
             <!---Displaying related charts-->
             <Grid x:Name="ChartStackPan"
-                                Grid.ColumnSpan="3"
-                                        Grid.Row="3"
-                                Margin="6"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch">
+                  Grid.ColumnSpan="3"
+                  Grid.Row="3"
+                  Margin="6"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
                 <TabControl HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch"
-                                        MaxHeight="800">
+                                        VerticalAlignment="Stretch">
                     <TabItem Header="Univariate">
                         <TabControl>
                             <TabItem Header="Data">

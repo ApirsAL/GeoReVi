@@ -90,4 +90,5 @@ If bugs or any other issues are identified we would be grateful for reporting th
 
 ### Three-dimensional principal component analysis
 <img src="docs/Samples/MultivariateAnalyses/3D_Principal_Component_Analysis.png" width="50%">
+<img src="docs/Samples/MultivariateAnalyses/PCA.gif" width="50%">
 

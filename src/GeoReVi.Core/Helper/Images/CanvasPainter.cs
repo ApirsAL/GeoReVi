@@ -1404,7 +1404,8 @@ namespace GeoReVi
                     {
                         System.Windows.Shapes.Rectangle myRectangle = (System.Windows.Shapes.Rectangle)element;
 
-                        DrawRectangle(x, y, w, h, pen, GDIFill);
+                        if(myRectangle.Height != 0)
+                            DrawRectangle(x, y, w, h, pen, GDIFill);
                     }
                     else if (t == typeof(System.Windows.Shapes.Polyline))
                     {
@@ -1508,9 +1509,12 @@ namespace GeoReVi
 
                     //y = Convert.ToSingle(VisualTreeHelper.GetOffset(element).Y - element.RenderTransform.Value.OffsetY);
 
+                    System.Drawing.FontStyle fontStyle = element.FontWeight == FontWeights.Regular ? System.Drawing.FontStyle.Regular : System.Drawing.FontStyle.Bold;
+
                     Font font = new Font(new FontConverter.FontNameConverter().ConvertToString(element.FontFamily),
                                          Convert.ToSingle((double)new FontSizeConverter().ConvertFrom(element.FontSize - 2)),
-                                         System.Drawing.FontStyle.Regular);
+                                         fontStyle);
+
 
                     System.Drawing.SolidBrush GDIStroke = ConvertSolidColorBrush(element.Foreground as SolidColorBrush);
 
