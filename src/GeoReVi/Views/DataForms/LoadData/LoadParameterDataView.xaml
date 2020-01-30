@@ -846,6 +846,9 @@
                                                                 <TextBlock Text="MAE"
                                                                                FontWeight="DemiBold"/>
                                                                 <TextBlock Text="{Binding Path=SpatialInterpolationHelper.MAE, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
+                                                                <TextBlock Text="Computation time (s)"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.ComputationTime, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
                                                             </StackPanel>
                                                         </Expander>
                                                         <DockPanel>
@@ -1040,6 +1043,12 @@
                                             <Grid Background="Gray"
                       Opacity="0.4"
                       Visibility="{Binding Path=SpatialInterpolationHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
+                                            <ProgressBar Visibility="{Binding Path=SpatialInterpolationHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                         Height="20"
+                                                         Width="100"
+                                                         Maximum="100"
+                                                         Minimum="0"
+                                                         Value="{Binding Path=SpatialInterpolationHelper.Status}"/>
                                             <Grid Background="Gray"
                       Opacity="0.4"
                       Visibility="{Binding Path=NumericalSolverHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>

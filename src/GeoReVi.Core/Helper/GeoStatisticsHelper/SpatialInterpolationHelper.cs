@@ -4,6 +4,7 @@ using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -150,6 +151,8 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => ShouldTargetVertexFitSourceGridName);
             }
         }
+
+
 
         /// <summary>
         /// The error variance of the measurement
@@ -510,10 +513,13 @@ namespace GeoReVi
             CommandHelper ch = new CommandHelper();
             await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsComputing, async () =>
             {
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
 
                 try
                 {
                     string type = "";
+                    Status = 0;
 
                     switch (InterpolationMethod)
                     {
@@ -548,6 +554,15 @@ namespace GeoReVi
                 catch
                 {
 
+                }
+                finally
+                {
+                    stopWatch.Stop();
+                    // Get the elapsed time as a TimeSpan value.
+                    TimeSpan ts = stopWatch.Elapsed;
+
+                    ComputationTime = ts.TotalSeconds;
+                    Status = 0;
                 }
             }));
 
@@ -893,6 +908,8 @@ namespace GeoReVi
                 for (int i = 0; i < DiscretizedLocationValues.Vertices.Count(); i++)
                 //Parallel.For((int)0, (int)DiscretizedLocationValues.Vertices.Count(), k =>
                 {
+                    if (i!= 0 && i % 100 == 0)
+                            Status = (Convert.ToDouble(i) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
                     try
                     {
                         //int i = Convert.ToInt32(k);
@@ -1211,6 +1228,9 @@ namespace GeoReVi
                 //Parallel.For(0, DiscretizedLocationValues.Vertices.Count(), j =>
                 for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
                 {
+                    if (j != 0 && j % 100 == 0)
+                        Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+
                     DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
@@ -1569,6 +1589,9 @@ namespace GeoReVi
                     //Parallel.For(0, DiscretizedLocationValues.Count(), j =>
                     for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
                     {
+                        if (j != 0 && j % 100 == 0)
+                            Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+
                         DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
@@ -1912,6 +1935,9 @@ namespace GeoReVi
                 //Parallel.For(0, DiscretizedLocationValues.Vertices.Count(), j =>
                 for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
                 {
+                    if (j != 0 && j % 100 == 0)
+                        Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+
                     await Task.Delay(0);
 
                     //Buffer of the original data values where the number of points defined for validation will be removed before kriging
@@ -2389,6 +2415,9 @@ namespace GeoReVi
                 //Parallel.For(0, NumberOfSwaps, j =>
                 for (int j = 0; j < NumberOfSwaps; j++)
                 {
+                    if (j != 0 && j % 100 == 0)
+                        Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+
                     int rnd1 = rnd.Next(0, DiscretizedLocationValues.Vertices.Count());
                     int rnd2 = rnd.Next(0, DiscretizedLocationValues.Vertices.Count());
 
@@ -2504,9 +2533,10 @@ namespace GeoReVi
                     //Parallel.For(0, DiscretizedLocationValues.Count(), j =>
                     for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
                     {
-                        DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = 0;
+                        if (j != 0 && j % 100 == 0)
+                            Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
 
-                        int p = j;
+                        DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = 0;
 
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
 
@@ -2649,6 +2679,10 @@ namespace GeoReVi
                 catch
                 {
 
+                }
+                finally
+                {
+                    Status = 0;
                 }
             try
             {

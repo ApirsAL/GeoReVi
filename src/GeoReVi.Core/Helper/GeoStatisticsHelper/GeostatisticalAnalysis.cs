@@ -20,5 +20,33 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => IsComputing);
             }
         }
+
+        /// <summary>
+        /// The status of the calculation
+        /// </summary>
+        private double status = 0;
+        public double Status
+        {
+            get => this.status;
+            set
+            {
+                this.status = value;
+                NotifyOfPropertyChange(() => Status);
+            }
+        }
+
+        /// <summary>
+        /// The computation time in seconds
+        /// </summary>
+        private double computationTime = 0;
+        public double ComputationTime
+        {
+            get => this.computationTime;
+            set
+            {
+                this.computationTime = value;
+                NotifyOfPropertyChange(() => ComputationTime);
+            }
+        }
     }
 }

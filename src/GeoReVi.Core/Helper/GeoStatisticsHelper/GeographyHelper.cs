@@ -14,9 +14,14 @@ namespace GeoReVi
         {
             List<XY> valList = new List<XY>();
 
-            for (int i = 0; i < Points.Count(); i++)
+            int f = 1;
+
+            if (Points.Count() > 10000)
+                f = 100;
+
+            for (int i = 0; i < Points.Count(); i+=f)
             {
-                for (int j = 0; j <= i; j++)
+                for (int j = 0; j <= i; j+=f)
                 {
                     if (i != j)
                     {

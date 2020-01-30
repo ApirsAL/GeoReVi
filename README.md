@@ -4,7 +4,7 @@
 # GeoReVi
 
 <img align="right" src="docs/Icon.png" width="50px">
-GeoReVi (Geological Reservoir Virtualization) is an open-source data management and analysis tool for subsurface applications. The software is intended to be used for reservoir data collection, data processing, data curation, data visualization and eventually for reservoir characterization. Data is stored in a local or server database dependent on the specific needs. The software runs on all Windows systems.
+GeoReVi (Geological Reservoir Virtualization) is an open-source data management and analysis tool for subsurface characterization. Data is stored in a local or server database dependent on the specific needs. The software runs on all Windows systems.
 
 ## License
 
