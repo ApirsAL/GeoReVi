@@ -22,6 +22,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Checks whether a cancellation takes place ATM or not
+        /// </summary>
+        private bool isCancelled = false;
+        public bool IsCancelled
+        {
+            get => this.isCancelled;
+            set
+            {
+                this.isCancelled = value;
+                NotifyOfPropertyChange(() => IsCancelled);
+            }
+        }
+
+        /// <summary>
         /// The status of the calculation
         /// </summary>
         private double status = 0;

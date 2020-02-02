@@ -1043,12 +1043,18 @@
                                             <Grid Background="Gray"
                       Opacity="0.4"
                       Visibility="{Binding Path=SpatialInterpolationHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
-                                            <ProgressBar Visibility="{Binding Path=SpatialInterpolationHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
-                                                         Height="20"
-                                                         Width="100"
-                                                         Maximum="100"
-                                                         Minimum="0"
-                                                         Value="{Binding Path=SpatialInterpolationHelper.Status}"/>
+                                            <DockPanel  Visibility="{Binding Path=SpatialInterpolationHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                        Width="200">
+                                                <ProgressBar Height="20"
+                                                             Width="100"
+                                                             Maximum="100"
+                                                             Minimum="0"
+                                                             Value="{Binding Path=SpatialInterpolationHelper.Status}"/>
+                                                <CheckBox Style="{StaticResource OnOffCheckBoxStyle}" 
+                                                          Content="Cancel"
+                                                          Height="30"
+                                                          IsChecked="{Binding Path=SpatialInterpolationHelper.IsCancelled}"/>
+                                            </DockPanel>
                                             <Grid Background="Gray"
                       Opacity="0.4"
                       Visibility="{Binding Path=NumericalSolverHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>

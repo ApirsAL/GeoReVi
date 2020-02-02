@@ -221,7 +221,7 @@
     <Compile Include="Views\Controls\Chart\Views\MVVM\HelixChart3DView.xaml.cs">
       <DependentUpon>HelixChart3DView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Chart\Views\MVVM\DatasetManagementAndVisualizationView.xaml.cs">
+    <Compile Include="Views\DataForms\LoadData\DatasetManagementAndVisualizationView.xaml.cs">
       <DependentUpon>DatasetManagementAndVisualizationView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Chart\Views\MVVM\LineAndScatterChartView.xaml.cs">
@@ -268,6 +268,9 @@
     </Compile>
     <Compile Include="Views\Controls\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\Statistics\AnalyticalHierarchyProcessView.xaml.cs">
+      <DependentUpon>AnalyticalHierarchyProcessView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Statistics\MeshStatisticsView.xaml.cs">
       <DependentUpon>MeshStatisticsView.xaml</DependentUpon>
@@ -625,7 +628,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\Chart\Views\MVVM\DatasetManagementAndVisualizationView.xaml">
+    <Page Include="Views\DataForms\LoadData\DatasetManagementAndVisualizationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -706,6 +709,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\ColorPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\Statistics\AnalyticalHierarchyProcessView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

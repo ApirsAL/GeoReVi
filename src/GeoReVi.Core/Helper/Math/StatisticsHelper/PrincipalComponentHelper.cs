@@ -453,22 +453,5 @@ namespace GeoReVi
             }
         }
 
-        /// <summary>
-        /// Converting a Accord.Statistics.Analysis.AnalysisMethod to a Accord.Statistics.Analysis.PrincipalComponentMethod
-        /// </summary>
-        /// <param name="method"></param>
-        /// <returns></returns>
-        public Accord.Statistics.Analysis.PrincipalComponentMethod ConvertMethod(Accord.Statistics.Analysis.AnalysisMethod method)
-        {
-            switch (method)
-            {
-                case AnalysisMethod.Center:
-                    return Accord.Statistics.Analysis.PrincipalComponentMethod.Center;
-                case AnalysisMethod.Standardize:
-                    return Accord.Statistics.Analysis.PrincipalComponentMethod.Standardize;
-                default:
-                    return Accord.Statistics.Analysis.PrincipalComponentMethod.Center;
-            }
-        }
     }
 }

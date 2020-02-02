@@ -156,6 +156,12 @@
                                                     cal:Message.Attach="AddDataToCluster"/>
                                             </Grid>
                                         </TabItem>
+                                        <TabItem Header="AHP">
+                                            <Grid>
+                                                <ContentControl
+                                            cal:View.Model="{Binding AnalyticalHierarchyProcessViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
                                     </TabControl>
                                 </TabItem>
                                 <TabItem Header="Charts">

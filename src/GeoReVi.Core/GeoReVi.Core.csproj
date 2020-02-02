@@ -311,6 +311,7 @@
     <Compile Include="Helper\Math\Interfaces\IMachineLearningAnalysis.cs" />
     <Compile Include="Helper\Math\MachineLearningHelper\MachineLearningAnalysis.cs" />
     <Compile Include="Helper\Math\MachineLearningHelper\SupportVectorMachineHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\AnalyticalHierarchyProcessHelper.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\ClusteringHelper.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\DataSetType.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\MissingDataTreatment.cs" />
@@ -394,6 +395,7 @@
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BarChartViewModel.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BoxWhiskerChartViewModel.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\ChartViewModelBase.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\AnalyticalHierarchyProcessViewModel.cs" />
     <Compile Include="ViewModels\Controls\Statistics\MeshStatisticsViewModel.cs" />
     <Compile Include="ViewModels\DataForms\Data\DatasetManagementAndVisualizationViewModel.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\Gridline.cs" />

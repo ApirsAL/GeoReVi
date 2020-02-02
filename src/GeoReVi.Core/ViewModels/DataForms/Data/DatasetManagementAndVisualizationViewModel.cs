@@ -196,6 +196,20 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// An analytical hierarchy process object
+        /// </summary>
+        private AnalyticalHierarchyProcessViewModel analyticalHierarchyProcessViewModel = new AnalyticalHierarchyProcessViewModel();
+        public AnalyticalHierarchyProcessViewModel AnalyticalHierarchyProcessViewModel
+        {
+            get => this.analyticalHierarchyProcessViewModel;
+            set
+            {
+                this.analyticalHierarchyProcessViewModel = value;
+                NotifyOfPropertyChange(() => AnalyticalHierarchyProcessViewModel);
+            }
+        }
+
         #endregion
 
         #endregion
@@ -293,6 +307,30 @@ namespace GeoReVi
         /// Creating the viewmodel for principal component analysis
         /// </summary>
         public void AddToPca()
+        {
+            try
+            {
+                MultiParameterViewModel.SelectedMeasPoint.Data.AcceptChanges();
+            }
+            catch
+            {
+
+            }
+
+            try
+            {
+                PrincipalComponentAnalysisViewModel.PrincipalComponentHelper.DataSet.Add(MultiParameterViewModel.SelectedMeasPoint);
+            }
+            catch
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Creating the viewmodel for principal component analysis
+        /// </summary>
+        public void AddToAHP()
         {
             try
             {

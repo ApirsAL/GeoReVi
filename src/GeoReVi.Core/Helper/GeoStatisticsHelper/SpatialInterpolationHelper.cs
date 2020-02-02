@@ -557,6 +557,7 @@ namespace GeoReVi
                 }
                 finally
                 {
+                    IsCancelled = false;
                     stopWatch.Stop();
                     // Get the elapsed time as a TimeSpan value.
                     TimeSpan ts = stopWatch.Elapsed;
@@ -908,8 +909,11 @@ namespace GeoReVi
                 for (int i = 0; i < DiscretizedLocationValues.Vertices.Count(); i++)
                 //Parallel.For((int)0, (int)DiscretizedLocationValues.Vertices.Count(), k =>
                 {
-                    if (i!= 0 && i % 100 == 0)
-                            Status = (Convert.ToDouble(i) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                    if (i != 0 && i % 100 == 0)
+                        Status = (Convert.ToDouble(i) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                    else if (IsCancelled == true)
+                        break;
+
                     try
                     {
                         //int i = Convert.ToInt32(k);
@@ -1230,6 +1234,8 @@ namespace GeoReVi
                 {
                     if (j != 0 && j % 100 == 0)
                         Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                    else if (IsCancelled == true)
+                        break;
 
                     DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
@@ -1591,6 +1597,8 @@ namespace GeoReVi
                     {
                         if (j != 0 && j % 100 == 0)
                             Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                        else if (IsCancelled == true)
+                            break;
 
                         DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
@@ -1937,6 +1945,8 @@ namespace GeoReVi
                 {
                     if (j != 0 && j % 100 == 0)
                         Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                    else if (IsCancelled == true)
+                        break;
 
                     await Task.Delay(0);
 
@@ -2417,6 +2427,8 @@ namespace GeoReVi
                 {
                     if (j != 0 && j % 100 == 0)
                         Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                    else if (IsCancelled == true)
+                        break;
 
                     int rnd1 = rnd.Next(0, DiscretizedLocationValues.Vertices.Count());
                     int rnd2 = rnd.Next(0, DiscretizedLocationValues.Vertices.Count());
@@ -2535,6 +2547,8 @@ namespace GeoReVi
                     {
                         if (j != 0 && j % 100 == 0)
                             Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                        else if (IsCancelled == true)
+                            break;
 
                         DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = 0;
 

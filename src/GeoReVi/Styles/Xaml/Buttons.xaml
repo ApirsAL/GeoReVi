@@ -381,7 +381,7 @@
     </Style>
 
     <!--Style for main grid buttons-->
-    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}" x:Key="MainButton">
+    <Style TargetType="{x:Type Button}" x:Key="MainButton">
 
         <Setter Property="FontFamily" Value="{StaticResource LatoRegular}"></Setter>
         <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}"></Setter>
@@ -458,7 +458,7 @@
     </Style>
 
     <!--Style for hyperlinks-->
-    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}" x:Key="HyperlinkButton">
+    <Style TargetType="{x:Type Button}" x:Key="HyperlinkButton">
 
         <Setter Property="FontFamily" Value="{StaticResource LatoRegular}"></Setter>
         <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}"></Setter>
