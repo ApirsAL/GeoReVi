@@ -265,9 +265,6 @@ namespace GeoReVi
 
                 if (AllValues != null)
                 {
-                    //var histogram = new Histogram();
-                    //histogram.Compute(AllValues.ToArray());
-
                     //Subdividing into bins
                     double[] bins = DistributionHelper.Subdivide(AllValues.ToArray(), NumberBins);
                     double width = bins[1] - bins[0];
