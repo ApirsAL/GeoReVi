@@ -2,21 +2,21 @@
 
 namespace GeoReVi
 {
-    public class UnivariateDistributionTestHelper : PropertyChangedBase, IUnivariateDataSetHolder
+    public class UnivariateDistributionTestHelper : BasicUnivariateStatisticalMeasuresHelper, IStatisticalAnalysis
     {
         #region Public properties
 
         /// <summary>
-        /// The data set that is hold
+        /// Kolmogorov-Smirnoff Helper
         /// </summary>
-        private double[] dataSet = new double[] { };
-        public double[] DataSet
+        private KolmogorovSmirnovHelper kolmogorovSmirnovHelper;
+        public KolmogorovSmirnovHelper KolmogorovSmirnovHelper
         {
-            get => dataSet;
+            get => this.kolmogorovSmirnovHelper;
             set
             {
-                this.dataSet = value;
-                NotifyOfPropertyChange(() => DataSet);
+                this.kolmogorovSmirnovHelper = value;
+                NotifyOfPropertyChange(() => KolmogorovSmirnovHelper);
             }
         }
 
@@ -27,18 +27,18 @@ namespace GeoReVi
         /// <summary>
         /// Default constructor
         /// </summary>
-        public UnivariateDistributionTestHelper()
-        {
-
-        }
-
-        /// <summary>
-        /// Constructor with dataset
-        /// </summary>
-        /// <param name="_dataSet">The univariate data set array</param>
         public UnivariateDistributionTestHelper(double[] _dataSet)
         {
-            DataSet = _dataSet;
+            KolmogorovSmirnovHelper = new KolmogorovSmirnovHelper(_dataSet);
+        }
+
+        #endregion
+
+        #region Methods
+
+        public void ComputeKolmogorovSmirnov()
+        {
+
         }
 
         #endregion

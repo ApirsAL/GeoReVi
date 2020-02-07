@@ -13,19 +13,20 @@ namespace GeoReVi
     {
         #region Public properties
 
+        /// <summary>
+        /// Data set
+        /// </summary>
         private double[] dataSet = new double[] { };
-        public double[] DataSet { get => this.dataSet; private set { this.dataSet = value; NotifyOfPropertyChange(() => DataSet); } }
-
-        private string dataSetIdentifier = "";
-        public string DataSetIdentifier
+        public double[] DataSet
         {
-            get => this.dataSetIdentifier;
+            get => this.dataSet;
             private set
             {
-                this.dataSetIdentifier = value;
-                NotifyOfPropertyChange(() => DataSetIdentifier);
+                this.dataSet = value;
+                NotifyOfPropertyChange(() => DataSet);
             }
         }
+
 
         private int count = 0;
         public int Count
@@ -172,10 +173,9 @@ namespace GeoReVi
 
         }
 
-        public BasicUnivariateStatisticalMeasuresHelper(double[] _dataSet, string _dataSetIdentifier = "")
+        public BasicUnivariateStatisticalMeasuresHelper(double[] _dataSet)
         {
             DataSet = _dataSet;
-            DataSetIdentifier = _dataSetIdentifier;
             Compute();
         }
 

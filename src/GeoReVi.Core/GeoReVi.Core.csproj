@@ -318,6 +318,9 @@
     <Compile Include="Helper\Math\StatisticsHelper\RegressionFunctionBiVariate.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\SammonProjectionHelper.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\MeshStatisticsHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\Tests\BaseStatisticalTest.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\Tests\KolmogorovSmirnovHelper.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\TransformationType.cs" />
     <Compile Include="Helper\Math\XY.cs" />
     <Compile Include="Helper\Paralellism\ParalellismHelper.cs" />
     <Compile Include="IoC\FileManager\FileManager.cs" />
@@ -397,6 +400,7 @@
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\ChartViewModelBase.cs" />
     <Compile Include="ViewModels\Controls\Statistics\AnalyticalHierarchyProcessViewModel.cs" />
     <Compile Include="ViewModels\Controls\Statistics\MeshStatisticsViewModel.cs" />
+    <Compile Include="ViewModels\Controls\Statistics\UnivariateStatisticalTestViewModel.cs" />
     <Compile Include="ViewModels\DataForms\Data\DatasetManagementAndVisualizationViewModel.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\Gridline.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\Label.cs" />

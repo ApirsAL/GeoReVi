@@ -66,13 +66,16 @@ namespace GeoReVi
 
         #region Constructor
 
-        public UnivariateHeterogeneityMeasuresHelper(double[] _dataSet, string dataSetName = "") : base(_dataSet, dataSetName)
+        public UnivariateHeterogeneityMeasuresHelper(double[] _dataSet) : base(_dataSet)
         {
             Compute();
         }
 
         #endregion
 
+        /// <summary>
+        /// Computing the tests
+        /// </summary>
         public void Compute()
         {
             try

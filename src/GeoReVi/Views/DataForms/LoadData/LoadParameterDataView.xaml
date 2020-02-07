@@ -163,38 +163,7 @@
                                               Foreground="{StaticResource WordBlueBrush}"
                                               FontSize="{StaticResource FontSizeVerySmall}"/>
                         </local:DropDownButton>
-                        <local:DropDownButton HorizontalAlignment="Left"
-                                              VerticalAlignment="Center"
-                                              Style="{StaticResource BaseStyle}"
-                                              Background="Transparent"
-                                              BorderThickness="0"
-                                              Margin="5,0">
-                            <local:DropDownButton.Menu>
-                                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
-                                    <MenuItem Header="Log10 transformation"
-                                              cal:Message.Attach="[Event Click] = [Action LogarithmicTransformation]"/>
-                                    <MenuItem Header="10^ transformation"
-                                              cal:Message.Attach="[Event Click] = [Action ExponentialTransformation]"/>
-                                    <MenuItem Header="Z-score transformation"
-                                              cal:Message.Attach="[Event Click] = [Action ZScoreTransformation]"/>
-                                    <MenuItem Header="Rescaling"
-                                              cal:Message.Attach="[Event Click] = [Action Rescaling]"/>
-                                    <MenuItem Header="Mean-Normalization"
-                                              cal:Message.Attach="[Event Click] = [Action MeanNormalization]"/>
-                                    <MenuItem Header="Subtract mean"
-                                              cal:Message.Attach="[Event Click] = [Action SubtractMean]"/>
-                                    <Separator HorizontalAlignment="Stretch"
-                                                       Height="2"/>
-                                    <MenuItem Header="Group by name"
-                                              cal:Message.Attach="[Event Click] = [Action GroupByName]"/>
-                                    <Separator/>
-                                </ContextMenu>
-                            </local:DropDownButton.Menu>
-                            <TextBlock Style="{StaticResource BaseTextBlockStyle}"
-                                              Text="Transformation"
-                                              Foreground="{StaticResource WordBlueBrush}"
-                                              FontSize="{StaticResource FontSizeVerySmall}"/>
-                        </local:DropDownButton>
+                       
                     </DockPanel>
                 </WrapPanel>
                 <TabControl Grid.Row="2"
@@ -267,6 +236,17 @@
                                     HorizontalAlignment="Left"
                                     Margin="5"/>
                             <ContentControl cal:View.Model="{Binding MeshStatisticsViewModel}"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Univariate Tests">
+                        <StackPanel>
+                            <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="CreateBasicUnivariateTestssHelper"
+                                            FontSize="{StaticResource FontSizeSmall}"
+                                            Content="Compute"
+                                    HorizontalAlignment="Left"
+                                    Margin="5"/>
+                            <ContentControl cal:View.Model="{Binding UnivariateStatisticalTestViewModel}"/>
                         </StackPanel>
                     </TabItem>
                 </TabControl>
@@ -414,6 +394,29 @@
                                                                 HorizontalAlignment="Left"
                                                             FontSize="{StaticResource FontSizeVerySmall}"
                                             Content="Compute thickness map"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                                <Expander ExpandDirection="Down"
+                                              Header="Data transformations"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                                    <StackPanel Margin="6">
+                                                        <TextBlock Text="Transformation type"
+                                                                       FontWeight="DemiBold"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=TransformationType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=TransformationType, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="Transform"
+                                                                HorizontalAlignment="Left"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Compute transformation"/>
                                                     </StackPanel>
                                                 </Expander>
                                                 <Expander ExpandDirection="Down"

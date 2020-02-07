@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Accord.Statistics.Distributions.Univariate;
+using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace GeoReVi
@@ -140,12 +143,23 @@ namespace GeoReVi
             //Counting based on the bin
             for (int i = 0; i < distribution.Count(); i++)
             {
-                for (int j = 0; j < bins.Count() - 1; j++)
+                for (int j = 0; j < bins.Count(); j++)
                 {
                     if (j == bins.Count() - 1)
-                        continue;
-
-                    if (distribution[i] > bins[j] && distribution[i] <= bins[j + 1])
+                    {
+                        if (distribution[i] > bins[j])
+                        {
+                            y[j] += 1;
+                        }
+                    }
+                    else if (j == 0)
+                    {
+                        if (distribution[i] >= bins[j] && distribution[i] <= bins[j + 1])
+                        {
+                            y[j] += 1;
+                        }
+                    }
+                    else if (distribution[i] > bins[j] && distribution[i] <= bins[j + 1])
                     {
                         y[j] += 1;
                     }
@@ -487,7 +501,441 @@ namespace GeoReVi
 
             return ret;
         }
+
+        /// <summary>
+        /// Performing a score transformation to the data set
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void ZScoreTransformation(ref Mesh _data)
+        {
+            int count = _data.Data.Rows.Count;
+
+            if (count >= 0)
+            {
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
+                double standardDeviation = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).StdDev();
+
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
+                {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - avg) / standardDeviation;
+
+                    if (_data.Vertices.Count > 0)
+                        _data.Vertices[i].Value[0] = (_data.Vertices[i].Value[0] - avg) / standardDeviation;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Transfers the z value to the value property
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void MakeZValue(ref Mesh _data)
+        {
+            //Transforming data set
+            for (int i = 0; i < _data.Data.Rows.Count; i++)
+            {
+                _data.Data.Rows[i][0] = (double)_data.Data.Rows[i][3];
+                if (_data.Vertices.Count > 0)
+                    _data.Vertices[i].Value[0] = (double)_data.Vertices[i].Z;
+
+            }
+        }
+
+        /// <summary>
+        /// Produces an exponential transformation to the data set
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void ExponentialTransformation(ref Mesh _data)
+        {
+            //Transforming data set
+            for (int i = 0; i < _data.Data.Rows.Count; i++)
+            {
+                _data.Data.Rows[i][0] = Math.Pow(10, (double)_data.Data.Rows[i][0]);
+                if (_data.Vertices.Count > 0)
+                    _data.Vertices[i].Value[0] = Math.Pow(10, (double)_data.Vertices[i].Value[0]);
+            }
+        }
+
+        /// <summary>
+        /// Performing a Mean transformation
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void MeanTransformation(ref Mesh _data)
+        {
+            int count = _data.Data.Rows.Count;
+
+            if (count >= 0)
+            {
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
+                double max = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Max();
+                double min = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Min();
+
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
+                {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - avg) / (max - min);
+                    if (_data.Vertices.Count > 0)
+                        _data.Vertices[i].Value[0] = ((_data.Vertices[i].Value[0] - avg) / (max - min));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performing a subtract mean transformation
+        /// </summary>
+        public static void SubtractMeanTransformation(ref Mesh _data)
+        {
+            int count = _data.Data.Rows.Count;
+
+            if (count >= 0)
+            {
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
+
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
+                {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - avg);
+                    if (_data.Vertices.Count > 0)
+                        _data.Vertices[i].Value[0] = ((double)_data.Vertices[i].Value[0] - avg);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performing a rescaling transformation
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void RescalingTransformation(ref Mesh _data)
+        {
+            int count = _data.Data.Rows.Count;
+
+            if (count >= 0)
+            {
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
+                double max = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Max();
+                double min = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Min();
+
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
+                {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - min) / (max - min);
+                    if (_data.Vertices.Count > 0)
+                        _data.Vertices[i].Value[0] = ((double)_data.Vertices[i].Value[0] - min) / (max - min);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performing a logarithmic transformation
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void LogarithmicTransformation(ref Mesh _data)
+        {
+            if (_data.Data.AsEnumerable().Where(y => y.Field<double>(0) <= 0).Count() > 0)
+            {
+                ((ShellViewModel)IoC.Get<IShell>()).ShowError("Cannot log-transform negative values");
+                return;
+            }
+
+            //Transforming data set
+            for (int i = 0; i < _data.Data.Rows.Count; i++)
+            {
+                _data.Data.Rows[i][0] = Math.Log10((double)_data.Data.Rows[i][0]);
+                if (_data.Vertices.Count > 0)
+                    _data.Vertices[i].Value[0] = Math.Log10((double)_data.Vertices[i].Value[0]);
+            }
+        }
+
+        /// <summary>
+        /// Applying a quantile-quantile-normal score transform
+        /// </summary>
+        /// <param name="_data">Data set to be transformed</param>
+        public static void QuantileQuantileNormalScoreTransformation(ref Mesh _data)
+        {
+            if (_data.Vertices.Count() == 0)
+                _data.Vertices.AddRange(new BindableCollection<LocationTimeValue>(_data.Data.AsEnumerable()
+                    .Select(x => new LocationTimeValue()
+                    {
+                        Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)) },
+                        X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
+                        Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
+                        Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                    }).ToList()));
+            else
+            {
+                _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.Select(x =>
+                new LocationTimeValue()
+                {
+                    X = x.X,
+                    Y = x.Y,
+                    Z = x.Z,
+                    Value = x.Value,
+                    MeshIndex = x.MeshIndex,
+                    IsActive = x.IsActive,
+                    IsDiscretized = x.IsDiscretized,
+                    Brush = x.Brush,
+                    Date = x.Date,
+                    Name = x.Name,
+                    Neighbors = x.Neighbors,
+                    Geographic = x.Geographic,
+                    IsExterior = x.IsExterior
+                }).ToList());
+
+            }
+
+            _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.OrderBy(x => x.Value[0]).ToList());
+
+            DataView dv = _data.Data.DefaultView;
+            try
+            {
+                dv.Sort = "Item1 asc";
+            }
+            catch
+            {
+                try
+                {
+                    dv.Sort = "Value asc";
+                }
+                catch
+                {
+
+                }
+            }
+
+            _data.Data = dv.ToTable();
+
+            //Getting basic statistics
+            double[] ccdf = CreateCumulativeRankStandardNormalDistribution(_data.Vertices.Count, -3, 3, 0, 1);
+
+            //Assigning the new data
+            for(int i = 0; i<_data.Vertices.Count();i++)
+            {
+                _data.Vertices[i].Value[0] = ccdf[i];
+                if (_data.Vertices.Count > 0)
+                    _data.Data.Rows[i][0] = ccdf[i];
+            }
+            
+        }
+
+        /// <summary>
+        /// Simulate normal distribution and sample from it
+        /// </summary>
+        public static double GetFromNormalDistribution(int sampleSize, int index, double start, double end, double mean, double standardDeviation)
+        {
+            double x = start + ((end - start) * (double)index) / (double)sampleSize;
+            return (double)((1/(Math.Sqrt(Math.Pow(standardDeviation,2)*2*Math.PI))) * Math.Exp(-Math.Pow((x - mean),2) / Math.Sqrt((2 * Math.Pow(standardDeviation,2)))));
+        }
+
+        /// <summary>
+        /// Creating a rank-based cumulative standard normal distribution based 
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="mean"></param>
+        /// <param name="standardDeviation"></param>
+        /// <returns></returns>
+        public static double[] CreateCumulativeRankStandardNormalDistribution(int sampleSize, double start, double end, double mean, double standardDeviation)
+        {
+            double[] ret = new double[sampleSize];
+
+            try
+            {
+                NormalDistribution normal = new NormalDistribution(mean, standardDeviation);
+                ret[0] = start;
+                ret[sampleSize-1] = end;
+
+                for(int i = 1; i<sampleSize-1;i++)
+                {
+                    double x = (double)i / (double)sampleSize;
+                    ret[i] = normal.InverseDistributionFunction(x);
+                }
+            }
+            catch
+            {
+
+            }
+
+            return ret;
+        }
+
+
+        /// <summary>
+        /// Applying a quantile-quantile back transformation to a target distribution
+        /// </summary>
+        /// <param name="sampleSize"></param>
+        /// <param name="_data"></param>
+        public static void QuantileQuantileBackTransformation(ref Mesh _data, Mesh targetDistribution)
+        {
+            //Checking meshes for consistency
+            CheckForNodeTableConsistency(ref _data);
+            CheckForNodeTableConsistency(ref targetDistribution);
+
+            SortByValue(ref _data);
+            SortByValue(ref targetDistribution);
+
+            //Deriving the complementary cumulative distribution function
+            double[,] ccdf = CreateCumulativeRankDistribution(targetDistribution);
+            
+            //Interpolating the ccdf
+            double[,] ccdfInterp = InterpolateCCDFLinear(ccdf, _data.Vertices.Count());
+
+            //Transform the function according to the derived interpolated ccdf
+            for(int i = 0; i< _data.Vertices.Count();i++)
+            {
+                _data.Vertices[i].Value[0] = ccdfInterp[i,1];
+                if (_data.Vertices.Count > 0)
+                    _data.Data.Rows[i][0] = ccdfInterp[i,1];
+            }
+
+            //Creating the mesh cells
+            if (_data.MeshCellType == MeshCellType.Hexahedral || _data.MeshCellType == MeshCellType.Tetrahedal)
+                _data.CellsFromPointCloud();
+        }
+
+        /// <summary>
+        /// Creating a cumulative rank distribution
+        /// </summary>
+        /// <param name="targetDistribution"></param>
+        /// <returns></returns>
+        public static double[,] CreateCumulativeRankDistribution(Mesh targetDistribution)
+        {
+            double[,] ret = new double[targetDistribution.Vertices.Count,2];
+
+            try
+            {
+                double start = targetDistribution.Vertices.Min(x => x.Value[0]);
+                double end = targetDistribution.Vertices.Max(x => x.Value[0]);
+
+                ret[0,0] = 0;
+                ret[0,1] = start;
+
+                ret[targetDistribution.Vertices.Count - 1,0] = 1;
+                ret[targetDistribution.Vertices.Count - 1,1] = end;
+
+                for (int i = 1; i < targetDistribution.Vertices.Count - 1; i++)
+                {
+                    double x = (double)i / (double)targetDistribution.Vertices.Count;
+                    ret[i, 0] = x;
+                    ret[i, 1] = (double)targetDistribution.Data.Rows[i][0];
+                }
+            }
+            catch
+            {
+
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Interpolates a CCDF linearly
+        /// </summary>
+        private static double[,] InterpolateCCDFLinear(double[,] ccdf, int targetSize)
+        {
+            double[,] ret = new double[targetSize,2];
+
+            try
+            {
+                int length = ccdf.GetLength(0);
+                //Items per lag
+                int s = targetSize / (length-1);
+                //Rest of the distribution
+                int mod = targetSize % (length - 1);
+
+                for(int j = 1;j < length; j++)
+                {
+                    for(int i = 0;i<= s; i++)
+                    {
+                        ret[(j-1) * s + i, 0] = ((double)i + ((double)j)*(double)s) / (double)targetSize;
+                        ret[(j-1) * s + i, 1] = ccdf[j-1, 1] + (ccdf[j, 1] - ccdf[j-1, 1]) * ((double)i /(double)s);
+                    }
+                }
+
+                for(int j = 0; j<mod;j++)
+                {
+                    ret[(s * (length-1) + j), 1] = ccdf.GetColumn(1).Max() + (ccdf[1,1] - ccdf[0, 1]) * (double)j/ (double)mod;
+                }
+            }
+            catch
+            {
+
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Checks a mesh for consistency between data table and nodes and adapts it if necessary
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void CheckForNodeTableConsistency(ref Mesh _data)
+        {
+            try
+            {
+                if (_data.Vertices.Count() == 0)
+                    _data.Vertices.AddRange(new BindableCollection<LocationTimeValue>(_data.Data.AsEnumerable()
+                        .Select(x => new LocationTimeValue()
+                        {
+                            Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)) },
+                            X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
+                            Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
+                            Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                        }).ToList()));
+                else
+                {
+                    _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.Select(x =>
+                    new LocationTimeValue()
+                    {
+                        X = x.X,
+                        Y = x.Y,
+                        Z = x.Z,
+                        Value = x.Value,
+                        MeshIndex = x.MeshIndex,
+                        IsActive = x.IsActive,
+                        IsDiscretized = x.IsDiscretized,
+                        Brush = x.Brush,
+                        Date = x.Date,
+                        Name = x.Name,
+                        Neighbors = x.Neighbors,
+                        Geographic = x.Geographic,
+                        IsExterior = x.IsExterior
+                    }).ToList());
+
+                }
+            }
+            catch
+            {
+                throw new Exception("Mesh could not be modified.");
+            }
+        }
+
+        /// <summary>
+        /// Sorts a mesh by its node values
+        /// </summary>
+        /// <param name="_data"></param>
+        private static void SortByValue(ref Mesh _data)
+        {
+            _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.OrderBy(x => x.Value[0]));
+            DataView dv = _data.Data.DefaultView;
+
+            try
+            {
+                dv.Sort = "Item1 asc";
+            }
+            catch
+            {
+                try
+                {
+                    dv.Sort = "Value asc";
+                }
+                catch
+                {
+
+                }
+            }
+
+            _data.Data = dv.ToTable();
+        }
     }
+    
     /// <summary>
     /// Distribution types
     /// </summary>

@@ -52,6 +52,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// View model for univariate statistical tests
+        /// </summary>
+        private UnivariateStatisticalTestViewModel univariateStatisticalTestViewModel = new UnivariateStatisticalTestViewModel();
+        public UnivariateStatisticalTestViewModel UnivariateStatisticalTestViewModel
+        {
+            get => this.univariateStatisticalTestViewModel;
+            set
+            {
+                this.univariateStatisticalTestViewModel = value;
+                NotifyOfPropertyChange(() => UnivariateStatisticalTestViewModel);
+            }
+        }
+
+        /// <summary>
         /// A descriptive statistics view model
         /// </summary>
         private HeterogeneityStatisticsViewModel heterogeneityStatisticsViewModel = new HeterogeneityStatisticsViewModel();
@@ -217,6 +231,20 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// The type of transformation that should be applied
+        /// </summary>
+        private TransformationType transformationType = TransformationType.ZScore;
+        public TransformationType TransformationType
+        {
+            get => this.transformationType;
+            set
+            {
+                this.transformationType = value;
+                NotifyOfPropertyChange(() => TransformationType);
+            }
+        }
+
         #endregion
 
         #region Constructor
@@ -287,7 +315,7 @@ namespace GeoReVi
         /// Importing a dropped object of investigation data file
         /// </summary>
         /// <param name="e"></param>
-        public void ImportMesh()
+        public async Task ImportMesh()
         {
             try
             {
@@ -303,86 +331,90 @@ namespace GeoReVi
                     return;
                 }
 
-                foreach(var file in openFileDlg.FileNames)
+                await Task.Run(() =>
                 {
-                    //Getting file information
-                    FileInfo fi = new FileInfo(file);
-
-                    DataTable table = new DataTable() { TableName = "MyTableName" };
-                    DataTable tableCloned = new DataTable();
-
-                    if (fi.Extension == ".XLSX" || fi.Extension == ".xlsx")
+                    foreach (var file in openFileDlg.FileNames)
                     {
-                        DataSet tables = FileHelper.LoadWorksheetsInDataSheets(fi.FullName, false, "", fi.Extension);
-                        table = tables.Tables[0];
+                        //Getting file information
+                        FileInfo fi = new FileInfo(file);
 
-                        ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
+                        DataTable table = new DataTable() { TableName = "MyTableName" };
+                        DataTable tableCloned = new DataTable();
 
-                        tableCloned = table.Clone();
-                        tableCloned.Columns["Value1"].DataType = typeof(double);
-                        tableCloned.Columns["X"].DataType = typeof(double);
-                        tableCloned.Columns["Y"].DataType = typeof(double);
-                        tableCloned.Columns["Z"].DataType = typeof(double);
-
-                        foreach (DataRow row1 in table.Rows)
+                        if (fi.Extension == ".XLSX" || fi.Extension == ".xlsx")
                         {
-                            tableCloned.ImportRow(row1);
-                        }
+                            DataSet tables = FileHelper.LoadWorksheetsInDataSheets(fi.FullName, false, "", fi.Extension);
+                            table = tables.Tables[0];
 
-                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
-                    }
-                    else if (fi.Extension == ".CSV" || fi.Extension == ".csv")
-                    {
-                        table = FileHelper.CsvToDataTable(fi.FullName, true);
+                            ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
 
-                        ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
+                            tableCloned = table.Clone();
+                            tableCloned.Columns["Value1"].DataType = typeof(double);
+                            tableCloned.Columns["X"].DataType = typeof(double);
+                            tableCloned.Columns["Y"].DataType = typeof(double);
+                            tableCloned.Columns["Z"].DataType = typeof(double);
 
-                        tableCloned = table.Clone();
-                        tableCloned.Columns["Value1"].DataType = typeof(double);
-                        tableCloned.Columns["X"].DataType = typeof(double);
-                        tableCloned.Columns["Y"].DataType = typeof(double);
-                        tableCloned.Columns["Z"].DataType = typeof(double);
-
-                        foreach (DataRow row1 in table.Rows)
-                        {
-                            tableCloned.ImportRow(row1);
-                        }
-
-                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
-                    }
-                    else if (fi.Extension == ".gmsh" || fi.Extension == ".gmsh")
-                    {
-                        Mesh importMesh = (Mesh)fi.FullName.FromXml<Mesh>();
-
-                        for(int i = 0; i<importMesh.Vertices.Count();i++)
-                            if(importMesh.Vertices[i].Value.Count() > 1)
+                            foreach (DataRow row1 in table.Rows)
                             {
-                                for(int j = 0; j< importMesh.Vertices[i].Value.Count(); j++)
-                                {
-                                    if (j == 0)
-                                        continue;
-                                    else
-                                        if (importMesh.Vertices[i].Value[j] > importMesh.Vertices[i].Value[0])
-                                            importMesh.Vertices[i].Value[0] = importMesh.Vertices[i].Value[j];
-                                }
+                                tableCloned.ImportRow(row1);
                             }
 
-                        importMesh.Cells.Clear();
-                        importMesh.Faces.Clear();
-
-                        switch(importMesh.Dimensionality)
-                        {
-                            case Dimensionality.TwoD:
-                                importMesh.FacesFromPointCloud();
-                                break;
-                            case Dimensionality.ThreeD:
-                                importMesh.CellsFromPointCloud();
-                                break;
+                            MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
                         }
+                        else if (fi.Extension == ".CSV" || fi.Extension == ".csv")
+                        {
+                            table = FileHelper.CsvToDataTable(fi.FullName, true);
 
-                        MeasPoints.Add(importMesh);
+                            ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
+
+                            tableCloned = table.Clone();
+                            tableCloned.Columns["Value1"].DataType = typeof(double);
+                            tableCloned.Columns["X"].DataType = typeof(double);
+                            tableCloned.Columns["Y"].DataType = typeof(double);
+                            tableCloned.Columns["Z"].DataType = typeof(double);
+
+                            foreach (DataRow row1 in table.Rows)
+                            {
+                                tableCloned.ImportRow(row1);
+                            }
+
+                            MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
+                        }
+                        else if (fi.Extension == ".gmsh" || fi.Extension == ".gmsh")
+                        {
+                            Mesh importMesh = (Mesh)fi.FullName.FromXml<Mesh>();
+
+                            for (int i = 0; i < importMesh.Vertices.Count(); i++)
+                                if (importMesh.Vertices[i].Value.Count() > 1)
+                                {
+                                    for (int j = 0; j < importMesh.Vertices[i].Value.Count(); j++)
+                                    {
+                                        if (j == 0)
+                                            continue;
+                                        else
+                                            if (importMesh.Vertices[i].Value[j] > importMesh.Vertices[i].Value[0])
+                                            importMesh.Vertices[i].Value[0] = importMesh.Vertices[i].Value[j];
+                                    }
+                                }
+
+                            importMesh.Cells.Clear();
+                            importMesh.Faces.Clear();
+
+                            switch (importMesh.Dimensionality)
+                            {
+                                case Dimensionality.TwoD:
+                                    importMesh.FacesFromPointCloud();
+                                    break;
+                                case Dimensionality.ThreeD:
+                                    importMesh.CellsFromPointCloud();
+                                    break;
+                            }
+
+                            MeasPoints.Add(importMesh);
+                        }
                     }
-                }
+                });
+                
             }
             catch (Exception ex)
             {
@@ -405,6 +437,8 @@ namespace GeoReVi
             {
                 try
                 {
+                    Mesh export = new Mesh(SelectedMeasPoint);
+
                     //Getting file information
                     FileInfo fi = new FileInfo(saveFileDialog1.FileName);
 
@@ -422,135 +456,57 @@ namespace GeoReVi
             }
         }
 
-        /// <summary>
-        /// Applies a logarithmic transformation on the selected column
-        /// </summary>
-        /// <param name="columnName"></param>
-        public void LogarithmicTransformation()
-        {
-            if (SelectedMeasPoint.Data.AsEnumerable().Where(y => y.Field<double>(0) <= 0).Count() > 0)
-            {
-                ((ShellViewModel)IoC.Get<IShell>()).ShowError("Cannot log-transform negative values");
-                return;
-            }
-
-            //Transforming data set
-            for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
-            {
-                SelectedMeasPoint.Data.Rows[i][0] = Math.Log10((double)SelectedMeasPoint.Data.Rows[i][0]);
-                SelectedMeasPoint.Vertices[i].Value[0] = Math.Log10((double)SelectedMeasPoint.Vertices[i].Value[0]);
-            }
-        }
-
-        /// <summary>
-        /// Applies an exponential transformation on the selected column
-        /// </summary>
-        /// <param name="columnName"></param>
-        public void ExponentialTransformation()
-        {
-            //Transforming data set
-            for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
-            {
-                SelectedMeasPoint.Data.Rows[i][0] = Math.Pow(10, (double)SelectedMeasPoint.Data.Rows[i][0]);
-                SelectedMeasPoint.Vertices[i].Value[0] = Math.Pow(10, (double)SelectedMeasPoint.Vertices[i].Value[0]);
-            }
-        }
-
-        /// <summary>
-        /// Makes z coordinate the value of the point
-        /// </summary>
-        /// <param name="columnName"></param>
-        public void MakeZValue()
-        {
-            //Transforming data set
-            for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
-            {
-                SelectedMeasPoint.Data.Rows[i][0] = (double)SelectedMeasPoint.Data.Rows[i][3];
-                SelectedMeasPoint.Vertices[i].Value[0] = (double)SelectedMeasPoint.Vertices[i].Z;
-                
-            }
-        }
-
-        /// <summary>
-        /// Applying a z transformation on the dataset
-        /// </summary>
-        public void ZScoreTransformation()
-        {
-            int count = SelectedMeasPoint.Data.Rows.Count;
-
-            if (count >= 0)
-            {
-                double avg = SelectedMeasPoint.Data.AsEnumerable().Average(r => r.Field<double>(0));
-                double standardDeviation = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).StdDev();
-
-                for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
-                {
-                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg)/standardDeviation;
-                    SelectedMeasPoint.Vertices[i].Value[0] = (SelectedMeasPoint.Vertices[i].Value[0] - avg)/standardDeviation;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Applying a rescaling on the dataset
-        /// </summary>
-        public void Rescaling()
-        {
-            int count = SelectedMeasPoint.Data.Rows.Count;
-
-            if (count >= 0)
-            {
-                double avg = SelectedMeasPoint.Data.AsEnumerable().Average(r => r.Field<double>(0));
-                double max = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).Max();
-                double min = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).Min();
-
-                for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
-                {
-                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - min) / (max-min);
-                    SelectedMeasPoint.Vertices[i].Value[0] = ((double)SelectedMeasPoint.Vertices[i].Value[0] - min) / (max-min);
-                }
-            }
-        }
 
         /// <summary>
         /// Applying a mean normalization on the dataset
         /// </summary>
-        public void MeanNormalization()
+        public void Transform()
         {
-            int count = SelectedMeasPoint.Data.Rows.Count;
-
-            if (count >= 0)
+            try
             {
-                double avg = SelectedMeasPoint.Data.AsEnumerable().Average(r => r.Field<double>(0));
-                double max = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).Max();
-                double min = SelectedMeasPoint.Data.AsEnumerable().Select(r => r.Field<double>(0)).Min();
+                var a = new Mesh(SelectedMeasPoint);
 
-                for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
+                switch(TransformationType)
                 {
-                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg) / (max - min);
-                    SelectedMeasPoint.Vertices[i].Value[0] = ((SelectedMeasPoint.Vertices[i].Value[0] - avg) / (max - min));
+                    case TransformationType.ZScore:
+                        DistributionHelper.ZScoreTransformation(ref a);
+                        break;
+                    case TransformationType.MeanNormalization:
+                        DistributionHelper.MeanTransformation(ref a);
+                        break;
+                    case TransformationType.Elevation:
+                        DistributionHelper.MakeZValue(ref a);
+                        break;
+                    case TransformationType.Exponential:
+                        DistributionHelper.ExponentialTransformation(ref a);
+                        break;
+                    case TransformationType.SubtractMean:
+                        DistributionHelper.SubtractMeanTransformation(ref a);
+                        break;
+                    case TransformationType.Rescaling:
+                        DistributionHelper.RescalingTransformation(ref a);
+                        break;
+                    case TransformationType.Logarithmic:
+                        DistributionHelper.LogarithmicTransformation(ref a);
+                        break;
+                    case TransformationType.NormalSpace:
+                        DistributionHelper.QuantileQuantileNormalScoreTransformation(ref a);
+                        break;
+                    case TransformationType.QuantileQuantileTransform:
+                        var b = new Mesh(SpatialInterpolationHelper.SelectedMeasPoints[0]);
+                        DistributionHelper.QuantileQuantileBackTransformation(ref a, b);
+                        break;
                 }
+
+                a.Name += " transformed";
+                MeasPoints.Add(a);
+            }
+            catch
+            {
+                throw new Exception("Please select at least one mesh before");
             }
         }
 
-        /// <summary>
-        /// Applying a mean normalization on the dataset
-        /// </summary>
-        public void SubtractMean()
-        {
-            int count = SelectedMeasPoint.Data.Rows.Count;
-
-            if (count >= 0)
-            {
-                double avg = SelectedMeasPoint.Data.AsEnumerable().Average(r => r.Field<double>(0));
-
-                for (int i = 0; i < SelectedMeasPoint.Data.Rows.Count; i++)
-                {
-                    SelectedMeasPoint.Data.Rows[i][0] = ((double)SelectedMeasPoint.Data.Rows[i][0] - avg);
-                    SelectedMeasPoint.Vertices[i].Value[0] = ((double)SelectedMeasPoint.Vertices[i].Value[0] - avg);
-                }
-            }
-        }
 
         /// <summary>
         /// Group the vertices by name
@@ -593,7 +549,29 @@ namespace GeoReVi
                 {
                     double[] dataSet = MeasPoints[i].Data.AsEnumerable().Select(x => x.Field<double>(0)).ToArray();
 
-                    HeterogeneityStatisticsViewModel.UnivariateHeterogeneityMeasuresHelper.Add(new KeyValuePair<string, UnivariateHeterogeneityMeasuresHelper>(MeasPoints[i].Name, new UnivariateHeterogeneityMeasuresHelper(dataSet, MeasPoints[i].Name)));
+                    HeterogeneityStatisticsViewModel.UnivariateHeterogeneityMeasuresHelper.Add(new KeyValuePair<string, UnivariateHeterogeneityMeasuresHelper>(MeasPoints[i].Name, new UnivariateHeterogeneityMeasuresHelper(dataSet)));
+                }
+            }
+            catch
+            {
+                throw new Exception("Cannot build basic statistics helper");
+            }
+        }
+
+        /// <summary>
+        /// Computing the univariate tests for the sample meshes
+        /// </summary>
+        public void CreateBasicUnivariateTestssHelper()
+        {
+            try
+            {
+                UnivariateStatisticalTestViewModel.UnivariateTestHelper = new BindableCollection<KeyValuePair<string, UnivariateDistributionTestHelper>>();
+
+                for (int i = 0; i < MeasPoints.Count; i++)
+                {
+                    double[] dataSet = MeasPoints[i].Data.AsEnumerable().Select(x => x.Field<double>(0)).ToArray();
+
+                    UnivariateStatisticalTestViewModel.UnivariateTestHelper.Add(new KeyValuePair<string, UnivariateDistributionTestHelper>(MeasPoints[i].Name, new UnivariateDistributionTestHelper(dataSet)));
                 }
             }
             catch

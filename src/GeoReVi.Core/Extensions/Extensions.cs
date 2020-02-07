@@ -326,13 +326,16 @@ namespace GeoReVi
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static void ToXml(this object obj, string path)
+        public static async void ToXml(this object obj, string path)
         {
-            XmlSerializer s = new XmlSerializer(obj.GetType());
-            using (TextWriter tw = new StreamWriter(@path))
+            await Task.Run(() =>
             {
-                s.Serialize(tw,obj);
-            }
+                XmlSerializer s = new XmlSerializer(obj.GetType());
+                using (TextWriter tw = new StreamWriter(@path))
+                {
+                    s.Serialize(tw,obj);
+                }
+            });
         }
 
         /// <summary>
