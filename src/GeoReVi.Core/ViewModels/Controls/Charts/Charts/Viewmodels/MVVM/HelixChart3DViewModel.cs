@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace GeoReVi
 {
@@ -133,9 +134,9 @@ namespace GeoReVi
         /// <summary>
         /// Adds a point to the collection
         /// </summary>
-        public void AddPoint()
+        public async Task PerformEditing()
         {
-            Ch3d.AddPoint();
+            await Ch3d.PerformEditing();
         }
             #endregion
 

@@ -207,18 +207,6 @@ namespace GeoReVi
 
         #region Public methods
 
-        public void SetVerticesFromData()
-        {
-            try
-            {
-
-            }
-            catch
-            {
-
-            }
-        }
-
         /// <summary>
         /// Triangulating a set of 3D points
         /// </summary>
@@ -731,6 +719,70 @@ namespace GeoReVi
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Extracting a 2D section
+        /// </summary>
+        /// <param name="_mesh"></param>
+        /// <returns></returns>
+        public async Task<Mesh> ExtractSection(Point3D point1, Point3D point2, int horizontalCells, int verticalCells, bool vertical = true)
+        {
+            Mesh mesh = new Mesh();
+            mesh.Dimensionality = Dimensionality.TwoD;
+            mesh.MeshCellType = MeshCellType.Rectangular;
+
+            try
+            {
+                //Interpolating the horizontal line
+                double[,] xyCoordinates = MeshingHelper.InterpolateLine2D(point1.X, point1.Y, point2.X, point2.Y, horizontalCells);
+                double[] zArray = DistributionHelper.Subdivide(new double[2] { Vertices.Max(x => x.Z), Vertices.Min(x => x.Z) }, verticalCells);
+
+                for(int i = 0; i<xyCoordinates.GetLength(0);i++)
+                    for(int j = 0; j<verticalCells;j++)
+                    {
+                        //Creating the new point to be inserted
+                        var pt = new LocationTimeValue()
+                        {
+                            X = xyCoordinates[i, 0],
+                            Y = xyCoordinates[i, 1],
+                            Z = zArray[j],
+                            Geographic = false,
+                            IsDiscretized = true,
+                            IsExterior = true,
+                            MeshIndex = new int[3] { i, j, 0 }
+                        };
+
+                        var verts = Vertices.AsParallel().OrderBy(x => x.GetEuclideanDistance(pt)).Take(5);
+
+                        pt.Value[0] = verts.Average(x => x.Value[0]);
+                        pt.Z = verts.Take(1).First().Z;
+
+                        mesh.vertices.Add(pt);
+                    }
+
+                //Adding interpolated values and variances to the original data set
+                mesh.Name = "Vertical section";
+                mesh.Data =
+                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
+                        new List<Tuple<double, double, double, double, DateTime, string>>(mesh.Vertices.Select(a =>
+                           new Tuple<double, double, double, double, DateTime, string>(
+                               a.Value[0],
+                               a.X,
+                               a.Y,
+                               a.Z,
+                               a.Date,
+                               a.Name
+                               )).ToList()));
+
+                mesh.FacesFromPointCloud();
+            }
+            catch
+            {
+
+            }
+
+            return mesh;
         }
 
         #endregion

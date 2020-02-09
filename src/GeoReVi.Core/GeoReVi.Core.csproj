@@ -301,6 +301,7 @@
     <Compile Include="Helper\GeoStatisticsHelper\GeostatisticalAnalysis.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\InterpolationFeature.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\InterpolationMethod.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\MeshingHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\SpatialDiscretizationHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\SpatialInterpolationHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\TargetVariable.cs" />
@@ -393,8 +394,11 @@
     <Compile Include="ViewModels\Authentication\HomeViewModel.cs" />
     <Compile Include="ViewModels\Authentication\LoginViewModel.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\ChartStyles\LegendObject.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\EditingTypeEnum.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\EditorBaseClass.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Image.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\SymbolType.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\ThreeDEditor.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BarChartViewModel.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BoxWhiskerChartViewModel.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\ChartViewModelBase.cs" />

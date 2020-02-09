@@ -13,6 +13,9 @@ namespace GeoReVi
     {
         #region Public properties
 
+        /// <summary>
+        /// Bar chart object
+        /// </summary>
         private BarChartObject barco;
         public BarChartObject Barco
         {

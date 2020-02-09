@@ -30,15 +30,15 @@
                                     <Grid.ContextMenu>
                                         <ContextMenu>
                                            
-                                            <MenuItem Header="Add data set to line chart"
+                                            <MenuItem Header="Add to line chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToLineChart]"/>
-                                            <MenuItem Header="Add data set to variogram chart"
+                                            <MenuItem Header="Add to variogram chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToVariogramChart]"/>
-                                            <MenuItem Header="Add data set to box-whisker chart"
+                                            <MenuItem Header="Add to box-whisker chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToBoxWhiskerChart]"/>
-                                            <MenuItem Header="Add data set to bar chart"
+                                            <MenuItem Header="Add to bar chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToBarChart]"/>
-                                            <MenuItem Header="Add data set to 3D chart"
+                                            <MenuItem Header="Add to 3D chart"
                                               cal:Message.Attach="[Event Click] = [Action AddTo3DChart]"/>
                                         </ContextMenu>
                                     </Grid.ContextMenu>

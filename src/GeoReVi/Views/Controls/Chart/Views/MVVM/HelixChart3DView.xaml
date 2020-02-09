@@ -107,16 +107,19 @@
                                                 <HelixToolkit:ArrowVisual3D Fill="#4B4B96" Point2="0 0 8" />
 
                                                 <HelixToolkit:BillboardTextVisual3D
+                                                    FontFamily="{StaticResource LatoBold}"
                                             Foreground="{Binding CoordinateSystemLabelForeground, RelativeSource={RelativeSource TemplatedParent}}"
                                             Position="10 0 0"
                                             Text="{Binding CoordinateSystemLabelX, RelativeSource={RelativeSource TemplatedParent}}" />
                                                 <HelixToolkit:BillboardTextVisual3D
                                             Foreground="{Binding CoordinateSystemLabelForeground, RelativeSource={RelativeSource TemplatedParent}}"
                                             Position="0 10 0"
+                                                    FontFamily="{StaticResource LatoBold}"
                                             Text="{Binding CoordinateSystemLabelY, RelativeSource={RelativeSource TemplatedParent}}"/>
                                                 <HelixToolkit:BillboardTextVisual3D
                                             Foreground="{Binding CoordinateSystemLabelForeground, RelativeSource={RelativeSource TemplatedParent}}"
                                             Position="0 0 10"
+                                                    FontFamily="{StaticResource LatoBold}"
                                             Text="{Binding CoordinateSystemLabelZ, RelativeSource={RelativeSource TemplatedParent}}" />
                                             </Viewport3D>
 
@@ -438,13 +441,28 @@
                                                             <TextBlock Text="X label"
                                                                        FontWeight="DemiBold"/>
                                                             <TextBox Text="{Binding Ch3d.XLabel.Text, Mode=TwoWay}"/>
-                                                            <TextBlock Text="Y label"
+                                                    <xctk:ColorPicker  SelectedColor="{Binding Path=Ch3d.XLabel.LabelColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+
+                                                    </xctk:ColorPicker>
+                                                    <TextBlock Text="Y label"
                                                                        FontWeight="DemiBold"/>
                                                             <TextBox Text="{Binding Ch3d.YLabel.Text, Mode=TwoWay}"/>
-                                                            <TextBlock Text="Z label"
+                                                    <xctk:ColorPicker  SelectedColor="{Binding Path=Ch3d.YLabel.LabelColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+
+                                                    </xctk:ColorPicker>
+                                                    <TextBlock Text="Z label"
                                                                        FontWeight="DemiBold"/>
                                                             <TextBox Text="{Binding Ch3d.ZLabel.Text, Mode=TwoWay}"/>
-                                                        </StackPanel>
+                                                    <xctk:ColorPicker  SelectedColor="{Binding Path=Ch3d.ZLabel.LabelColor, Mode=TwoWay, Converter={StaticResource ColorToSolidBrushValueConverter}}"
+                                                                                               Width="140"
+                                                                                               HorizontalContentAlignment="Left">
+
+                                                    </xctk:ColorPicker>
+                                                </StackPanel>
                                                     </Expander>
                                                 </StackPanel>
                                             </Border>
@@ -1012,32 +1030,64 @@
                                     <Border Background="{StaticResource ForegroundLightBrush}">
                                         <StackPanel MinWidth="30">
                                             <Expander ExpandDirection="Down"
-                                                                          Header="Editing"
-                                                                          FontWeight="Bold"
-                                                                          Template="{StaticResource StretchyExpanderTemp}"
-                                                                          IsExpanded="False">
+                                                      Header="Editing"
+                                                      FontWeight="Bold"
+                                                      Template="{StaticResource StretchyExpanderTemp}"
+                                                      IsExpanded="False">
                                                 <StackPanel Margin="6">
                                                     <WrapPanel>
                                                         <Button Style="{StaticResource IconButton}"
-                                                                    Content="{StaticResource FontAwesomeTrash}"
-                                                                    Foreground="Red"
-                                                                    ToolTip="Remove series from chart"
-                                                                    cal:Message.Attach="RemoveSelectedSeries"
+                                                                Content="{StaticResource FontAwesomeTrash}"
+                                                                Foreground="Red"
+                                                                ToolTip="Remove series from chart"
+                                                                cal:Message.Attach="RemoveSelectedSeries"
                                                                 cal:Bind.ModelWithoutContext="{Binding Ch3d}">
                                                         </Button>
                                                     </WrapPanel>
-                                                    <DockPanel>
-                                                        <TextBlock Text="Start editor mode"
-                                                                           FontWeight="DemiBold"/>
-                                                        <CheckBox IsChecked="{Binding Path=Ch3d.EditModeRunning, Mode=TwoWay}"
+                                            <ComboBox HorizontalAlignment="Left" 
+                                                                  VerticalAlignment="Center" 
+                                                                  MinWidth="60"
+                                                                  ItemsSource="{Binding Path=Ch3d.ThreeDEditor.EditingType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                  SelectedValuePath="Value"
+                                                                  DisplayMemberPath="Description"
+                                                                  IsSynchronizedWithCurrentItem="True"
+                                                                  SelectedValue="{Binding Path=Ch3d.ThreeDEditor.EditingType, Mode=TwoWay}"
+                                                                                  SelectedIndex="0"/>
+                                            <DockPanel>
+                                                        <TextBlock Text="Is editing"
+                                                                   FontWeight="DemiBold"/>
+                                                        <CheckBox Style="{StaticResource OnOffCheckBoxStyle}" 
+                                                                  IsChecked="{Binding Path=Ch3d.ThreeDEditor.Editing, Mode=TwoWay}"
                                                                   HorizontalAlignment="Right"/>
                                                     </DockPanel>
-                                                    <ListView Margin="10"
-                                                  Grid.Row="2"
-                                                                  SelectionMode="Single"
-                                                  ItemsSource="{Binding Path=Ch3d.DataCollection}"
-                                                                  SelectedItem="{Binding Path=Ch3d.SelectedSeries, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  BorderBrush="Transparent">
+                                            <DockPanel>
+                                                <TextBlock Text="Vertical cell count"
+                                                                 Margin="0,5"
+                                                           VerticalAlignment="Center"
+                                                                  FontWeight="DemiBold"/>
+                                                <TextBox Text="{Binding Path=Ch3d.ThreeDEditor.VerticalCellCount, Mode=TwoWay}"
+                                                         Width="50"
+                                                         HorizontalAlignment="Right"/>
+
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <TextBlock Text="Horizontal cell count"
+                                                           Margin="0,5"
+                                                           VerticalAlignment="Center"
+                                                           FontWeight="DemiBold"/>
+                                                <TextBox Text="{Binding Path=Ch3d.ThreeDEditor.HorizontalCellCount, Mode=TwoWay}"
+                                                         Width="50"
+                                                         HorizontalAlignment="Right"/>
+
+                                            </DockPanel>
+                                            <TextBlock Text="Target"
+                                                       FontWeight="DemiBold"/>
+                                            <ListView Margin="10"
+                                                      Grid.Row="2"
+                                                      SelectionMode="Single"
+                                                      ItemsSource="{Binding Path=Ch3d.DataCollection}"
+                                                      SelectedItem="{Binding Path=Ch3d.SelectedSeries, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      BorderBrush="Transparent">
                                                         <ListView.ItemTemplate>
                                                                 <DataTemplate>
                                                                     <TextBlock TextAlignment="Left"
@@ -1058,25 +1108,24 @@
                                                              BorderThickness="0" 
                                                              TextAlignment="Right"
                                                              Background="{Binding Path=Background, RelativeSource={RelativeSource TemplatedParent}}"
-                                                             Text="{Binding Path=Ch3d.CursorOnElementPosition.X, StringFormat={}{0:f1}, FallbackValue=0.0}" />
+                                                             Text="{Binding Path=Ch3d.ThreeDEditor.CursorOnElementPosition.X, StringFormat={}{0:f1}, FallbackValue=0.0}" />
                                             <TextBox Grid.Row="0" 
                                                              Grid.Column="1" 
                                                              BorderThickness="0" 
                                                              TextAlignment="Right"
                                                              Background="{Binding Path=Background, RelativeSource={RelativeSource TemplatedParent}}"
-                                                             Text="{Binding Path=Ch3d.CursorOnElementPosition.Y, StringFormat={}{0:f1}, FallbackValue=0.0}" />
+                                                             Text="{Binding Path=Ch3d.ThreeDEditor.CursorOnElementPosition.Y, StringFormat={}{0:f1}, FallbackValue=0.0}" />
                                             <TextBox Grid.Row="0" 
                                                              Grid.Column="1" 
                                                              BorderThickness="0" 
                                                              TextAlignment="Right"
                                                              Background="{Binding Path=Background, RelativeSource={RelativeSource TemplatedParent}}"
-                                                             Text="{Binding Path=Ch3d.CursorOnElementPosition.Z, StringFormat={}{0:f1}, FallbackValue=0.0}" />
+                                                             Text="{Binding Path=Ch3d.ThreeDEditor.CursorOnElementPosition.Z, StringFormat={}{0:f1}, FallbackValue=0.0}" />
                                             <Button Content="Finish editing"
-                                            FontSize="{StaticResource FontSizeVerySmall}"
-                                            cal:Message.Attach="FinishEditing"
-                                                            cal:Bind.ModelWithoutContext="{Binding Ch3d}"
-                                            />
-                                                </StackPanel>
+                                                    FontSize="{StaticResource FontSizeVerySmall}"
+                                                    cal:Message.Attach="FinishEditing"
+                                                    cal:Bind.ModelWithoutContext="{Binding Ch3d}"/>
+                                        </StackPanel>
                                             </Expander>
                                         </StackPanel>
                                     </Border>
@@ -1136,13 +1185,13 @@
                     </HelixToolkit:HelixViewport3D.Background>
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="MouseLeftButtonDown">
-                                    <cal:ActionMessage MethodName="AddPoint" />
+                                    <cal:ActionMessage MethodName="PerformEditing" />
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                             <local:DataPiping.DataPipes>
                                 <local:DataPipeCollection>
                                     <local:DataPipe Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type HelixToolkit:HelixViewport3D}}, Path=CursorOnElementPosition}"
-                                                    Target="{Binding Path=Ch3d.CursorOnElementPosition, Mode=OneWayToSource}"/>
+                                                    Target="{Binding Path=Ch3d.ThreeDEditor.CursorOnElementPosition, Mode=OneWayToSource}"/>
                                 </local:DataPipeCollection>
                             </local:DataPiping.DataPipes>
                             <HelixToolkit:SunLight Altitude="90"

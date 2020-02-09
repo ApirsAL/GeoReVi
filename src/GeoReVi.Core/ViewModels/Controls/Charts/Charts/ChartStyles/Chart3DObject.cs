@@ -15,6 +15,7 @@ using Point3D = System.Windows.Media.Media3D.Point3D;
 using TranslateTransform3D = System.Windows.Media.Media3D.TranslateTransform3D;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
+using System.Diagnostics;
 
 namespace GeoReVi
 {
@@ -476,50 +477,19 @@ namespace GeoReVi
             }
         }
 
+
         /// <summary>
-        /// The position of the cursor on the element
+        /// A 3D Editor
         /// </summary>
-        private Point3D? cursorOnElementPosition = new Point3D();
+        private ThreeDEditor threeDEditor = new ThreeDEditor();
         [XmlIgnore]
-        public Point3D? CursorOnElementPosition
+        public ThreeDEditor ThreeDEditor
         {
-            get => this.cursorOnElementPosition;
+            get => threeDEditor;
             set
             {
-                this.cursorOnElementPosition = value;
-                NotifyOfPropertyChange(() => CursorOnElementPosition);
-            }
-        }
-
-        /// <summary>
-        /// Checks if the edit mode is running
-        /// </summary>
-        private bool editModeRunning = false;
-        public bool EditModeRunning
-        {
-            get => this.editModeRunning;
-            set
-            {
-                this.editModeRunning = value;
-
-                if (value == false)
-                    AddedPoints.Clear();
-
-                NotifyOfPropertyChange(() => EditModeRunning);
-            }
-        }
-
-        /// <summary>
-        /// During editing mode added points
-        /// </summary>
-        private List<LocationTimeValue> addedPoints = new List<LocationTimeValue>();
-        public List<LocationTimeValue> AddedPoints
-        {
-            get => this.addedPoints;
-            set
-            {
-                this.addedPoints = value;
-                NotifyOfPropertyChange(() => AddedPoints);
+                this.threeDEditor = value;
+                NotifyOfPropertyChange(() => ThreeDEditor);
             }
         }
 
@@ -529,7 +499,10 @@ namespace GeoReVi
 
         #region Constructor
 
-
+        /// <summary>
+        /// Specific constructor
+        /// </summary>
+        /// <param name="_ch"></param>
         public Chart3DObject(Chart3DObject _ch)
         {
             DataCollection = new BindableCollection<Series3D>();
@@ -629,72 +602,170 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Adds a point to the collection
+        /// Performs one editing operation
         /// </summary>
-        public void AddPoint()
+        public async Task PerformEditing()
         {
-            if (CursorOnElementPosition.HasValue == false)
+
+            //return if not editing
+            if (!ThreeDEditor.Editing)
                 return;
 
-            if (!EditModeRunning)
+            //return if no point is selected
+            if (ThreeDEditor.CursorOnElementPosition.HasValue == false)
                 return;
 
-            try
-            {
-                LocationTimeValue loc = new LocationTimeValue(CursorOnElementPosition.Value.X + MinEast,
-                                                              CursorOnElementPosition.Value.Y + MinNorth,
-                                                              CursorOnElementPosition.Value.Z + MinAltitude);
-
-                AddedPoints.Add(loc);
-
-                // Create a mesh builder and add a box to it
-                var meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
-
-                meshBuilder.AddSphere(CursorOnElementPosition.Value, SelectedSeries.Symbols.SymbolSize, 10, 10);
-
-                var mesh = meshBuilder.ToMesh(true);
-
-                var material = MaterialHelper.CreateMaterial(Colors.Black);
-
-                Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material });
-            }
-            catch
+            //Performing the interpolation
+            CommandHelper ch = new CommandHelper();
+            await Task.WhenAll(ch.RunBackgroundWorkerHelperAsync(async () =>
             {
 
-            }
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                try
+                {
+                    switch (ThreeDEditor.EditingType)
+                    {
+                        case EditingTypeEnum.SelectPoints:
+
+                            break;
+                        //Adding a point to a selected data sets
+                        case EditingTypeEnum.AddPoints:
+                            try
+                            {
+                                LocationTimeValue loc = new LocationTimeValue(ThreeDEditor.CursorOnElementPosition.Value.X + MinEast,
+                                                                              ThreeDEditor.CursorOnElementPosition.Value.Y + MinNorth,
+                                                                              ThreeDEditor.CursorOnElementPosition.Value.Z + MinAltitude);
+
+                                ThreeDEditor.AddedPoints.Add(loc);
+
+                                // Create a mesh builder and add a sphere to it
+                                var meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
+
+                                meshBuilder.AddSphere(ThreeDEditor.CursorOnElementPosition.Value, SelectedSeries.Symbols.SymbolSize, 10, 10);
+
+                                var mesh = meshBuilder.ToMesh(true);
+
+                                var material = MaterialHelper.CreateMaterial(Colors.Black);
+
+                                Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material });
+                            }
+                            catch
+                            {
+
+                            }
+                            break;
+                        //Extracting a vertical section from the selected model
+                        case EditingTypeEnum.ExtractVerticalSection:
+                            try
+                            {
+
+                                LocationTimeValue loc = new LocationTimeValue(ThreeDEditor.CursorOnElementPosition.Value.X + MinEast,
+                                                                              ThreeDEditor.CursorOnElementPosition.Value.Y + MinNorth,
+                                                                              ThreeDEditor.CursorOnElementPosition.Value.Z + MinAltitude);
+
+                                ThreeDEditor.AddedPoints.Add(loc);
+
+                                // Create a mesh builder and add a sphere to it
+                                var meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
+
+                                meshBuilder.AddSphere(ThreeDEditor.CursorOnElementPosition.Value, SelectedSeries.Symbols.SymbolSize, 10, 10);
+
+                                var mesh = meshBuilder.ToMesh(true);
+
+                                var material = MaterialHelper.CreateMaterial(Colors.Black);
+
+                                new DispatchService().Invoke(() =>
+                                {
+                                    Model.Dispatcher.InvokeAsync(() => Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
+                                });
+
+                                if (ThreeDEditor.AddedPoints.Count == 2)
+                                {
+                                    Task.WaitAll(FinishEditing());
+                                    return;
+                                }
+                            }
+                            catch
+                            {
+
+                            }
+                            break;
+                        case EditingTypeEnum.ExtractHorizontalSection:
+                            break;
+                        case EditingTypeEnum.ExtractVerticalProfile:
+                            break;
+                        case EditingTypeEnum.ExtractHorizontalProfile:
+                            break;
+
+                    }
+                }
+                catch
+                {
+                    throw new Exception("Editing operation ended with exception.");
+                }
+            }));
         }
 
         /// <summary>
         /// Finishes the editing mode
         /// </summary>
-        public void FinishEditing()
+        public async Task FinishEditing()
         {
-            if (!EditModeRunning)
+            if (!ThreeDEditor.Editing)
                 return;
 
-            SelectedSeries.Mesh.Vertices.AddRange(AddedPoints);
-            for (int i = 0; i < AddedPoints.Count(); i++)
+            try
             {
-                try
+                switch (ThreeDEditor.EditingType)
                 {
-                    DataRow dr = SelectedSeries.Mesh.Data.NewRow();
-                    dr[0] = AddedPoints[i].Value[0];
-                    dr[1] = AddedPoints[i].X;
-                    dr[2] = AddedPoints[i].Y;
-                    dr[3] = AddedPoints[i].Z;
-                    dr[4] = AddedPoints[i].Date;
-                    dr[5] = AddedPoints[i].Name;
+                    case EditingTypeEnum.SelectPoints:
 
-                    SelectedSeries.Mesh.Data.Rows.Add(dr);
-                }
-                catch
-                {
+                        break;
+                    //Adding a point to a selected data sets
+                    case EditingTypeEnum.AddPoints:
+                        SelectedSeries.Mesh.Vertices.AddRange(ThreeDEditor.AddedPoints);
+                        for (int i = 0; i < ThreeDEditor.AddedPoints.Count(); i++)
+                        {
+                            await Task.Delay(0);
+                            try
+                            {
+                                DataRow dr = SelectedSeries.Mesh.Data.NewRow();
+                                dr[0] = ThreeDEditor.AddedPoints[i].Value[0];
+                                dr[1] = ThreeDEditor.AddedPoints[i].X;
+                                dr[2] = ThreeDEditor.AddedPoints[i].Y;
+                                dr[3] = ThreeDEditor.AddedPoints[i].Z;
+                                dr[4] = ThreeDEditor.AddedPoints[i].Date;
+                                dr[5] = ThreeDEditor.AddedPoints[i].Name;
+
+                                SelectedSeries.Mesh.Data.Rows.Add(dr);
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+                        break;
+                    //Extracting a vertical section from the selected model
+                    case EditingTypeEnum.ExtractVerticalSection:
+                        DataSet.Add(await SelectedSeries.Mesh.ExtractSection(ThreeDEditor.AddedPoints[0].ToPoint3D(), ThreeDEditor.AddedPoints[1].ToPoint3D(), ThreeDEditor.VerticalCellCount, ThreeDEditor.HorizontalCellCount, true));
+                        AddDataToSeries();
+                        break;
+                    case EditingTypeEnum.ExtractHorizontalSection:
+                        break;
+                    case EditingTypeEnum.ExtractVerticalProfile:
+                        break;
+                    case EditingTypeEnum.ExtractHorizontalProfile:
+                        break;
 
                 }
+            }
+            catch
+            {
 
             }
 
-            EditModeRunning = false;
+            ThreeDEditor.Editing = false;
         }
 
         /// <summary>
@@ -820,7 +891,7 @@ namespace GeoReVi
         {
             CommandHelper ch = new CommandHelper();
 
-            if (EditModeRunning)
+            if (ThreeDEditor.Editing)
                 return;
 
             var modelGroup = new Model3DGroup();
@@ -918,7 +989,6 @@ namespace GeoReVi
                                         }
                                     }
 
-
                                     SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(point.Value[0], ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
 
                                     pointMaterials.Add(new Tuple<LocationTimeValue, SolidColorBrush>(point, m));
@@ -929,7 +999,6 @@ namespace GeoReVi
                                 {
 
                                 }
-
                             }
                         }
                         else if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Gradient)
@@ -987,22 +1056,22 @@ namespace GeoReVi
 
                             gradients.ForEach(x =>
                             {
-                               //Normalizing each vector based on the symbol size
-                               x.Item2[0] = 0.5 * (x.Item2[0] / max) * ls3D.Symbols.SymbolSize;
+                                //Normalizing each vector based on the symbol size
+                                x.Item2[0] = 0.5 * (x.Item2[0] / max) * ls3D.Symbols.SymbolSize;
                                 x.Item2[1] = 0.5 * (x.Item2[1] / max) * ls3D.Symbols.SymbolSize;
                                 x.Item2[2] = 0.5 * (x.Item2[2] / max) * ls3D.Symbols.SymbolSize;
 
-                               //Adding arrow to the mesh builder
-                               meshBuilder.AddArrow(
-                                     new Point3D(x.Item1.X - 0.5 * x.Item2[0],
-                                                 x.Item1.Y - 0.5 * x.Item2[1],
-                                                 x.Item1.Z - 0.5 * x.Item2[2]),
-                                     new Point3D(x.Item1.X + 0.5 * x.Item2[0],
-                                                 x.Item1.Y + 0.5 * x.Item2[1],
-                                                 x.Item1.Z + 0.5 * x.Item2[2]),
-                                     ls3D.WireframeThickness,
-                                     ls3D.WireframeThickness,
-                                     18);
+                                //Adding arrow to the mesh builder
+                                meshBuilder.AddArrow(
+                                      new Point3D(x.Item1.X - 0.5 * x.Item2[0],
+                                                  x.Item1.Y - 0.5 * x.Item2[1],
+                                                  x.Item1.Z - 0.5 * x.Item2[2]),
+                                      new Point3D(x.Item1.X + 0.5 * x.Item2[0],
+                                                  x.Item1.Y + 0.5 * x.Item2[1],
+                                                  x.Item1.Z + 0.5 * x.Item2[2]),
+                                      ls3D.WireframeThickness,
+                                      ls3D.WireframeThickness,
+                                      18);
                             });
 
                             mesh = meshBuilder.ToMesh(true);
@@ -1157,19 +1226,19 @@ namespace GeoReVi
                                                 break;
                                         }
 
-                                        if ((verticesCut > 0 && verticesCut < cell.Vertices.Count()) || (cell.Vertices.Any(x => x.IsExterior) && verticesCut < cell.Vertices.Count()))
+                                    if ((verticesCut > 0 && verticesCut < cell.Vertices.Count()) || (cell.Vertices.Any(x => x.IsExterior) && verticesCut < cell.Vertices.Count()))
+                                    {
+                                        foreach (var face in cell.Faces)
                                         {
-                                            foreach (var face in cell.Faces)
-                                            {
-                                                SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                            SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
 
-                                                    faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
+                                            faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
 
-                                                    if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                                        materials.Add(m);
-                                                }
-                                            }
-                                    
+                                            if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                materials.Add(m);
+                                        }
+                                    }
+
                                 }
                             }
                         }
@@ -1501,7 +1570,6 @@ namespace GeoReVi
             for (dx = 0; dx <= 2; dx += 1)
             {
                 TextVisual3D txt = new TextVisual3D();
-                txt.Foreground = new SolidColorBrush(Colors.Black);
                 txt.Background = new SolidColorBrush(Colors.Transparent);
                 txt.Padding = new Thickness(2);
                 txt.FontWeight = FontWeights.Bold;
@@ -1509,6 +1577,7 @@ namespace GeoReVi
 
                 if (dx == 0)
                 {
+                    txt.Foreground = XLabel.LabelColor;
                     txt.Position = new Point3D(((Xmax + Xmin)) / 2 - minEast - txt.Height, (Ymin - minNorth) - (2 * txt.Height), Zmin - minAltitude);
                     txt.Text = XLabel.Text;
                     txt.TextDirection = new Vector3D(1, 0, 0);                      // Set text to run in line with X axis
@@ -1516,6 +1585,7 @@ namespace GeoReVi
                 }
                 if (dx == 1)
                 {
+                    txt.Foreground = YLabel.LabelColor;
                     txt.Position = new Point3D((Xmin - minEast) - 2 * txt.Height, ((Ymax + Ymin)) / 2 - minNorth - txt.Height, Zmin - minAltitude);
                     txt.Text = YLabel.Text;
                     txt.TextDirection = new Vector3D(0, 1, 0);                      // Set text to run in line with X axis
@@ -1523,6 +1593,7 @@ namespace GeoReVi
                 }
                 if (dx == 2)
                 {
+                    txt.Foreground = ZLabel.LabelColor;
                     txt.Position = new Point3D((Xmin - minEast) - 2 * txt.Height, Ymax - minNorth, ((Zmax + Zmin)) / 2 - minAltitude);
                     txt.Text = IsZGrid ? ZLabel.Text : " ";
                     txt.TextDirection = new Vector3D(0, 0, 1);                      // Set text to run in line with X axis
@@ -1549,7 +1620,7 @@ namespace GeoReVi
                 txt.Text = Math.Round(dx, 2).ToString();
                 txt.TextDirection = new Vector3D(1, 0, 0);                      // Set text to run in line with X axis
                 txt.UpDirection = new Vector3D(0, 1, 0);                             // Set text to Point Up on Y axis
-                txt.Foreground = new SolidColorBrush(Colors.Black);
+                txt.Foreground = XLabel.LabelColor;
                 txt.Padding = new Thickness(2);
 
                 if (XTick == 0)
@@ -1574,7 +1645,7 @@ namespace GeoReVi
                 txt.Text = Math.Round(dx, 2).ToString();
                 txt.TextDirection = new Vector3D(1, 0, 0);                      // Set text to run in line with X axis
                 txt.UpDirection = new Vector3D(0, 1, 0);                             // Set text to Point Up on Y axis
-                txt.Foreground = new SolidColorBrush(Colors.Black);
+                txt.Foreground = YLabel.LabelColor;
                 txt.Padding = new Thickness(2);
 
                 if (YTick == 0)
@@ -1601,7 +1672,7 @@ namespace GeoReVi
                     txt.Text = Math.Round(dx, 2).ToString();
                     txt.TextDirection = new Vector3D(1, 0, 0);                      // Set text to run in line with X axis
                     txt.UpDirection = new Vector3D(0, 0, 1);                             // Set text to Point Up on Y axis
-                    txt.Foreground = new SolidColorBrush(Colors.Black);
+                    txt.Foreground = ZLabel.LabelColor;
                     txt.Padding = new Thickness(2);
 
                     if (ZTick == 0)

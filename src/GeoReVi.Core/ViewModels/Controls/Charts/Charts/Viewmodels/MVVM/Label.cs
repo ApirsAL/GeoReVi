@@ -1,4 +1,6 @@
 ﻿using Caliburn.Micro;
+using System.Windows.Media;
+using System.Xml.Serialization;
 
 namespace GeoReVi
 {
@@ -39,6 +41,22 @@ namespace GeoReVi
             {
                 this.text = value;
                 NotifyOfPropertyChange(() => Text);
+            }
+        }
+
+        /// <summary>
+        /// Label brush
+        /// </summary>
+        private Brush labelColor = Brushes.Black;
+        [XmlIgnore()]
+        public Brush LabelColor
+        {
+            get => labelColor;
+            set
+            {
+                this.labelColor = value;
+                NotifyOfPropertyChange(() => LabelColor);
+
             }
         }
 

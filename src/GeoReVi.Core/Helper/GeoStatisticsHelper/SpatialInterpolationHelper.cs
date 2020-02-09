@@ -2605,7 +2605,7 @@ namespace GeoReVi
                         if (includedPoints == null || includedPoints.Count() == 0)
                             includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[randomPath[j]].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
                         else if (includedPoints.Count() > MaximumNeighborCount)
-                            includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
+                            includedPoints = includedPoints.AsParallel().OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
 
                          double mean = includedPoints.Average(x => x.Value[0]);
 

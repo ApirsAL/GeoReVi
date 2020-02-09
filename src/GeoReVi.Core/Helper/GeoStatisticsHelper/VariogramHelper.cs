@@ -403,5 +403,26 @@ namespace GeoReVi
         {
             return (Sill + Nugget) - CalculateSemivariance(point1, point2);
         }
+
+        /// <summary>
+        /// Getting the Variance-Covariance-Matrix of a point set
+        /// </summary>
+        /// <param name="points"></param>
+        /// <returns></returns>
+        public double[,] GetVarianceCovarianceMatrix(IEnumerable<LocationTimeValue> points)
+        {
+            double[,] ret = new double[points.Count(), points.Count()];
+
+            try
+            {
+
+            }
+            catch
+            {
+
+            }
+
+            return ret;
+        }
     }
 }
