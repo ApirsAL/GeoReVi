@@ -169,20 +169,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// The local variance of the field
-        /// </summary>
-        private double localVariance = 0;
-        public double LocalVariance
-        {
-            get => this.localVariance;
-            set
-            {
-                this.localVariance = value;
-                NotifyOfPropertyChange(() => LocalVariance);
-            }
-        }
-
-        /// <summary>
         /// The power parameter needed in the IDW interpolation
         /// </summary>
         private double power = 2;
@@ -225,6 +211,20 @@ namespace GeoReVi
             {
                 this.selectedInterpolationMeasPoints = value;
                 NotifyOfPropertyChange(() => SelectedInterpolationMeasPoints);
+            }
+        }
+
+        /// <summary>
+        /// Selected data sets for providing a global variance for conditional simulation
+        /// </summary>
+        private BindableCollection<Mesh> selectedGlobalVariance = new BindableCollection<Mesh>();
+        public BindableCollection<Mesh> SelectedGlobalVariance
+        {
+            get => this.selectedGlobalVariance;
+            set
+            {
+                this.selectedGlobalVariance = value;
+                NotifyOfPropertyChange(() => SelectedGlobalVariance);
             }
         }
 
@@ -309,6 +309,20 @@ namespace GeoReVi
             {
                 this.rmse = value;
                 NotifyOfPropertyChange(() => RMSE);
+            }
+        }
+
+        /// <summary>
+        /// The Frobenius norm of a simulation algorithm
+        /// </summary>
+        private double frobeniusNorm = 0;
+        public double FrobeniusNorm
+        {
+            get => this.frobeniusNorm;
+            set
+            {
+                this.frobeniusNorm = value;
+                NotifyOfPropertyChange(() => FrobeniusNorm);
             }
         }
 
@@ -1510,7 +1524,7 @@ namespace GeoReVi
 
                     pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], value });
                     Residuals.Vertices.Add(new LocationTimeValue(OriginalLocationValues[k]));
-                   
+                    Residuals.Vertices[k].Value[0] = OriginalLocationValues[k].Value[0] - pointPairs[k][1];
                 }
 
                 if (TransformToOriginalDistribution)
@@ -1878,6 +1892,7 @@ namespace GeoReVi
 
                     pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], value });
                     Residuals.Vertices.Add(new LocationTimeValue(OriginalLocationValues[k]));
+                    Residuals.Vertices[k].Value[0] = OriginalLocationValues[k].Value[0] - pointPairs[k][1];
                 }
 
                 //Transforming to the range of the original distribution
@@ -2247,7 +2262,8 @@ namespace GeoReVi
                     }
 
                     pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], value });
-
+                    Residuals.Vertices.Add(new LocationTimeValue(OriginalLocationValues[k]));
+                    Residuals.Vertices[k].Value[0] = OriginalLocationValues[k].Value[0] - pointPairs[k][1];
 
                 }
 
@@ -2544,19 +2560,23 @@ namespace GeoReVi
                     int[] randomPath = Enumerable.Range(0, DiscretizedLocationValues.Vertices.Count()).Shuffle().ToArray();
                     List<LocationTimeValue> simulatedValues = new List<LocationTimeValue>();
 
+                    System.Threading.Tasks.ParallelOptions opt = new System.Threading.Tasks.ParallelOptions();
+                    opt.MaxDegreeOfParallelism = 4;
+
                     //Performing the kriging calculation for each point
-                    //Parallel.For(0, DiscretizedLocationValues.Count(), j =>
-                    for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
+                    Parallel.For(0, DiscretizedLocationValues.Vertices.Count(), opt, (j, loopState) =>
+                    //for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
                     {
                         if (j != 0 && j % 100 == 0)
-                            Status = (Convert.ToDouble(j) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
+                            Status = (Convert.ToDouble(simulatedValues.Count()) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
                         else if (IsCancelled == true)
-                            break;
+                            loopState.Break();
 
                         DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = 0;
 
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
 
+                        //Determining the neighborhood
                         for (int f = 0; f < OriginalLocationValues.Count(); f++)
                         {
                             try
@@ -2602,12 +2622,15 @@ namespace GeoReVi
                             }
                         }
 
+                        //If selection is too big or too small either a subset is selected or a new selection is made
                         if (includedPoints == null || includedPoints.Count() == 0)
                             includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[randomPath[j]].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
                         else if (includedPoints.Count() > MaximumNeighborCount)
-                            includedPoints = includedPoints.AsParallel().OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
+                        {
+                            includedPoints = includedPoints.AsParallel().MinBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[randomPath[j]])).Take(MaximumNeighborCount).ToList();
+                        }
 
-                         double mean = includedPoints.Average(x => x.Value[0]);
+                        double mean = includedPoints.Average(x => x.Value[0]);
 
                         //Covariance vector
                         double[] semivarianceVector = new double[includedPoints.Count()];
@@ -2683,15 +2706,14 @@ namespace GeoReVi
                         DiscretizedLocationValues.Vertices[randomPath[j]].Value[1] = Vh.CalculateCovariance(DiscretizedLocationValues.Vertices[randomPath[j]], DiscretizedLocationValues.Vertices[randomPath[j]]) - DiscretizedLocationValues.Vertices[randomPath[j]].Value[1];
 
                         double krigingMean = DiscretizedLocationValues.Vertices[randomPath[j]].Value[0];
-                        double stdDev = Math.Sqrt((!IncludeLocalVariance ? DiscretizedLocationValues.Vertices[randomPath[j]].Value[1] : LocalVariance));
+                        double stdDev = Math.Sqrt((!IncludeLocalVariance ? DiscretizedLocationValues.Vertices[randomPath[j]].Value[1] : SelectedGlobalVariance[0].Vertices[randomPath[j]].Value[0]));
 
                         //Using the Box-Muller algorithm to produce Gaussian random number
                         DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = DistributionHelper.SampleFromGaussian(krigingMean, stdDev);
 
-                        simulatedValues.Add(new LocationTimeValue(DiscretizedLocationValues.Vertices[randomPath[j]]));
-                    }
-
-                    
+                        simulatedValues.Add(DiscretizedLocationValues.Vertices[randomPath[j]]);
+                    //}
+                    });
                 }
                 catch
                 {
@@ -2734,6 +2756,7 @@ namespace GeoReVi
             double rmseSum = 0;
             double globalMean = 0;
             List<List<double>> pointPairs = new List<List<double>>();
+            List<LocationTimeValue> simulatedValues = new List<LocationTimeValue>();
 
             try
             {
@@ -2865,11 +2888,22 @@ namespace GeoReVi
 
                     value += globalMean;
 
+                    //Calculating the kriging variance
                     variance = Vh.CalculateCovariance(OriginalLocationValues[k], OriginalLocationValues[k]) - variance;
 
-                    double stdDev = Math.Sqrt((!IncludeLocalVariance ? Math.Abs(variance) : LocalVariance));
+                    //Deriving the standard deviation
+                    double stdDev = Math.Sqrt((!IncludeLocalVariance ? Math.Abs(variance) : SelectedGlobalVariance[0].Vertices.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(3).Average(x => x.Value[0])));
 
-                    pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], DistributionHelper.SampleFromGaussian(value, stdDev)});
+                    //Simulating the value
+                    double simulatedValue = DistributionHelper.SampleFromGaussian(value, stdDev);
+
+                    pointPairs.Add(new List<double>() { OriginalLocationValues[k].Value[0], simulatedValue});
+                    Residuals.Vertices.Add(new LocationTimeValue(OriginalLocationValues[k]));
+                    Residuals.Vertices[k].Value[0] = OriginalLocationValues[k].Value[0] - simulatedValue;
+
+                    LocationTimeValue loc = new LocationTimeValue(OriginalLocationValues[k]);
+                    loc.Value[0] = simulatedValue;
+                    simulatedValues.Add(loc);
                 }
 
                 //Transforming results to the extend of the original data distribution
@@ -2914,11 +2948,21 @@ namespace GeoReVi
 
                 MAE = mae / OriginalLocationValues.Count();
                 RMSE = Math.Sqrt(rmseSum / OriginalLocationValues.Count());
+
+                double[,] covarianceSimulated = Vh.GetVarianceCovarianceMatrix(simulatedValues);
+                double[,] covarianceOriginal = Vh.GetVarianceCovarianceMatrix(OriginalLocationValues.ToList());
+                double[,] subtracted = covarianceSimulated.Subtract(covarianceOriginal);
+
+                double normBoth = Norm.Frobenius(covarianceSimulated.Subtract(covarianceOriginal));
+                double normOriginal = Norm.Frobenius(Vh.GetVarianceCovarianceMatrix(OriginalLocationValues.ToList()));
+
+                FrobeniusNorm = normBoth / normOriginal;
             }
             catch
             {
                 MAE = double.NaN;
                 RMSE = double.NaN;
+                FrobeniusNorm = double.NaN;
             }
         }
 

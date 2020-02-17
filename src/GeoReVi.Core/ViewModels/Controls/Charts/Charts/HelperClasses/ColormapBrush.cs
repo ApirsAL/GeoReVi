@@ -206,7 +206,6 @@ namespace GeoReVi
             this.ColormapBrushes = brush.ColormapBrushes;
             this.ColormapBrushType = brush.ColormapBrushType;
             this.ColormapLength = Convert.ToInt32(brush.ColormapLength);
-            this.Ydivisions = Convert.ToInt32(brush.Ydivisions);
             this.Ymax = Convert.ToDouble(brush.Ymax);
             this.Ymin = Convert.ToDouble(brush.Ymin);
         }

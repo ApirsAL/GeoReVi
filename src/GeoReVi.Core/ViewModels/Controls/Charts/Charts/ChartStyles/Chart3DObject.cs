@@ -648,7 +648,7 @@ namespace GeoReVi
 
                                 var material = MaterialHelper.CreateMaterial(Colors.Black);
 
-                                Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material });
+                                Model.Dispatcher.Invoke(()=> Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
                             }
                             catch
                             {
@@ -777,7 +777,13 @@ namespace GeoReVi
             {
                 if (SelectedSeries != null)
                 {
-                    SelectedDataSet = DataSet.Where(x => x.Data.Equals(SelectedSeries.Mesh.Data)).First();
+                    SelectedDataSet = DataSet.Where(x => x.Data.Equals(SelectedSeries.Mesh.Data)).FirstOrDefault();
+                    if (SelectedDataSet == null)
+                    {
+                        DataCollection.Remove(SelectedSeries);
+                        return;
+                    }
+
                     int index = DataSet.IndexOf(SelectedDataSet);
                     DataSet.RemoveAt(index);
                     index = DataCollection.IndexOf(SelectedSeries);

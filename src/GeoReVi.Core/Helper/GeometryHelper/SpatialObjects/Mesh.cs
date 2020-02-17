@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using MathNet.Numerics.LinearAlgebra;
 using MIConvexHull;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -738,8 +739,10 @@ namespace GeoReVi
                 double[,] xyCoordinates = MeshingHelper.InterpolateLine2D(point1.X, point1.Y, point2.X, point2.Y, horizontalCells);
                 double[] zArray = DistributionHelper.Subdivide(new double[2] { Vertices.Max(x => x.Z), Vertices.Min(x => x.Z) }, verticalCells);
 
-                for(int i = 0; i<xyCoordinates.GetLength(0);i++)
-                    for(int j = 0; j<verticalCells;j++)
+                //for(int i = 0; i<xyCoordinates.GetLength(0);i++)
+                Parallel.For(0, xyCoordinates.GetLength(0), (i, loopState) =>
+                {
+                    for (int j = 0; j < verticalCells; j++)
                     {
                         //Creating the new point to be inserted
                         var pt = new LocationTimeValue()
@@ -753,13 +756,14 @@ namespace GeoReVi
                             MeshIndex = new int[3] { i, j, 0 }
                         };
 
-                        var verts = Vertices.AsParallel().OrderBy(x => x.GetEuclideanDistance(pt)).Take(5);
+                        var sortedList = Vertices.AsParallel().MinBy(x => x.GetEuclideanDistance(pt)).Take(3);
 
-                        pt.Value[0] = verts.Average(x => x.Value[0]);
-                        pt.Z = verts.Take(1).First().Z;
+                        pt.Value[0] = sortedList.Average(x => x.Value[0]);
+                        pt.Z = sortedList.Take(1).First().Z;
 
-                        mesh.vertices.Add(pt);
+                        mesh.Vertices.Add(pt);
                     }
+                });
 
                 //Adding interpolated values and variances to the original data set
                 mesh.Name = "Vertical section";

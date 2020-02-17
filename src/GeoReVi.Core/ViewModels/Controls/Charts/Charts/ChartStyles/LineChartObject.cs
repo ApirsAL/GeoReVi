@@ -580,7 +580,7 @@ namespace GeoReVi
         {
             List<SolidColorBrush> brushes = new List<SolidColorBrush>();
 
-            double dy = (ColorMap.Ymax - ColorMap.Ymin) / (ColorMap.Ydivisions - 1);
+            double dy = (ColorMap.Ymax - ColorMap.Ymin) / (ColorMap.ColormapLength - 1);
 
             for (int i = 0; i < ColorMap.Ydivisions; i++)
             {

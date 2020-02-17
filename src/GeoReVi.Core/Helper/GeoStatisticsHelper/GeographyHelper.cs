@@ -78,7 +78,7 @@ namespace GeoReVi
         /// <returns></returns>
         public static double EuclideanDistance(LocationTimeValue point1, LocationTimeValue point2)
         {
-            return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2) + Math.Pow(point2.Z - point1.Z, 2));
+            return Math.Sqrt((point2.X - point1.X)*(point2.X - point1.X) + (point2.Y - point1.Y)*(point2.Y - point1.Y) + (point2.Z - point1.Z)*(point2.Z - point1.Z));
         }
 
         #region Public methods

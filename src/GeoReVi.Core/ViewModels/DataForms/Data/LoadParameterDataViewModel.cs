@@ -331,56 +331,57 @@ namespace GeoReVi
                     return;
                 }
 
-                await Task.Run(() =>
+
+                foreach (var file in openFileDlg.FileNames)
                 {
-                    foreach (var file in openFileDlg.FileNames)
+                    //Getting file information
+                    FileInfo fi = new FileInfo(file);
+
+                    DataTable table = new DataTable() { TableName = "MyTableName" };
+                    DataTable tableCloned = new DataTable();
+
+                    if (fi.Extension == ".XLSX" || fi.Extension == ".xlsx")
                     {
-                        //Getting file information
-                        FileInfo fi = new FileInfo(file);
+                        DataSet tables = FileHelper.LoadWorksheetsInDataSheets(fi.FullName, false, "", fi.Extension);
+                        table = tables.Tables[0];
 
-                        DataTable table = new DataTable() { TableName = "MyTableName" };
-                        DataTable tableCloned = new DataTable();
+                        ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
 
-                        if (fi.Extension == ".XLSX" || fi.Extension == ".xlsx")
+                        tableCloned = table.Clone();
+                        tableCloned.Columns["Value1"].DataType = typeof(double);
+                        tableCloned.Columns["X"].DataType = typeof(double);
+                        tableCloned.Columns["Y"].DataType = typeof(double);
+                        tableCloned.Columns["Z"].DataType = typeof(double);
+
+                        foreach (DataRow row1 in table.Rows)
                         {
-                            DataSet tables = FileHelper.LoadWorksheetsInDataSheets(fi.FullName, false, "", fi.Extension);
-                            table = tables.Tables[0];
-
-                            ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
-
-                            tableCloned = table.Clone();
-                            tableCloned.Columns["Value1"].DataType = typeof(double);
-                            tableCloned.Columns["X"].DataType = typeof(double);
-                            tableCloned.Columns["Y"].DataType = typeof(double);
-                            tableCloned.Columns["Z"].DataType = typeof(double);
-
-                            foreach (DataRow row1 in table.Rows)
-                            {
-                                tableCloned.ImportRow(row1);
-                            }
-
-                            MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
+                            tableCloned.ImportRow(row1);
                         }
-                        else if (fi.Extension == ".CSV" || fi.Extension == ".csv")
+
+                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
+                    }
+                    else if (fi.Extension == ".CSV" || fi.Extension == ".csv")
+                    {
+                        table = FileHelper.CsvToDataTable(fi.FullName, true);
+
+                        ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
+
+                        tableCloned = table.Clone();
+                        tableCloned.Columns["Value1"].DataType = typeof(double);
+                        tableCloned.Columns["X"].DataType = typeof(double);
+                        tableCloned.Columns["Y"].DataType = typeof(double);
+                        tableCloned.Columns["Z"].DataType = typeof(double);
+
+                        foreach (DataRow row1 in table.Rows)
                         {
-                            table = FileHelper.CsvToDataTable(fi.FullName, true);
-
-                            ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
-
-                            tableCloned = table.Clone();
-                            tableCloned.Columns["Value1"].DataType = typeof(double);
-                            tableCloned.Columns["X"].DataType = typeof(double);
-                            tableCloned.Columns["Y"].DataType = typeof(double);
-                            tableCloned.Columns["Z"].DataType = typeof(double);
-
-                            foreach (DataRow row1 in table.Rows)
-                            {
-                                tableCloned.ImportRow(row1);
-                            }
-
-                            MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
+                            tableCloned.ImportRow(row1);
                         }
-                        else if (fi.Extension == ".gmsh" || fi.Extension == ".gmsh")
+
+                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
+                    }
+                    else if (fi.Extension == ".gmsh" || fi.Extension == ".gmsh")
+                    {
+                        await Task.Run(() =>
                         {
                             Mesh importMesh = (Mesh)fi.FullName.FromXml<Mesh>();
 
@@ -411,10 +412,9 @@ namespace GeoReVi
                             }
 
                             MeasPoints.Add(importMesh);
-                        }
+                        });
                     }
-                });
-                
+                }
             }
             catch (Exception ex)
             {

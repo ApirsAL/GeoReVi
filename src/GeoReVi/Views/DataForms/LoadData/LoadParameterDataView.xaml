@@ -650,12 +650,33 @@
                                                                               HorizontalAlignment="Right"
                                       VerticalAlignment="Center"/>
                                                                 </DockPanel>
-                                                                <TextBlock Text="Local variance"
-                                                                           Visibility="{Binding Path=SpatialInterpolationHelper.IncludeLocalVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
-                                                                       FontWeight="DemiBold"/>
-                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.LocalVariance, Mode=TwoWay}"
-                                                                         Visibility="{Binding Path=SpatialInterpolationHelper.IncludeLocalVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
-                                                                        />
+                                                                <TextBlock Text="Global variance mesh"
+                                                                           FontWeight="DemiBold"
+                                                                           Visibility="{Binding Path=SpatialInterpolationHelper.IncludeLocalVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
+                                                                <ListView Margin="10"
+                                                                          Visibility="{Binding Path=SpatialInterpolationHelper.IncludeLocalVariance, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
+                                                  Grid.Row="2"
+                                                  ItemsSource="{Binding Path=MeasPoints}"
+                                                                      SelectionMode="Single"
+                                                  BorderBrush="Transparent">
+                                                                    <i:Interaction.Behaviors>
+                                                                        <local:SelectedMeasPointsBehaviour
+                                                    SelectedItemCollection="{Binding Path=SpatialInterpolationHelper.SelectedGlobalVariance, Mode=TwoWay}">
+                                                                        </local:SelectedMeasPointsBehaviour>
+                                                                    </i:Interaction.Behaviors>
+                                                                    <ListView.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <TextBlock TextAlignment="Left"
+                                                                               Text="{Binding Path=Name}"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Center"
+                                                                               FontSize="{StaticResource FontSizeVerySmall}"
+                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
+                                                                               Style="{StaticResource GridViewColumnTextStyle}"
+                                                                               Focusable="False"/>
+                                                                        </DataTemplate>
+                                                                    </ListView.ItemTemplate>
+                                                                </ListView>
                                                                 <TextBlock Text="Cross validation points to remove"
                                                                        FontWeight="DemiBold"/>
                                                                 <TextBox Text="{Binding Path=SpatialInterpolationHelper.CrossValidationRemovePointCount, Mode=TwoWay}"/>
@@ -798,38 +819,7 @@
                                                                             </DataTemplate>
                                                                         </ListView.ItemTemplate>
                                                                     </ListView>
-                                                                    <TextBlock Text="Regression parameter"
-                                                                           FontWeight="DemiBold"/>
-                                                                    <DockPanel>
-                                                                        <Button Style="{StaticResource HyperlinkButton}"
-                                            cal:Message.Attach="AddRegressionParameter"
-                                                                 cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
-                                                            FontSize="{StaticResource FontSizeVerySmall}"
-                                            Content="Add"/>
-                                                                        <Button Style="{StaticResource HyperlinkButton}"
-                                            cal:Message.Attach="RemoveRegressionParameter"
-                                                                 cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
-                                                            FontSize="{StaticResource FontSizeVerySmall}"
-                                            Content="Remove"/>
-                                                                    </DockPanel>
-                                                                    <ListView Margin="10"
-                                                  Grid.Row="2"
-                                                  ItemsSource="{Binding Path=SpatialInterpolationHelper.RegressionParameters}"
-                                                                      SelectionMode="Single"
-                                                  BorderBrush="Transparent">
-                                                                        <ListView.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <TextBlock TextAlignment="Left"
-                                                                               Text="{Binding}"
-                                                                               VerticalAlignment="Center"
-                                                                               HorizontalAlignment="Center"
-                                                                               FontSize="{StaticResource FontSizeVerySmall}"
-                                                                               Foreground="{StaticResource ForegroundVeryDarkBrush}"
-                                                                               Style="{StaticResource GridViewColumnTextStyle}"
-                                                                               Focusable="False"/>
-                                                                            </DataTemplate>
-                                                                        </ListView.ItemTemplate>
-                                                                    </ListView>
+                                                                  
                                                                 </StackPanel>
                                                                     <Button Style="{StaticResource HyperlinkButton}"
                                             cal:Message.Attach="ComputeResiduals"
@@ -849,6 +839,9 @@
                                                                 <TextBlock Text="MAE"
                                                                                FontWeight="DemiBold"/>
                                                                 <TextBlock Text="{Binding Path=SpatialInterpolationHelper.MAE, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
+                                                                <TextBlock Text="Frobenius norm (only for simulations)"
+                                                                               FontWeight="DemiBold"/>
+                                                                <TextBlock Text="{Binding Path=SpatialInterpolationHelper.FrobeniusNorm, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
                                                                 <TextBlock Text="Computation time (s)"
                                                                                FontWeight="DemiBold"/>
                                                                 <TextBlock Text="{Binding Path=SpatialInterpolationHelper.ComputationTime, Mode=OneWay, NotifyOnSourceUpdated=True}"/>

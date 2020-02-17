@@ -409,13 +409,20 @@ namespace GeoReVi
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
-        public double[,] GetVarianceCovarianceMatrix(IEnumerable<LocationTimeValue> points)
+        public double[,] GetVarianceCovarianceMatrix(List<LocationTimeValue> points)
         {
             double[,] ret = new double[points.Count(), points.Count()];
 
             try
             {
-
+                //Calculating the semivariance matrix based on the variogram model
+                for (int i = 0; i < points.Count(); i++)
+                {
+                    for (int k = 0; k < points.Count(); k++)
+                    {
+                        ret[i, k] = CalculateCovariance(points[i], points[k]);
+                    }
+                }
             }
             catch
             {
