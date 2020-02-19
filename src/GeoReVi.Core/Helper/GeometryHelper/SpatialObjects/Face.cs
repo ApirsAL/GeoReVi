@@ -2,6 +2,7 @@
 using MIConvexHull;
 using MoreLinq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
@@ -66,6 +67,13 @@ namespace GeoReVi
 
                         loc = Vector3D.Add(Vertices[0].ToVector3D(), Vector3D.Add(cp.CrossProduct(vec1).Multiply(Math.Pow(b, 2)), vec2.CrossProduct(cp).Multiply(Math.Pow(a, 2))).Divide(2 * Math.Pow(cp.Length, 2))).ToLocationTimeValue();
 
+                        break;
+                    case FaceType.Quadrilateral:
+                        loc = new LocationTimeValue((Vertices[0].X + Vertices[1].X + Vertices[2].X + Vertices[3].X) / 4,
+                                                    (Vertices[0].Y + Vertices[1].Y + Vertices[2].Y + Vertices[3].Y) / 4,
+                                                    (Vertices[0].Z + Vertices[1].Z + Vertices[2].Z + Vertices[3].Z) / 4,
+                        "default",
+                                                    (Vertices[0].Value[0] + Vertices[1].Value[0] + Vertices[2].Value[0] + Vertices[3].Value[0]) / 4);
                         break;
                     default:
                         break;
@@ -250,6 +258,23 @@ namespace GeoReVi
             {
                 return double.NaN;
             }
+        }
+
+        /// <summary>
+        /// Sorting elements clockwise
+        /// </summary>
+        public virtual void SortVertices()
+        {
+            
+        }
+
+        /// <summary>
+        /// Interpolating a face
+        /// </summary>
+        /// <returns></returns>
+        public virtual Face[] SubdivideFace()
+        {
+            return new Face[0];
         }
 
         #endregion

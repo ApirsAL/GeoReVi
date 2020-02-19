@@ -1088,20 +1088,16 @@ namespace GeoReVi
                         {
 
                             ls3D.Mesh.FacesFromPointCloud();
-
-                            ///Adding all points to the model group
                             foreach (var face in ls3D.Mesh.Faces)
                             {
                                 try
                                 {
                                     await Task.Delay(0);
 
-                                    double average = face.Vertices.Select(x => x.Value[0]).Average();
+                                    bool isFiltered = false;
 
-                                    //Filtering values based on minimum and maximum visibility
-                                    if (ColorMapFilterActive)
-                                        if (average < MinimumVisibility || average > MaximumVisibility)
-                                            continue;
+                                    if (face.Vertices.Any(x => !x.IsExterior))
+                                        continue;
 
                                     //Filter values
                                     if (Plane3D.IsActive == true)
@@ -1111,25 +1107,58 @@ namespace GeoReVi
                                             {
                                                 case RelativeOrientation.Above:
                                                     if (Plane3D.PointRelativeToPlane(vertice.ToVector3D()) > 0)
-                                                        continue;
+                                                        isFiltered = true; ;
                                                     break;
                                                 case RelativeOrientation.Below:
                                                     if (Plane3D.PointRelativeToPlane(vertice.ToVector3D()) < 0)
-                                                        continue;
+                                                        isFiltered = true;
                                                     break;
                                                 default:
                                                     if (Plane3D.PointRelativeToPlane(vertice.ToVector3D()) == 0)
-                                                        continue;
+                                                        isFiltered = true;
                                                     break;
                                             }
                                     }
 
-                                    SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                    if (isFiltered)
+                                        continue;
 
-                                    faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
+                                    List<Face> faces = ls3D.Mesh.Faces.ToList();
 
-                                    if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                        materials.Add(m);
+                                    //Interpolating faces
+                                    for (int i = 0; i < ls3D.GradeOfResolution; i++)
+                                    {
+                                        List<Face> newFaces = new List<Face>();
+
+                                        for (int j = 0; j < faces.Count(); j++)
+                                        {
+                                            newFaces.AddRange(faces[j].SubdivideFace());
+                                        }
+
+                                        faces = newFaces.ToList();
+                                    }
+
+                                    for (int j = 0; j < faces.Count(); j++)
+                                    {
+
+                                        double average = faces[j].Vertices.Select(x => x.Value[0]).Average();
+
+                                        //Filtering values based on minimum and maximum visibility
+                                        if (ColorMapFilterActive)
+                                            if (average < MinimumVisibility || average > MaximumVisibility)
+                                                continue;
+
+                                        //Defining the color for the face
+                                        SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+
+                                        //Adding the face to the face objects
+                                        faceMaterials.Add(new Tuple<Face, SolidColorBrush>(faces[j], m));
+
+                                        //Adding color to new materials if it is not included yet
+                                        if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                            materials.Add(m);
+                                    }
+
                                 }
                                 catch
                                 {
@@ -1146,20 +1175,12 @@ namespace GeoReVi
 
                             foreach (var cell in ls3D.Mesh.Cells)
                             {
-
-                                double average = cell.Vertices.Select(x => x.Value[0]).Average();
-
-                                //Filtering values based on minimum and maximum visibility
-                                if (ColorMapFilterActive)
-                                    if (average < MinimumVisibility || average > MaximumVisibility)
-                                        continue;
-
                                 if (cell.Faces.Count < 1)
                                     cell.CreateFaces();
 
-
                                 ///Adding all points to the model group
                                 if (cell.Vertices.Where(x => x.IsExterior).Count() > 0)
+                                {
                                     foreach (var face in cell.Faces)
                                     {
                                         try
@@ -1168,7 +1189,7 @@ namespace GeoReVi
 
                                             bool isFiltered = false;
 
-                                            if (!face.Vertices.Any(x => x.IsExterior))
+                                            if (face.Vertices.Any(x => !x.IsExterior))
                                                 continue;
 
                                             //Filter values
@@ -1195,15 +1216,42 @@ namespace GeoReVi
                                             if (isFiltered)
                                                 continue;
 
-                                            //Defining the color for the face
-                                            SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                            List<Face> faces = cell.Faces.ToList();
 
-                                            //Adding the face to the face objects
-                                            faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
+                                            //Interpolating faces
+                                            for (int i = 0; i < ls3D.GradeOfResolution; i++)
+                                            {
+                                                List<Face> newFaces = new List<Face>();
 
-                                            //Adding color to new materials if it is not included yet
-                                            if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                                materials.Add(m);
+                                                for (int j = 0; j < faces.Count(); j++)
+                                                {
+                                                    newFaces.AddRange(faces[j].SubdivideFace());
+                                                }
+
+                                                faces = newFaces.ToList();
+                                            }
+
+                                            for (int j = 0; j < faces.Count(); j++)
+                                            {
+
+                                                double average = faces[j].Vertices.Select(x => x.Value[0]).Average();
+
+                                                //Filtering values based on minimum and maximum visibility
+                                                if (ColorMapFilterActive)
+                                                    if (average < MinimumVisibility || average > MaximumVisibility)
+                                                        continue;
+
+                                                //Defining the color for the face
+                                                SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+
+                                                //Adding the face to the face objects
+                                                faceMaterials.Add(new Tuple<Face, SolidColorBrush>(faces[j], m));
+
+                                                //Adding color to new materials if it is not included yet
+                                                if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                    materials.Add(m);
+                                            }
+
                                         }
                                         catch
                                         {
@@ -1211,6 +1259,8 @@ namespace GeoReVi
                                         }
 
                                     }
+
+                                }
                                 else if (Plane3D.IsActive == true)
                                 {
                                     int verticesCut = 0;
@@ -1234,8 +1284,31 @@ namespace GeoReVi
 
                                     if ((verticesCut > 0 && verticesCut < cell.Vertices.Count()) || (cell.Vertices.Any(x => x.IsExterior) && verticesCut < cell.Vertices.Count()))
                                     {
-                                        foreach (var face in cell.Faces)
+                                        List<Face> faces = cell.Faces.ToList();
+
+                                        //Interpolating faces
+                                        for(int i = 0; i< ls3D.GradeOfResolution; i++)
                                         {
+                                            List<Face> newFaces = new List<Face>();
+
+                                            for(int j = 0; j < faces.Count();j++)
+                                            {
+                                                faces.AddRange(faces[j].SubdivideFace());
+                                            }
+
+                                            faces = newFaces.ToList();
+                                        }
+
+                                        //Adding faces to a list of materials and faces
+                                        foreach (var face in faces)
+                                        {
+                                            double average = face.Vertices.Select(x => x.Value[0]).Average();
+
+                                            //Filtering values based on minimum and maximum visibility
+                                            if (ColorMapFilterActive)
+                                                if (average < MinimumVisibility || average > MaximumVisibility)
+                                                    continue;
+
                                             SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
 
                                             faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));

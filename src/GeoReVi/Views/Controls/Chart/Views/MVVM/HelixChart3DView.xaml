@@ -859,6 +859,18 @@
                                                                     <TextBox Text="{Binding Path=Scale, Mode=TwoWay}"/>
                                                                 </StackPanel>
                                                             </Expander>
+                                                            <Expander ExpandDirection="Down"
+                                                                          Header="Subdivision"
+                                                                          FontWeight="Bold"
+                                                                          Margin="3"
+                                                                          Template="{StaticResource StretchyExpanderTemp}"
+                                                                          IsExpanded="False">
+                                                                <StackPanel Margin="6">
+                                                                    <TextBlock Text="Subdivisions"
+                                                                       FontWeight="DemiBold"/>
+                                                                    <TextBox Text="{Binding Path=GradeOfResolution, Mode=TwoWay}"/>
+                                                                </StackPanel>
+                                                            </Expander>
                                                             <Button Content="Back to origin"
                                                             Style="{StaticResource HyperlinkButton}"
                                                             FontSize="{StaticResource FontSizeVerySmall}"

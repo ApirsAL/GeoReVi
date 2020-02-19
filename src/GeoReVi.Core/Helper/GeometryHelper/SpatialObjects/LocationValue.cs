@@ -353,6 +353,16 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Getting the middle point of two vertices
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public LocationTimeValue GetMiddlePoint(LocationTimeValue loc)
+        {
+            return new LocationTimeValue((X + loc.X) / 2, (Y + loc.Y) / 2, (Z + loc.Z) / 2, "default", (Value[0] - loc.Value[0]) / 2);
+        }
+
+        /// <summary>
         /// Getting the gradient of a three dimensional neighborhood
         /// </summary>
         /// <param name="neighbors"></param>

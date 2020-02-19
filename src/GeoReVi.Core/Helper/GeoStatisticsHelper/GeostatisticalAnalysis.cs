@@ -62,5 +62,19 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => ComputationTime);
             }
         }
+
+        /// <summary>
+        /// The maximum degree of parallelism wanted by the
+        /// </summary>
+        private int maximumDegreeOfParallelism = 2;
+        public int MaximumDegreeOfParallelism
+        {
+            get => this.maximumDegreeOfParallelism;
+            set
+            {
+                this.maximumDegreeOfParallelism = value;
+                NotifyOfPropertyChange(() => MaximumDegreeOfParallelism);
+            }
+        }
     }
 }

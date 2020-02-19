@@ -82,9 +82,9 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Sorting elements clockwise
+        /// Sorting vertices clockwise
         /// </summary>
-        public void SortVertices()
+        public override void SortVertices()
         {
             try
             {
@@ -114,6 +114,52 @@ namespace GeoReVi
             {
                 return;
             }
+        }
+
+        /// <summary>
+        /// Subdividing the quadrilateral
+        /// </summary
+        /// <returns></returns>
+        public override Face[] SubdivideFace()
+        {
+
+            Face[] interpolatedFaces = new Face[4];
+
+            SortVertices();
+
+            try
+            {
+                var middle01 = Vertices[0].GetMiddlePoint(Vertices[1]);
+                var middle12 = Vertices[1].GetMiddlePoint(Vertices[2]);
+                var middle23 = Vertices[2].GetMiddlePoint(Vertices[3]);
+                var middle30 = Vertices[3].GetMiddlePoint(Vertices[0]);
+                var center = GetCircumCentre();
+
+                if(Vertices.Any(x => x.IsExterior))
+                {
+                    middle01.IsExterior = true;
+                    middle12.IsExterior = true;
+                    middle23.IsExterior = true;
+                    middle30.IsExterior = true;
+                    center.IsExterior = true;
+                }
+
+                interpolatedFaces[0] = new Quadrilateral(Vertices[0], middle01, center, middle30);
+                interpolatedFaces[1] = new Quadrilateral(middle01, Vertices[1], middle12, center);
+                interpolatedFaces[2] = new Quadrilateral(middle12, Vertices[2], middle23, center);
+                interpolatedFaces[3] = new Quadrilateral(middle30, center, middle23, Vertices[3]);
+
+                interpolatedFaces[0].FaceType = FaceType.Quadrilateral;
+                interpolatedFaces[1].FaceType = FaceType.Quadrilateral;
+                interpolatedFaces[2].FaceType = FaceType.Quadrilateral;
+                interpolatedFaces[3].FaceType = FaceType.Quadrilateral;
+            }
+            catch
+            {
+
+            }
+
+            return interpolatedFaces;
         }
 
         #endregion

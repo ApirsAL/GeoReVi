@@ -206,6 +206,21 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// The count of how often a face should be subdivided for visualization
+        /// </summary>
+        private int gradeOfResolution;
+        public int GradeOfResolution
+        {
+            get => this.gradeOfResolution;
+            set
+            {
+                gradeOfResolution = value;
+
+                NotifyOfPropertyChange(() => GradeOfResolution);
+            }
+        }
+
+        /// <summary>
         /// The model
         /// </summary>
         private Model3DGroup model = new Model3DGroup();
@@ -360,7 +375,7 @@ namespace GeoReVi
         public void ExportModel()
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "OBJ (*.obj)|*.obj|STL (*.stl)|*.stl|X3D (*.x3d)|*.x3d|XAML (*.xaml)|*.xaml|XML (*.xml)|*.xml";
+            saveFileDialog1.Filter = "OBJ (*.obj)|*.obj|STL (*.stl)|*.stl|X3D (*.x3d)|*.x3d|XAML (*.xaml)|*.xaml|XML (*.xml)|*.xml|GeoReVi Mesh (*.gmsh)|*.gmsh";
             saveFileDialog1.RestoreDirectory = true;
 
             saveFileDialog1.ShowDialog();
@@ -455,6 +470,9 @@ namespace GeoReVi
                                 }
                                 break;
                             }
+                        case ".gmsh":
+                            Mesh.ToXml(saveFileDialog1.FileName);
+                            break;
                     }
                 }
                 catch

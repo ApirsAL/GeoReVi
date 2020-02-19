@@ -22,13 +22,13 @@ namespace GeoReVi
         {
             SolidColorBrush brush = new SolidColorBrush();
 
-            int colorIndex = (int)(((cm.ColormapLength - 1) * (z - zmin) + zmax - z) / (zmax - zmin));
+            int colorIndex = (int)(((cm.Ydivisions - 1) * (z - zmin) + zmax - z) / (zmax - zmin));
 
             if (colorIndex < 0)
                 colorIndex = 0;
 
-            if (colorIndex >= cm.ColormapLength)
-                colorIndex = cm.ColormapLength - 1;
+            if (colorIndex >= cm.Ydivisions)
+                colorIndex = cm.Ydivisions - 1;
 
             if (cm.ColormapBrushes == null || cm.ColormapBrushes.Count == 0)
                 cm.CalculateColormapBrushes(opacity);

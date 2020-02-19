@@ -855,6 +855,9 @@
                                                                               HorizontalAlignment="Right"
                                       VerticalAlignment="Center"/>
                                                         </DockPanel>
+                                                        <TextBlock Text="Maximum number of CPU cores used for analysis"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=SpatialInterpolationHelper.MaximumDegreeOfParallelism, Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
                                                         <Button Style="{StaticResource HyperlinkButton}"
                                                     cal:Message.Attach="ComputeInterpolation"
                                                                     FontSize="{StaticResource FontSizeVerySmall}"
@@ -1029,6 +1032,7 @@
                                                                 </StackPanel>
                                                             </Expander>
                                                         </StackPanel>
+                                                        
                                                         <Button Style="{StaticResource HyperlinkButton}"
                                                         cal:Message.Attach="ComputeNumericalSolution"
                                                                         FontSize="{StaticResource FontSizeVerySmall}"

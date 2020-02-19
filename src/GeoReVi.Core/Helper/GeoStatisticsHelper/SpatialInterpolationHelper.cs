@@ -2560,8 +2560,9 @@ namespace GeoReVi
                     int[] randomPath = Enumerable.Range(0, DiscretizedLocationValues.Vertices.Count()).Shuffle().ToArray();
                     List<LocationTimeValue> simulatedValues = new List<LocationTimeValue>();
 
+                    //Determining the maximum degree of parallelism
                     System.Threading.Tasks.ParallelOptions opt = new System.Threading.Tasks.ParallelOptions();
-                    opt.MaxDegreeOfParallelism = 4;
+                    opt.MaxDegreeOfParallelism = MaximumDegreeOfParallelism;
 
                     //Performing the kriging calculation for each point
                     Parallel.For(0, DiscretizedLocationValues.Vertices.Count(), opt, (j, loopState) =>
