@@ -1075,17 +1075,27 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Vco.TickColor}"
                                                               SelectedIndex="0"/>
 
                                                     <StackPanel Margin="6">
-                                                        <TextBlock Text="Direction"
-                                                                FontWeight="DemiBold"
-                                                               VerticalAlignment="Center"/>
-                                                        <ComboBox HorizontalAlignment="Left" 
-                                                              VerticalAlignment="Center" 
-                                                              MinWidth="100"
-                                                              ItemsSource="{Binding Path=Vco.Direction, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
-                                                              SelectedValuePath="Value"
-                                                              DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=Vco.Direction, Mode=OneWayToSource}"
-                                                              SelectedIndex="2"/>
+                                                        <TextBlock Text="Search ellipsoid"/>
+                                                        <TextBlock Text="Azimuth"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=Vco.Vh.Azimuth, Mode=TwoWay}"/>
+                                                        <TextBlock Text="Dip"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=Vco.Vh.Dip, Mode=TwoWay}"/>
+                                                        <TextBlock Text="Plunge"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=Vco.Vh.Plunge, Mode=TwoWay}"
+                                                                   />
+                                                        <TextBlock Text="Range X"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=Vco.Vh.RangeX, Mode=TwoWay}"/>
+                                                        <TextBlock Text="Range Y"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=Vco.Vh.RangeY, Mode=TwoWay}"/>
+                                                        <TextBlock Text="Range Z"
+                                                                       FontWeight="DemiBold"/>
+                                                        <TextBox Text="{Binding Path=Vco.Vh.RangeZ, Mode=TwoWay}"
+                                                                   />
                                                         <TextBlock Text="Bins"
                                                                            FontWeight="DemiBold"/>
                                                         <TextBox Text="{Binding Path=Vco.Vh.NumberBins, Mode=TwoWay}"/>

@@ -43,20 +43,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// View model for data management and visualization
-        /// </summary>
-        private DatasetManagementAndVisualizationViewModel datasetManagementAndVisualizationViewModel = new DatasetManagementAndVisualizationViewModel();
-        public DatasetManagementAndVisualizationViewModel DatasetManagementAndVisualizationViewModel
-        {
-            get => this.datasetManagementAndVisualizationViewModel;
-            set
-            {
-                this.datasetManagementAndVisualizationViewModel = value;
-                NotifyOfPropertyChange(() => DatasetManagementAndVisualizationViewModel);
-            }
-        }
-
-        /// <summary>
         /// The selected index
         /// </summary>
         private int selectedIndex = 0;
@@ -101,33 +87,33 @@ namespace GeoReVi
                     ///Loads a univariate data set from the actually selected laboratory measurement
                     if (SelectedIndex == 0)
                     {
-                        DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblRockSample>().GetLaboratoryMeasurementPoints(
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblRockSample>().GetLaboratoryMeasurementPoints(
                             LabMeasurementDetailsViewModel.RockSamples,
                             LabMeasurementDetailsViewModel.SelectedRockSample,
                             LabMeasurementDetailsViewModel.SelectedLaboratoryMeasurement,
-                            DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.GroupBy,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.GroupBy,
                             LabMeasurementDetailsViewModel.SelectedProperty.alColumnName,
-                            DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.All,
-                            DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.Global,
-                            DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.From : null,
-                            DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.To : null,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.All,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.Global,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.From : null,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.To : null,
                             LabMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName != null ? LabMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName : "",
                             LabMeasurementDetailsViewModel.FilterText));
 
                     }
                     else
                     {
-                        DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblMeasurement>()
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblMeasurement>()
                             .GetFieldMeasurementPoints(
                             FieldMeasurementDetailsViewModel.FieldMeasurements,
                             FieldMeasurementDetailsViewModel.SelectedFieldMeasurement,
                             FieldMeasurementDetailsViewModel.ObjectsOfInvestigation,
-                            DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.GroupBy,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.GroupBy,
                              FieldMeasurementDetailsViewModel.SelectedProperty.alColumnName,
-                             DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.All,
-                             DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.Global,
-                             DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.From : null,
-                             DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.To : null,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.All,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.Global,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.From : null,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.To : null,
                              FieldMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName != null ? FieldMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName : "",
                              FieldMeasurementDetailsViewModel.FilterText));
 
@@ -155,13 +141,13 @@ namespace GeoReVi
                 {
 
                     if (SelectedIndex == 0)
-                        DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblRockSample>().GetLaboratoryPetrophysics(
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblRockSample>().GetLaboratoryPetrophysics(
                             LabMeasurementDetailsViewModel.RockSamples,
                             LabMeasurementDetailsViewModel.SelectedRockSample,
-                            DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.GroupBy,
-                            DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.All));
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.GroupBy,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.All));
                     else
-                        DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblMeasurement>().GetFieldPetrophysics(
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblMeasurement>().GetFieldPetrophysics(
                             FieldMeasurementDetailsViewModel.FieldMeasurements, 
                             FieldMeasurementDetailsViewModel.SelectedFieldMeasurement, 
                             FieldMeasurementDetailsViewModel.GroupBy,
@@ -169,16 +155,16 @@ namespace GeoReVi
 
 
 
-                    if (DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.Count > 0)
+                    if (((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.Count > 0)
                     {
-                        DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SetDataTableNames().AsResult();
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SetDataTableNames().AsResult();
 
 
-                        DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SelectedColumn.Add(DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames[0]);
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SelectedColumn.Add(((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames[0]);
                     }
                     else
                     {
-                        DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames = new BindableCollection<string>();
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames = new BindableCollection<string>();
                     }
                 }
                 catch

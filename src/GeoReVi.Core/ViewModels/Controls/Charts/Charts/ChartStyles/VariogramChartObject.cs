@@ -77,7 +77,6 @@ namespace GeoReVi
             IsXLog = _vco.IsXLog;
             IsXGrid = _vco.IsXGrid;
 
-            Direction = _vco.Direction;
             Ds = _vco.Ds;
             FillColor = _vco.FillColor;
 
@@ -219,35 +218,6 @@ namespace GeoReVi
             InitializeStandardVariogram();
             AddDataSeries();
             Ds[0].SeriesName = "Experimental";
-
-
-            switch (Direction)
-            {
-                case DirectionEnum.X:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, X = a.X, Y = 0, Z = 0 }));
-                    break;
-                case DirectionEnum.Y:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, X = 0, Y = a.Y, Z = 0 }));
-                    break;
-                case DirectionEnum.Z:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, X = 0, Y = 0, Z = a.Z }));
-                    break;
-                case DirectionEnum.XY:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, Y = a.Y, X = a.X, Z = 0 }));
-                    break;
-                case DirectionEnum.XZ:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, Z = a.Z, X = a.X, Y = 0 }));
-                    break;
-                case DirectionEnum.YZ:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, Y = a.Y, Z = a.Z, X = 0 }));
-                    break;
-                case DirectionEnum.XYZ:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, X = a.X, Y = a.Y , Z = a.Z}));
-                    break;
-                default:
-                    MeasuringPoints = new BindableCollection<LocationTimeValue>(MeasuringPoints.Select(a => new LocationTimeValue() { Value = a.Value, X = a.X, Y = a.Y, Z = a.Z }));
-                    break;
-            }
 
             Vh.DataSet = MeasuringPoints;
 

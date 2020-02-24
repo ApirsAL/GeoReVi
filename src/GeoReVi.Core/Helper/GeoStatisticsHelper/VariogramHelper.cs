@@ -68,7 +68,7 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Sill
+        /// Range
         /// </summary>
         private double range = 1;
         public double Range
@@ -80,6 +80,93 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => Range);
             }
         }
+
+        /// <summary>
+        /// Search angle around Z axis
+        /// </summary>
+        private double azimuth = 0;
+        public double Azimuth
+        {
+            get => this.azimuth;
+            set
+            {
+                this.azimuth = value;
+                NotifyOfPropertyChange(() => Azimuth);
+            }
+        }
+
+        /// <summary>
+        /// Search angle around X axis
+        /// </summary>
+        private double dip = 0;
+        public double Dip
+        {
+            get => this.dip;
+            set
+            {
+                this.dip = value;
+                NotifyOfPropertyChange(() => Dip);
+            }
+        }
+
+        /// <summary>
+        /// Search angle around Y axis
+        /// </summary>
+        private double plunge = 0;
+        public double Plunge
+        {
+            get => this.plunge;
+            set
+            {
+                this.plunge = value;
+                NotifyOfPropertyChange(() => Plunge);
+            }
+        }
+
+
+        /// <summary>
+        /// Range in x direction
+        /// </summary>
+        private double rangeX = 9999;
+        public double RangeX
+        {
+            get => this.rangeX;
+            set
+            {
+                this.rangeX = value;
+                NotifyOfPropertyChange(() => RangeX);
+            }
+        }
+
+        /// <summary>
+        /// Range in y direction
+        /// </summary>
+        private double rangeY = 9999;
+        public double RangeY
+        {
+            get => this.rangeY;
+            set
+            {
+                this.rangeY = value;
+                NotifyOfPropertyChange(() => RangeY);
+            }
+        }
+
+        /// <summary>
+        /// Range in z direction
+        /// </summary>
+        private double rangeZ = 9999;
+        public double RangeZ
+        {
+            get => this.rangeZ;
+            set
+            {
+                this.rangeZ = value;
+                NotifyOfPropertyChange(() => RangeZ);
+            }
+        }
+
+
 
         /// <summary>
         /// The variogram model
@@ -227,7 +314,7 @@ namespace GeoReVi
             DataSet = new BindableCollection<LocationTimeValue>(DataSet.OrderBy(x => x.X).OrderBy(x => x.Y).OrderBy(x => x.Z));
 
             //Subdividing into bins
-            valuesDistance = GeographyHelper.DistanceMatrix(DataSet);
+            valuesDistance = GeographyHelper.DistanceMatrix(DataSet, this);
 
             double[] bins = DistributionHelper.Subdivide(valuesDistance.Select(x => x.Y).ToArray(), NumberBins);
             double range = bins[1] - bins[0];

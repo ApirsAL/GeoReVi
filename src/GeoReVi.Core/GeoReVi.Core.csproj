@@ -304,6 +304,7 @@
     <Compile Include="Helper\GeoStatisticsHelper\MeshingHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\SpatialDiscretizationHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\SpatialInterpolationHelper.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\SpatialSearchHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\TargetVariable.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\VariogramEnum.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\VariogramHelper.cs" />

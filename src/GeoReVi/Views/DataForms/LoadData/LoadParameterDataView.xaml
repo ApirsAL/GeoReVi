@@ -594,17 +594,29 @@
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
                                                             <StackPanel Margin="6">
-                                                                <TextBlock Text="Neighborhood x direction"
+                                                                <TextBlock Text="Range x direction"
                                                                        FontWeight="DemiBold"/>
-                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.SearchRadiusX, Mode=TwoWay}"/>
-                                                                <TextBlock Text="Neighborhood y direction"
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.RangeX, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Range y direction"
                                                                        FontWeight="DemiBold"/>
-                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.SearchRadiusY, Mode=TwoWay}"/>
-                                                                <TextBlock Text="Neighborhood z direction"
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.RangeY, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Range z direction"
                                                                        FontWeight="DemiBold"/>
-                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.SearchRadiusZ, Mode=TwoWay}"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.RangeZ, Mode=TwoWay}"/>
                                                                 <TextBlock Text="Maximum count of neighbors"
                                                                        FontWeight="DemiBold"/>
+                                                                <TextBlock Text="Azimuth"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.Azimuth, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Dip"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.Dip, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Plunge"
+                                                                       FontWeight="DemiBold"/>
+                                                                <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.Plunge, Mode=TwoWay}"/>
+                                                                <TextBlock Text="Maximum count of neighbors"
+                                                                       FontWeight="DemiBold"/>
+                                                                
                                                                 <TextBox Text="{Binding Path=SpatialInterpolationHelper.MaximumNeighborCount, Mode=TwoWay}"/>
                                                                 <TextBlock Text="Power parameter"
                                                                            Visibility="{Binding Path=SpatialInterpolationHelper.IsIDW, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"

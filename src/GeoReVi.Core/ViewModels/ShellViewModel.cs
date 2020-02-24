@@ -66,6 +66,9 @@ namespace GeoReVi
 
         #region Public properties
 
+        /// <summary>
+        /// Side menu where all logging-functionality and project navigation functionality is located
+        /// </summary>
         private SideMenuViewModel sideMenuViewModel;
         public SideMenuViewModel SideMenuViewModel
         {
@@ -74,6 +77,20 @@ namespace GeoReVi
             {
                 this.sideMenuViewModel = value;
                 NotifyOfPropertyChange(() => SideMenuViewModel);
+            }
+        }
+
+        /// <summary>
+        /// View model for data management and visualization
+        /// </summary>
+        private DatasetManagementAndVisualizationViewModel datasetManagementAndVisualizationViewModel = new DatasetManagementAndVisualizationViewModel();
+        public DatasetManagementAndVisualizationViewModel DatasetManagementAndVisualizationViewModel
+        {
+            get => this.datasetManagementAndVisualizationViewModel;
+            set
+            {
+                this.datasetManagementAndVisualizationViewModel = value;
+                NotifyOfPropertyChange(() => DatasetManagementAndVisualizationViewModel);
             }
         }
 

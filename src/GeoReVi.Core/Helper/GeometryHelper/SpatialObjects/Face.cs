@@ -72,7 +72,7 @@ namespace GeoReVi
                         loc = new LocationTimeValue((Vertices[0].X + Vertices[1].X + Vertices[2].X + Vertices[3].X) / 4,
                                                     (Vertices[0].Y + Vertices[1].Y + Vertices[2].Y + Vertices[3].Y) / 4,
                                                     (Vertices[0].Z + Vertices[1].Z + Vertices[2].Z + Vertices[3].Z) / 4,
-                        "default",
+                                                    "default",
                                                     (Vertices[0].Value[0] + Vertices[1].Value[0] + Vertices[2].Value[0] + Vertices[3].Value[0]) / 4);
                         break;
                     default:

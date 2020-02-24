@@ -359,7 +359,7 @@ namespace GeoReVi
         /// <returns></returns>
         public LocationTimeValue GetMiddlePoint(LocationTimeValue loc)
         {
-            return new LocationTimeValue((X + loc.X) / 2, (Y + loc.Y) / 2, (Z + loc.Z) / 2, "default", (Value[0] - loc.Value[0]) / 2);
+            return new LocationTimeValue((X + loc.X) / 2, (Y + loc.Y) / 2, (Z + loc.Z) / 2, "default", (Value[0] + loc.Value[0]) / 2);
         }
 
         /// <summary>
@@ -387,6 +387,18 @@ namespace GeoReVi
 
                 return grad;
         }
+
+        /// <summary>
+        /// Rotating the point along the origin
+        /// </summary>
+        /// <param name="zTransform"></param>
+        /// <param name="xTransform"></param>
+        /// <param name="yTransform"></param>
+        public void Rotate(double[,] zTransform, double[,] xTransform, double[,] yTransform)
+        {
+
+        }
+
         #endregion
     }
 }

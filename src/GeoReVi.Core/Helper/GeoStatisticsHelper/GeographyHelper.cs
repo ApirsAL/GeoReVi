@@ -10,29 +10,37 @@ namespace GeoReVi
     public static class GeographyHelper
     {
         //Calculating the distance matrix of a set of points
-        public static List<XY> DistanceMatrix(BindableCollection<LocationTimeValue> Points)
+        public static List<XY> DistanceMatrix(BindableCollection<LocationTimeValue> Points, VariogramHelper vh)
         {
             List<XY> valList = new List<XY>();
 
             int f = 1;
 
             if (Points.Count() > 10000)
-                f = 100;
+                f = 500;
 
             for (int i = 0; i < Points.Count(); i+=f)
             {
-                for (int j = 0; j <= i; j+=f)
+                //Searching the neighborhood according to a search ellipsoid
+                List<LocationTimeValue> neighborhood = SpatialNeighborhoodHelper.SearchByDistance(Points, Points[i], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge).ToList();
+
+                for (int j = 0; j < neighborhood.Count; j++)
                 {
-                    if (i != j)
+                    try
                     {
-                        XY valDist = new XY();
+                            XY valDist = new XY();
 
-                        valDist.X = Points[j].Value[0] - Points[i].Value[0];
+                            valDist.X = neighborhood[j].Value[0] - Points[i].Value[0];
 
-                        valDist.Y = EuclideanDistance(Points[j].X - Points[i].X, Points[j].Y - Points[i].Y, Points[j].Z - Points[i].Z);
+                            valDist.Y = EuclideanDistance(neighborhood[j].X - Points[i].X, neighborhood[j].Y - Points[i].Y, neighborhood[j].Z - Points[i].Z);
 
-                        valList.Add(valDist);
+                            valList.Add(valDist);
                     }
+                    catch
+                    {
+                        continue;
+                    }
+
                 }
             }
 

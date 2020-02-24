@@ -904,7 +904,8 @@ namespace GeoReVi
 
             Model = new Model3DGroup();
 
-            await Task.WhenAll(await Application.Current.Dispatcher.InvokeAsync(async () =>
+            //await Task.WhenAll(await Application.Current.Dispatcher.InvokeAsync(async () =>
+            await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => Updating, async () =>
             {
                 // Create a mesh builder and add a box to it
                 var meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
@@ -958,7 +959,7 @@ namespace GeoReVi
                         if (ls3D.Chart3DDisplayType != Chart3DDisplayType.Model)
                             ls3D.Model = new Model3DGroup();
 
-                        //Adding point clould of the series
+                        //Adding point cloud of the series
                         if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Scatter)
                         {
                             //Adding all points to the model group
@@ -1088,7 +1089,10 @@ namespace GeoReVi
                         {
 
                             ls3D.Mesh.FacesFromPointCloud();
-                            foreach (var face in ls3D.Mesh.Faces)
+
+                            List<Face> faces = ls3D.Mesh.Faces.ToList();
+
+                            foreach (var face in faces)
                             {
                                 try
                                 {
@@ -1123,40 +1127,45 @@ namespace GeoReVi
                                     if (isFiltered)
                                         continue;
 
-                                    List<Face> faces = ls3D.Mesh.Faces.ToList();
-
+                                    List<Face> newFaces = new List<Face>() { face };
+                                    
                                     //Interpolating faces
                                     for (int i = 0; i < ls3D.GradeOfResolution; i++)
                                     {
-                                        List<Face> newFaces = new List<Face>();
-
-                                        for (int j = 0; j < faces.Count(); j++)
+                                        List<Face> subdividedFaces = new List<Face>();
+                                        for (int j = 0; j < newFaces.Count(); j++)
                                         {
-                                            newFaces.AddRange(faces[j].SubdivideFace());
+                                            newFaces.AddRange(newFaces[j].SubdivideFace());
                                         }
 
-                                        faces = newFaces.ToList();
+                                        newFaces = newFaces.ToList();
                                     }
 
-                                    for (int j = 0; j < faces.Count(); j++)
+                                    for (int j = 0; j < newFaces.Count(); j++)
                                     {
+                                        try
+                                        {
+                                            double average = faces[j].Vertices.Select(x => x.Value[0]).Average();
 
-                                        double average = faces[j].Vertices.Select(x => x.Value[0]).Average();
+                                            //Filtering values based on minimum and maximum visibility
+                                            if (ColorMapFilterActive)
+                                                if (average < MinimumVisibility || average > MaximumVisibility)
+                                                    continue;
 
-                                        //Filtering values based on minimum and maximum visibility
-                                        if (ColorMapFilterActive)
-                                            if (average < MinimumVisibility || average > MaximumVisibility)
-                                                continue;
+                                            //Defining the color for the face
+                                            SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
 
-                                        //Defining the color for the face
-                                        SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                            //Adding the face to the face objects
+                                            faceMaterials.Add(new Tuple<Face, SolidColorBrush>(faces[j], m));
 
-                                        //Adding the face to the face objects
-                                        faceMaterials.Add(new Tuple<Face, SolidColorBrush>(faces[j], m));
-
-                                        //Adding color to new materials if it is not included yet
-                                        if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                            materials.Add(m);
+                                            //Adding color to new materials if it is not included yet
+                                            if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                materials.Add(m);
+                                        }
+                                        catch
+                                        {
+                                            continue;
+                                        }
                                     }
 
                                 }
@@ -1423,12 +1432,12 @@ namespace GeoReVi
                             if (ls3D.MeshDisplayType == MeshDisplayType.Faces || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
                             {
                                 material = mat;
-                                ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material });
+                                ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
                             }
                             if (ls3D.MeshDisplayType == MeshDisplayType.WireFrame || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
                             {
                                 ///Adding a wireframe
-                                ls3D.Model.Children.Add(CreateWireframe(mesh, ls3D.WireframeThickness));
+                                ls3D.Model.Dispatcher.Invoke(() =>ls3D.Model.Children.Add(CreateWireframe(mesh, ls3D.WireframeThickness)));
                             }
                             if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Line)
                             {
@@ -1444,7 +1453,7 @@ namespace GeoReVi
 
                                 material = MaterialHelper.CreateMaterial(ls3D.LineColor);
 
-                                ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material });
+                                ls3D.Model.Dispatcher.Invoke(() =>ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material }));
                             }
 
                         }
@@ -1454,7 +1463,7 @@ namespace GeoReVi
                         {
                             Transform3DGroup transformations = new Transform3DGroup();
 
-                            ls3D.Model.Transform = transformations;
+                            ls3D.Model.Dispatcher.Invoke(() =>ls3D.Model.Transform = transformations);
 
 
                             //Scaling
@@ -1518,7 +1527,7 @@ namespace GeoReVi
                             ls3D.Model.Freeze();
                         }
 
-                        modelGroup.Children.Add(ls3D.Model);
+                        modelGroup.Dispatcher.Invoke(()=> modelGroup.Children.Add(ls3D.Model));
                     }
                     catch
                     {
@@ -1527,13 +1536,14 @@ namespace GeoReVi
 
                 }
 
-                AddSlice(ref modelGroup);
+            }));
+
+            AddSlice(ref modelGroup);
                 AddLabels(ref modelGroup, MinEast, MinNorth, MinAltitude);
 
                 ///Applying a scale to the model
                 ScaleTransform3D scaleTransform = new ScaleTransform3D(1, 1, ExaggerationFactor, 0, 0, 0);
                 modelGroup.Transform = scaleTransform;
-            }));
 
             AddGrid(MinEast, MinNorth, MinAltitude);
             Model = modelGroup;

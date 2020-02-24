@@ -523,7 +523,7 @@ namespace GeoReVi
             }
             catch
             {
-                ((ShellViewModel)IoC.Get<IShell>()).ShowInformation("Please selecte a valid value");
+                ((ShellViewModel)IoC.Get<IShell>()).ShowInformation("Please select a valid value");
             }
         }
 
@@ -925,7 +925,7 @@ namespace GeoReVi
                 }
                 catch
                 {
-                    ((ShellViewModel)IoC.Get<IShell>()).ShowInformation("An unexpected error occured.");
+                    ((ShellViewModel)IoC.Get<IShell>()).ShowInformation("An unexpected error occurred.");
                 }
             }
         }

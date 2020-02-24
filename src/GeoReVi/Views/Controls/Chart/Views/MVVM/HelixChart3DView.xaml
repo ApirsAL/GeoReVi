@@ -565,10 +565,6 @@
                                                     <TextBlock Text="Color map subdivisions"
                                                                            FontWeight="DemiBold"
                                                                                        Margin="0,5,0,0"/>
-                                                    <TextBox Text="{Binding Ch3d.ColorMap.ColormapLength, Mode=TwoWay}"></TextBox>
-                                                    <TextBlock Text="Color map subdivisions"
-                                                                           FontWeight="DemiBold"
-                                                                                       Margin="0,5,0,0"/>
                                                     <TextBox Text="{Binding Ch3d.ColorMap.Ydivisions, Mode=TwoWay}">
                                                     </TextBox>
                                                 </StackPanel>

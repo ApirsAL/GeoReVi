@@ -744,34 +744,49 @@ namespace GeoReVi
                 {
                     for (int j = 0; j < verticalCells; j++)
                     {
-                        //Creating the new point to be inserted
-                        var pt = new LocationTimeValue()
+                        try
                         {
-                            X = xyCoordinates[i, 0],
-                            Y = xyCoordinates[i, 1],
-                            Z = zArray[j],
-                            Geographic = false,
-                            IsDiscretized = true,
-                            IsExterior = true,
-                            MeshIndex = new int[3] { i, j, 0 }
-                        };
+                            //Creating the new point to be inserted
+                            var pt = new LocationTimeValue()
+                            {
+                                X = xyCoordinates[i, 0],
+                                Y = xyCoordinates[i, 1],
+                                Z = zArray[j],
+                                Geographic = false,
+                                IsDiscretized = true,
+                                IsExterior = true,
+                                MeshIndex = new int[3] { i, j, 0 }
+                            };
 
-                        var sortedList = Vertices.AsParallel().MinBy(x => x.GetEuclideanDistance(pt)).Take(3);
+                            var sortedList = Vertices.AsParallel().MinBy(x => x.GetEuclideanDistance(pt)).Take(3);
 
-                        pt.Value[0] = sortedList.Average(x => x.Value[0]);
-                        pt.Z = sortedList.Take(1).First().Z;
+                            pt.Value[0] = sortedList.Average(x => x.Value[0]);
+                            pt.Z = sortedList.Take(1).First().Z;
 
-                        mesh.Vertices.Add(pt);
+                            mesh.Vertices.Add(pt);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
                     }
                 });
 
+                //Removing null vertices
+                for (int i = 0; i < mesh.Vertices.Count(); i++)
+                    if (mesh.Vertices[i] == null)
+                    {
+                        mesh.Vertices.RemoveAt(i);
+                        i -= 1;
+                    }
+                
                 //Adding interpolated values and variances to the original data set
                 mesh.Name = "Vertical section";
                 mesh.Data =
                     CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
                         new List<Tuple<double, double, double, double, DateTime, string>>(mesh.Vertices.Select(a =>
                            new Tuple<double, double, double, double, DateTime, string>(
-                               a.Value[0],
+                               (a.Value[0] == null ? 0 : a.Value[0]),
                                a.X,
                                a.Y,
                                a.Z,

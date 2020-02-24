@@ -303,7 +303,7 @@ namespace GeoReVi
             try
             {
                 SelectedMeasPoint.Name = newKey;
-
+                SelectedMeasPoint.Data.TableName = newKey;
             }
             catch
             {
@@ -722,23 +722,6 @@ namespace GeoReVi
             {
 
             }
-        }
-
-        /// <summary>
-        /// Building a slice of the selected model
-        /// </summary>
-        /// <returns></returns>
-        public async Task GetSlice()
-        {
-            try
-            {
-
-            }
-            catch
-            {
-
-            }
-
         }
 
         /// <summary>
