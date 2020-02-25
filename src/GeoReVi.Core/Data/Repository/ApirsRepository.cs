@@ -1655,7 +1655,7 @@ namespace GeoReVi
         //Returning all projects, the user participates at
         public IEnumerable<tblProject> GetUserProjects(int id)
         {
-            if ((bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode)
+            if ((bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode || id==0)
                 return _apirsLocalLiteDatabase.GetCollection<tblProject>(typeof(tblProject).Name).Find(x => x.prjCreatorIdFk == id);
             else
                 return from p in _apirsDatabase.tblProjects

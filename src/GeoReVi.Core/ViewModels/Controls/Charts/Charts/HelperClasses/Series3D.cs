@@ -208,7 +208,7 @@ namespace GeoReVi
         /// <summary>
         /// The count of how often a face should be subdivided for visualization
         /// </summary>
-        private int gradeOfResolution;
+        private int gradeOfResolution = 0;
         public int GradeOfResolution
         {
             get => this.gradeOfResolution;

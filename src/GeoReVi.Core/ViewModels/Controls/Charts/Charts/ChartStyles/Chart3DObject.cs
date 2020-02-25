@@ -648,7 +648,7 @@ namespace GeoReVi
 
                                 var material = MaterialHelper.CreateMaterial(Colors.Black);
 
-                                Model.Dispatcher.Invoke(()=> Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
+                                Model.Dispatcher.Invoke(() => Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
                             }
                             catch
                             {
@@ -904,6 +904,12 @@ namespace GeoReVi
 
             Model = new Model3DGroup();
 
+            DataCollection.ForEach(x =>
+            {
+                x.Symbols.FillColor.Freeze();
+                x.Symbols.BorderColor.Freeze();
+            });
+
             //await Task.WhenAll(await Application.Current.Dispatcher.InvokeAsync(async () =>
             await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => Updating, async () =>
             {
@@ -952,6 +958,18 @@ namespace GeoReVi
                     List<Tuple<LocationTimeValue, SolidColorBrush>> pointMaterials = new List<Tuple<LocationTimeValue, SolidColorBrush>>();
                     List<Tuple<Face, SolidColorBrush>> faceMaterials = new List<Tuple<Face, SolidColorBrush>>();
                     List<SolidColorBrush> materials = new List<SolidColorBrush>();
+                    SolidColorBrush fillColor = new SolidColorBrush();
+                    SolidColorBrush wireFrameColor = new SolidColorBrush();
+
+                    lock ((SolidColorBrush)ls3D.Symbols.FillColor)
+                    {
+                        fillColor = (SolidColorBrush)ls3D.Symbols.FillColor;
+                    }
+
+                    lock((SolidColorBrush)ls3D.Symbols.BorderColor)
+                    {
+                        wireFrameColor = (SolidColorBrush)ls3D.Symbols.BorderColor;
+                    }
 
                     try
                     {
@@ -996,11 +1014,13 @@ namespace GeoReVi
                                         }
                                     }
 
-                                    SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(point.Value[0], ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                    SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(point.Value[0], ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
 
                                     pointMaterials.Add(new Tuple<LocationTimeValue, SolidColorBrush>(point, m));
 
-                                    materials.Add(m);
+                                    //Adding color to new materials if it is not included yet
+                                    if (materials.Where(x => x.Color == m.Color).FirstOrDefault() == null)
+                                        materials.Add(m);
                                 }
                                 catch
                                 {
@@ -1128,39 +1148,45 @@ namespace GeoReVi
                                         continue;
 
                                     List<Face> newFaces = new List<Face>() { face };
-                                    
-                                    //Interpolating faces
-                                    for (int i = 0; i < ls3D.GradeOfResolution; i++)
-                                    {
-                                        List<Face> subdividedFaces = new List<Face>();
-                                        for (int j = 0; j < newFaces.Count(); j++)
-                                        {
-                                            newFaces.AddRange(newFaces[j].SubdivideFace());
-                                        }
 
-                                        newFaces = newFaces.ToList();
-                                    }
+                                    //Interpolating faces
+                                    if (ls3D.GradeOfResolution > 0)
+                                        for (int i = 0; i < ls3D.GradeOfResolution; i++)
+                                        {
+                                            List<Face> subdividedFaces = new List<Face>();
+                                            for (int j = 0; j < newFaces.Count(); j++)
+                                            {
+                                                subdividedFaces.AddRange(newFaces[j].SubdivideFace());
+                                                break;
+                                            }
+
+                                            newFaces = subdividedFaces.ToList();
+                                        }
 
                                     for (int j = 0; j < newFaces.Count(); j++)
                                     {
                                         try
                                         {
-                                            double average = faces[j].Vertices.Select(x => x.Value[0]).Average();
+                                            double average = newFaces[j].Vertices.Select(x => x.Value[0]).Average();
 
                                             //Filtering values based on minimum and maximum visibility
                                             if (ColorMapFilterActive)
                                                 if (average < MinimumVisibility || average > MaximumVisibility)
                                                     continue;
 
+
                                             //Defining the color for the face
-                                            SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                            SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
 
                                             //Adding the face to the face objects
-                                            faceMaterials.Add(new Tuple<Face, SolidColorBrush>(faces[j], m));
+                                            faceMaterials.Add(new Tuple<Face, SolidColorBrush>(newFaces[j], m));
 
-                                            //Adding color to new materials if it is not included yet
-                                            if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                                materials.Add(m);
+                                            ls3D.Symbols.FillColor.Dispatcher.Invoke(() =>
+                                            {
+                                                //Adding color to new materials if it is not included yet
+                                                if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                    materials.Add(m);
+                                            });
                                         }
                                         catch
                                         {
@@ -1251,7 +1277,7 @@ namespace GeoReVi
                                                         continue;
 
                                                 //Defining the color for the face
-                                                SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                                SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
 
                                                 //Adding the face to the face objects
                                                 faceMaterials.Add(new Tuple<Face, SolidColorBrush>(faces[j], m));
@@ -1296,11 +1322,11 @@ namespace GeoReVi
                                         List<Face> faces = cell.Faces.ToList();
 
                                         //Interpolating faces
-                                        for(int i = 0; i< ls3D.GradeOfResolution; i++)
+                                        for (int i = 0; i < ls3D.GradeOfResolution; i++)
                                         {
                                             List<Face> newFaces = new List<Face>();
 
-                                            for(int j = 0; j < faces.Count();j++)
+                                            for (int j = 0; j < faces.Count(); j++)
                                             {
                                                 faces.AddRange(faces[j].SubdivideFace());
                                             }
@@ -1318,12 +1344,13 @@ namespace GeoReVi
                                                 if (average < MinimumVisibility || average > MaximumVisibility)
                                                     continue;
 
-                                            SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : (SolidColorBrush)ls3D.Symbols.FillColor;
+                                            SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(average, ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
 
                                             faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
 
-                                            if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                                materials.Add(m);
+
+                                                if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                   materials.Add(m);
                                         }
                                     }
 
@@ -1380,90 +1407,90 @@ namespace GeoReVi
 
                         }
 
-                        materials = materials.DistinctBy(x => x.Color).ToList();
+                            materials = materials.DistinctBy(x => x.Color).ToList();
 
-                        foreach (SolidColorBrush s in materials)
-                        {
-
-                            Material mat = MaterialHelper.CreateMaterial(s);
-
-                            // Create a mesh builder and add a box to it
-                            meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
-
-                            mesh = new System.Windows.Media.Media3D.MeshGeometry3D();
-
-                            List<Tuple<LocationTimeValue, SolidColorBrush>> a = pointMaterials.Where(x => x.Item2 == s).ToList();
-                            List<Tuple<Face, SolidColorBrush>> b = faceMaterials.Where(x => x.Item2 == s).ToList();
-
-                            for (int i = 0; i < a.Count(); i++)
+                            foreach (SolidColorBrush s in materials)
                             {
-                                await Task.Delay(0);
 
-                                switch (ls3D.Symbols.SymbolType)
-                                {
-                                    case SymbolTypeEnum.Box:
-                                        meshBuilder.AddBox(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, HelixToolkit.Wpf.BoxFaces.All);
-                                        break;
-                                    case SymbolTypeEnum.Dot:
-                                        meshBuilder.AddSphere(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, 10, 5);
-                                        break;
-                                }
-                            }
-
-                            for (int i = 0; i < b.Count(); i++)
-                            {
-                                await Task.Delay(0);
-
-                                switch (b[i].Item1.FaceType)
-                                {
-                                    case FaceType.Triangular:
-                                        meshBuilder.AddTriangle(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D());
-                                        break;
-                                    case FaceType.Quadrilateral:
-                                        ((Quadrilateral)b[i].Item1).SortVertices();
-                                        meshBuilder.AddQuad(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D(), b[i].Item1.Vertices[3].ToPoint3D());
-                                        break;
-                                }
-                            }
-
-                            mesh = meshBuilder.ToMesh(true);
-
-                            ///Adding the mesh to the model group
-                            if (ls3D.MeshDisplayType == MeshDisplayType.Faces || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
-                            {
-                                material = mat;
-                                ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
-                            }
-                            if (ls3D.MeshDisplayType == MeshDisplayType.WireFrame || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
-                            {
-                                ///Adding a wireframe
-                                ls3D.Model.Dispatcher.Invoke(() =>ls3D.Model.Children.Add(CreateWireframe(mesh, ls3D.WireframeThickness)));
-                            }
-                            if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Line)
-                            {
-                                pointMaterials.OrderBy(x => x.Item1.X).OrderBy(x => x.Item1.Y).OrderBy(x => x.Item1.Z);
+                                Material mat = MaterialHelper.CreateMaterial(s);
 
                                 // Create a mesh builder and add a box to it
                                 meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
 
-                                for (int i = 0; i < pointMaterials.Count() - 1; i++)
-                                    meshBuilder.AddCylinder(pointMaterials[i].Item1.ToPoint3D(), pointMaterials[i + 1].Item1.ToPoint3D(), ls3D.WireframeThickness, 5, false, false);
+                                mesh = new System.Windows.Media.Media3D.MeshGeometry3D();
+
+                                List<Tuple<LocationTimeValue, SolidColorBrush>> a = pointMaterials.Where(x => x.Item2 == s).ToList();
+                                List<Tuple<Face, SolidColorBrush>> b = faceMaterials.Where(x => x.Item2 == s).ToList();
+
+                                for (int i = 0; i < a.Count(); i++)
+                                {
+                                    await Task.Delay(0);
+
+                                    switch (ls3D.Symbols.SymbolType)
+                                    {
+                                        case SymbolTypeEnum.Box:
+                                            meshBuilder.AddBox(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, HelixToolkit.Wpf.BoxFaces.All);
+                                            break;
+                                        case SymbolTypeEnum.Dot:
+                                            meshBuilder.AddSphere(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, 10, 5);
+                                            break;
+                                    }
+                                }
+
+                                for (int i = 0; i < b.Count(); i++)
+                                {
+                                    await Task.Delay(0);
+
+                                    switch (b[i].Item1.FaceType)
+                                    {
+                                        case FaceType.Triangular:
+                                            meshBuilder.AddTriangle(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D());
+                                            break;
+                                        case FaceType.Quadrilateral:
+                                            ((Quadrilateral)b[i].Item1).SortVertices();
+                                            meshBuilder.AddQuad(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D(), b[i].Item1.Vertices[3].ToPoint3D());
+                                            break;
+                                    }
+                                }
 
                                 mesh = meshBuilder.ToMesh(true);
 
-                                material = MaterialHelper.CreateMaterial(ls3D.LineColor);
+                                ///Adding the mesh to the model group
+                                if (ls3D.MeshDisplayType == MeshDisplayType.Faces || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
+                                {
+                                    material = mat;
+                                    ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
+                                }
+                                if (ls3D.MeshDisplayType == MeshDisplayType.WireFrame || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
+                                {
+                                    ///Adding a wireframe
+                                    ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(CreateWireframe(mesh, wireFrameColor, ls3D.WireframeThickness)));
+                                }
+                                if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Line)
+                                {
+                                    pointMaterials.OrderBy(x => x.Item1.X).OrderBy(x => x.Item1.Y).OrderBy(x => x.Item1.Z);
 
-                                ls3D.Model.Dispatcher.Invoke(() =>ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material }));
+                                    // Create a mesh builder and add a box to it
+                                    meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
+
+                                    for (int i = 0; i < pointMaterials.Count() - 1; i++)
+                                        meshBuilder.AddCylinder(pointMaterials[i].Item1.ToPoint3D(), pointMaterials[i + 1].Item1.ToPoint3D(), ls3D.WireframeThickness, 5, false, false);
+
+                                    mesh = meshBuilder.ToMesh(true);
+
+                                    material = MaterialHelper.CreateMaterial(ls3D.LineColor);
+
+                                    ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material }));
+                                }
+
                             }
-
-                        }
 
                         //Applying a transformation on the dataset
                         try
                         {
                             Transform3DGroup transformations = new Transform3DGroup();
 
-                            ls3D.Model.Dispatcher.Invoke(() =>ls3D.Model.Transform = transformations);
+                            ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Transform = transformations);
 
 
                             //Scaling
@@ -1527,7 +1554,7 @@ namespace GeoReVi
                             ls3D.Model.Freeze();
                         }
 
-                        modelGroup.Dispatcher.Invoke(()=> modelGroup.Children.Add(ls3D.Model));
+                        modelGroup.Dispatcher.Invoke(() => modelGroup.Children.Add(ls3D.Model));
                     }
                     catch
                     {
@@ -1539,11 +1566,11 @@ namespace GeoReVi
             }));
 
             AddSlice(ref modelGroup);
-                AddLabels(ref modelGroup, MinEast, MinNorth, MinAltitude);
+            AddLabels(ref modelGroup, MinEast, MinNorth, MinAltitude);
 
-                ///Applying a scale to the model
-                ScaleTransform3D scaleTransform = new ScaleTransform3D(1, 1, ExaggerationFactor, 0, 0, 0);
-                modelGroup.Transform = scaleTransform;
+            ///Applying a scale to the model
+            ScaleTransform3D scaleTransform = new ScaleTransform3D(1, 1, ExaggerationFactor, 0, 0, 0);
+            modelGroup.Transform = scaleTransform;
 
             AddGrid(MinEast, MinNorth, MinAltitude);
             Model = modelGroup;
@@ -1807,12 +1834,13 @@ namespace GeoReVi
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static System.Windows.Media.Media3D.GeometryModel3D CreateWireframe(System.Windows.Media.Media3D.MeshGeometry3D mesh, double gridlineThickness = 0.02)
+        public static System.Windows.Media.Media3D.GeometryModel3D CreateWireframe(System.Windows.Media.Media3D.MeshGeometry3D mesh, Brush color, double gridlineThickness = 0.02)
         {
             // Create a mesh builder and add a box to it
             var meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
 
             Model3DGroup group = new Model3DGroup();
+
             for (int i = 0; i < mesh.TriangleIndices.Count; i += 3)
             {
                 int a = mesh.TriangleIndices[i];
@@ -1823,14 +1851,13 @@ namespace GeoReVi
                 Point3D pb = mesh.Positions[b];
                 Point3D pc = mesh.Positions[c];
 
+
                 meshBuilder.AddCylinder(pa, pb, gridlineThickness, 4, false, false);
                 meshBuilder.AddCylinder(pa, pc, gridlineThickness, 4, false, false);
                 meshBuilder.AddCylinder(pb, pc, gridlineThickness, 4, false, false);
-
-
             }
 
-            var material = MaterialHelper.CreateMaterial(Colors.Black);
+            var material = MaterialHelper.CreateMaterial(color);
             var mesh1 = meshBuilder.ToMesh(true);
 
             return new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh1, Material = material };

@@ -191,7 +191,7 @@ namespace GeoReVi
         }
 
         //Returns a rescaled bitmapframe
-        public static BitmapFrame RenderVisual(UIElement visual, int targetSizeHeight = 0, int targetSizeWidth = 0, double dpi = 300)
+        public static BitmapFrame RenderVisual(UIElement visual, int targetSizeHeight = 0, int targetSizeWidth = 0, double dpi = 600)
         {
             double dpiScale = dpi / 96;
             System.Windows.Size actualSize = new System.Windows.Size(visual.RenderSize.Width, visual.RenderSize.Height);

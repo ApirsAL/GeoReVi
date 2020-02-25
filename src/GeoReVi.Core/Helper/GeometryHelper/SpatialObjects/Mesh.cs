@@ -739,8 +739,8 @@ namespace GeoReVi
                 double[,] xyCoordinates = MeshingHelper.InterpolateLine2D(point1.X, point1.Y, point2.X, point2.Y, horizontalCells);
                 double[] zArray = DistributionHelper.Subdivide(new double[2] { Vertices.Max(x => x.Z), Vertices.Min(x => x.Z) }, verticalCells);
 
-                //for(int i = 0; i<xyCoordinates.GetLength(0);i++)
-                Parallel.For(0, xyCoordinates.GetLength(0), (i, loopState) =>
+                for(int i = 0; i<xyCoordinates.GetLength(0);i++)
+                //Parallel.For(0, xyCoordinates.GetLength(0), (i, loopState) =>
                 {
                     for (int j = 0; j < verticalCells; j++)
                     {
@@ -758,7 +758,7 @@ namespace GeoReVi
                                 MeshIndex = new int[3] { i, j, 0 }
                             };
 
-                            var sortedList = Vertices.AsParallel().MinBy(x => x.GetEuclideanDistance(pt)).Take(3);
+                            var sortedList = Vertices.MinBy(x => x.GetEuclideanDistance(pt)).Take(3);
 
                             pt.Value[0] = sortedList.Average(x => x.Value[0]);
                             pt.Z = sortedList.Take(1).First().Z;
@@ -770,7 +770,7 @@ namespace GeoReVi
                             continue;
                         }
                     }
-                });
+                };
 
                 //Removing null vertices
                 for (int i = 0; i < mesh.Vertices.Count(); i++)

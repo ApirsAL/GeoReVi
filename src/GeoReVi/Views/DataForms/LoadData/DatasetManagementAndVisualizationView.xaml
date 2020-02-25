@@ -16,8 +16,6 @@
         <ControlTemplate TargetType="UserControl">
             <!---Displaying related charts-->
             <Grid x:Name="ChartStackPan"
-                  Grid.ColumnSpan="3"
-                  Grid.Row="3"
                   Margin="6"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
@@ -108,13 +106,13 @@
                                         <Grid.ContextMenu>
                                             <ContextMenu>
 
-                                                <MenuItem Header="Add data set to cluster"
+                                                <MenuItem Header="Add to cluster"
                                               cal:Message.Attach="[Event Click] = [Action AddToCluster]"/>
-                                                <MenuItem Header="Add data set to PCA"
+                                                <MenuItem Header="Add to PCA"
                                               cal:Message.Attach="[Event Click] = [Action AddToPca]"/>
-                                                <MenuItem Header="Add data set to Sammon"
+                                                <MenuItem Header="Add to Sammon"
                                               cal:Message.Attach="[Event Click] = [Action AddToSammon]"/>
-                                                <MenuItem Header="Add data set to Correlation"
+                                                <MenuItem Header="Add to Correlation"
                                               cal:Message.Attach="[Event Click] = [Action AddToCorrelation]"/>
                                             </ContextMenu>
                                         </Grid.ContextMenu>
