@@ -51,8 +51,11 @@ To get started with GeoReVi you have to download the packed file [GeoReVi.zip](h
 * ternary charts
 * 3D charts
 
-### Three-dimensional principal component analysis
-<img src="docs/Samples/MultivariateAnalyses/PCA.gif" width="50%">
+### Three-dimensional outcrop model
+<img src="docs/Samples/Meshes/OutcropModeling.png" width="60%">
+
+### Sequential simulation of the porosity
+<img src="docs/Samples/Meshes/SGS.gif" width="60%">
 
 ## Algorithms
 * Semivariogram
@@ -84,14 +87,12 @@ If bugs or any other issues are identified we would be grateful for reporting th
 
 ## Other Samples
 
-### Three-dimensional outcrop model
-<img src="docs/Samples/Meshes/OutcropModeling.png" width="60%">
-
 ### Reservoir-scale temperature distribution
 <img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="60%">
 
 ### Meter-scale permeability distribution
 <img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
 
-
+### Three-dimensional principal component analysis
+<img src="docs/Samples/MultivariateAnalyses/PCA.gif" width="50%">
 

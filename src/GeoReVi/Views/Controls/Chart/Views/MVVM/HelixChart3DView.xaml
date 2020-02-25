@@ -1150,7 +1150,44 @@
                             </TabItem>
                         </TabControl>
                     </Expander>
-                </Grid>
+            <local:DropDownButton HorizontalAlignment="Right"
+                                              VerticalAlignment="Top">
+                <local:DropDownButton.Menu>
+                    <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+
+                        <MenuItem Header="Refresh"
+                                              cal:Bind.ModelWithoutContext="{Binding Ch3d}"
+                                              cal:Message.Attach="[Event Click] = [Action AddDataCollection]"/>
+                        <MenuItem Header="Load model" 
+                                              cal:Bind.ModelWithoutContext="{Binding Ch3d}"
+                                              cal:Message.Attach="Load3dModel"/>
+                        <MenuItem Header="Add data to series"
+                                              cal:Bind.ModelWithoutContext="{Binding Ch3d}"
+                                              cal:Message.Attach="[Event Click] = [Action AddDataToSeries]"/>
+                        <MenuItem Header="Export chart"
+                                              Click="MenuItem_Click">
+                        </MenuItem>
+                        <MenuItem cal:Message.Attach="[Event Click] = [Action ZoomToExtends]"
+                                              Header="Zoom to extends">
+                        </MenuItem>
+                        <MenuItem Header="Save chart object"
+                          cal:Message.Attach="[Event Click]=[Action SaveChartObject]">
+
+                        </MenuItem>
+                        <MenuItem Header="Load chart object"
+                          cal:Message.Attach="[Event Click]=[Action LoadChartObject]">
+
+                        </MenuItem>
+                    </ContextMenu>
+                </local:DropDownButton.Menu>
+                <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                                              FontFamily="{StaticResource FontAwesome}"
+                                              Text="{StaticResource FontAwesomePlus}"
+                                              Foreground="{StaticResource ForegroundLightBrush}"
+                                              Background="{StaticResource ApirsMediumGrayBrush}"
+                                              FontSize="{StaticResource FontSizeVerySmall}"/>
+            </local:DropDownButton>
+        </Grid>
         <DockPanel Grid.Column="1">
             <!--The HelixViewport3D supports camera manipulation, and can be used just like the Viewport3D-->
             <Grid DockPanel.Dock="Left"
@@ -1164,7 +1201,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                        <HelixToolkit:HelixViewport3D ShowFrameRate="True" 
+                <HelixToolkit:HelixViewport3D ShowFrameRate="True" 
                                                   x:Name="Helix3D"
                                                   ShowViewCube="True"
                                                   HorizontalAlignment="Left"
@@ -1200,20 +1237,20 @@
                             <GradientStop Color="{Binding ElementName=BottomColor, Path=SelectedColor.Color, Mode=OneWay}" Offset="1.0" />
                         </LinearGradientBrush>
                     </HelixToolkit:HelixViewport3D.Background>
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="MouseLeftButtonDown">
-                                    <cal:ActionMessage MethodName="PerformEditing" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                            <local:DataPiping.DataPipes>
-                                <local:DataPipeCollection>
-                                    <local:DataPipe Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type HelixToolkit:HelixViewport3D}}, Path=CursorOnElementPosition}"
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                            <cal:ActionMessage MethodName="PerformEditing" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <local:DataPiping.DataPipes>
+                        <local:DataPipeCollection>
+                            <local:DataPipe Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type HelixToolkit:HelixViewport3D}}, Path=CursorOnElementPosition}"
                                                     Target="{Binding Path=Ch3d.ThreeDEditor.CursorOnElementPosition, Mode=OneWayToSource}"/>
-                                </local:DataPipeCollection>
-                            </local:DataPiping.DataPipes>
-                            <HelixToolkit:SunLight Altitude="90"
+                        </local:DataPipeCollection>
+                    </local:DataPiping.DataPipes>
+                    <HelixToolkit:SunLight Altitude="90"
                                                    Brightness="0.1"/>
-                            <HelixToolkit:SunLight Altitude="-90"
+                    <HelixToolkit:SunLight Altitude="-90"
                                                    Brightness="0.1"/>
                     <HelixToolkit:SunLight Altitude="45"
                                            Azimuth="0"
@@ -1222,12 +1259,12 @@
                                            Azimuth="0"
                                            Brightness="0.1"/>
                     <HelixToolkit:SortingVisual3D CheckForOpaqueVisuals="True"/>
-                            <!--The content of this visual is defined in MainViewModel.cs-->
-                            <ModelVisual3D Content="{Binding Path=Ch3d.Model}"/>
+                    <!--The content of this visual is defined in MainViewModel.cs-->
+                    <ModelVisual3D Content="{Binding Path=Ch3d.Model}"/>
 
-                            <!--You can also add elements here in the xaml-->
+                    <!--You can also add elements here in the xaml-->
 
-                            <HelixToolkit:GridLinesVisual3D Center="{Binding Path=Ch3d.XZGridlines.Center}"
+                    <HelixToolkit:GridLinesVisual3D Center="{Binding Path=Ch3d.XZGridlines.Center}"
                                                         Length="{Binding Path=Ch3d.XZGridlines.Length}"
                                                         Width="{Binding Path=Ch3d.XZGridlines.Width}"
                                                         Normal="{Binding Path=Ch3d.XZGridlines.Normal}"
@@ -1236,7 +1273,7 @@
                                                         Visible="{Binding Path=Ch3d.XZGridlines.Visible}"
                                                         Fill="{Binding Path=Ch3d.GridlineColor}"
                                                         Thickness="{Binding Path=Ch3d.GridlineThickness}"/>
-                            <HelixToolkit:GridLinesVisual3D Center="{Binding Path=Ch3d.XYGridlines.Center}"
+                    <HelixToolkit:GridLinesVisual3D Center="{Binding Path=Ch3d.XYGridlines.Center}"
                                                         Length="{Binding Path=Ch3d.XYGridlines.Length}"
                                                         Width="{Binding Path=Ch3d.XYGridlines.Width}"
                                                         Normal="{Binding Path=Ch3d.XYGridlines.Normal}"
@@ -1245,7 +1282,7 @@
                                                         Visible="{Binding Path=Ch3d.XYGridlines.Visible}"
                                                         Fill="{Binding Path=Ch3d.GridlineColor}"
                                                         Thickness="{Binding Path=Ch3d.GridlineThickness}"/>
-                            <HelixToolkit:GridLinesVisual3D Center="{Binding Path=Ch3d.YZGridlines.Center}"
+                    <HelixToolkit:GridLinesVisual3D Center="{Binding Path=Ch3d.YZGridlines.Center}"
                                                         Length="{Binding Path=Ch3d.YZGridlines.Length}"
                                                         Width="{Binding Path=Ch3d.YZGridlines.Width}"
                                                         Normal="{Binding Path=Ch3d.YZGridlines.Normal}"
@@ -1254,44 +1291,7 @@
                                                         Visible="{Binding Path=Ch3d.YZGridlines.Visible}"
                                                         Fill="{Binding Path=Ch3d.GridlineColor}"
                                                         Thickness="{Binding Path=Ch3d.GridlineThickness}"/>
-                        </HelixToolkit:HelixViewport3D>
-                        <local:DropDownButton HorizontalAlignment="Left"
-                                              VerticalAlignment="Top">
-                            <local:DropDownButton.Menu>
-                                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
-                                   
-                                    <MenuItem Header="Refresh"
-                                              cal:Bind.ModelWithoutContext="{Binding Ch3d}"
-                                              cal:Message.Attach="[Event Click] = [Action AddDataCollection]"/>
-                                    <MenuItem Header="Load model" 
-                                              cal:Bind.ModelWithoutContext="{Binding Ch3d}"
-                                              cal:Message.Attach="Load3dModel"/>
-                                    <MenuItem Header="Add data to series"
-                                              cal:Bind.ModelWithoutContext="{Binding Ch3d}"
-                                              cal:Message.Attach="[Event Click] = [Action AddDataToSeries]"/>
-                                    <MenuItem Header="Export chart"
-                                              Click="MenuItem_Click">
-                                    </MenuItem>
-                                    <MenuItem cal:Message.Attach="[Event Click] = [Action ZoomToExtends]"
-                                              Header="Zoom to extends">
-                                    </MenuItem>
-                                    <MenuItem Header="Save chart object"
-                          cal:Message.Attach="[Event Click]=[Action SaveChartObject]">
-
-                                    </MenuItem>
-                                    <MenuItem Header="Load chart object"
-                          cal:Message.Attach="[Event Click]=[Action LoadChartObject]">
-
-                                    </MenuItem>
-                                </ContextMenu>
-                            </local:DropDownButton.Menu>
-                            <TextBlock Style="{StaticResource BaseTextBlockStyle}"
-                                              FontFamily="{StaticResource FontAwesome}"
-                                              Text="{StaticResource FontAwesomePlus}"
-                                              Foreground="{StaticResource ForegroundLightBrush}"
-                                              Background="{StaticResource ApirsMediumGrayBrush}"
-                                              FontSize="{StaticResource FontSizeVerySmall}"/>
-                        </local:DropDownButton>
+                </HelixToolkit:HelixViewport3D>
                 <Grid VerticalAlignment="Stretch"
                             Grid.Column="1"
                             Margin="10">

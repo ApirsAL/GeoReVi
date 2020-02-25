@@ -1157,7 +1157,6 @@ namespace GeoReVi
                                             for (int j = 0; j < newFaces.Count(); j++)
                                             {
                                                 subdividedFaces.AddRange(newFaces[j].SubdivideFace());
-                                                break;
                                             }
 
                                             newFaces = subdividedFaces.ToList();
@@ -1181,12 +1180,9 @@ namespace GeoReVi
                                             //Adding the face to the face objects
                                             faceMaterials.Add(new Tuple<Face, SolidColorBrush>(newFaces[j], m));
 
-                                            ls3D.Symbols.FillColor.Dispatcher.Invoke(() =>
-                                            {
-                                                //Adding color to new materials if it is not included yet
-                                                if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                                    materials.Add(m);
-                                            });
+                                            //Adding color to new materials if it is not included yet
+                                            if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                materials.Add(m);
                                         }
                                         catch
                                         {
