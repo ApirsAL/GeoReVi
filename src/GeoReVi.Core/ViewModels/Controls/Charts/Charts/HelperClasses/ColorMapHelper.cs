@@ -35,7 +35,7 @@ namespace GeoReVi
 
             brush = (SolidColorBrush)cm.ColormapBrushes[colorIndex].Brush;
 
-            //brush.Freeze();
+            brush.Freeze();
 
             return brush;
         }

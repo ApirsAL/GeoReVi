@@ -48,7 +48,7 @@ namespace GeoReVi
         private IWindowManager _windowManager;
 
         //Check if local or server mode
-        private bool localMode;
+        private bool localMode = false;
 
         //Checks if data is loading
         private bool isLoading;

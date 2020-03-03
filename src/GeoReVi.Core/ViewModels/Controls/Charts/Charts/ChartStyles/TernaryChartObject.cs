@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GeoReVi
 {
@@ -156,7 +157,7 @@ namespace GeoReVi
         /// <summary>
         /// Creating the ternary chart
         /// </summary>
-        public override void CreateChart()
+        public override async Task CreateChart()
         {
             try
             {

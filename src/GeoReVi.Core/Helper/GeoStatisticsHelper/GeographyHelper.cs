@@ -4,37 +4,63 @@ using System;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GeoReVi
 {
     public static class GeographyHelper
     {
         //Calculating the distance matrix of a set of points
-        public static List<XY> DistanceMatrix(BindableCollection<LocationTimeValue> Points, VariogramHelper vh)
+        public static async Task<List<XY>> DistanceMatrix(BindableCollection<LocationTimeValue> Points, VariogramHelper vh)
         {
             List<XY> valList = new List<XY>();
 
             int f = 1;
 
-            if (Points.Count() > 10000)
-                f = 500;
+            BindableCollection<LocationTimeValue> subset = new BindableCollection<LocationTimeValue>();
 
-            for (int i = 0; i < Points.Count(); i+=f)
+            if (Points.Count() > 500)
             {
-                //Searching the neighborhood according to a search ellipsoid
-                List<LocationTimeValue> neighborhood = SpatialNeighborhoodHelper.SearchByDistance(Points, Points[i], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge).ToList();
+                Points.Shuffle();
+                subset.AddRange(Points.Take(500).ToList());
+            }
+            else
+            {
+                subset.AddRange(Points);
+            }
 
-                for (int j = 0; j < neighborhood.Count; j++)
+            for (int i = 0; i < subset.Count(); i+=1)
+            {
+                await Task.Delay(0);
+
+                //Searching the neighborhood according to a search ellipsoid
+                List<LocationTimeValue> neighborhood = (await SpatialNeighborhoodHelper.SearchByDistance(Points, subset[i], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge)).ToList();
+
+                BindableCollection<LocationTimeValue> subsetNeighborhood = new BindableCollection<LocationTimeValue>();
+
+                if (neighborhood.Count() > 500)
+                {
+                    neighborhood.Shuffle();
+                    subsetNeighborhood.AddRange(Points.Take(500).ToList());
+                }
+                else
+                {
+                    subsetNeighborhood.AddRange(Points);
+                }
+
+                for (int j = 0; j < subsetNeighborhood.Count; j++)
                 {
                     try
                     {
-                            XY valDist = new XY();
+                        await Task.Delay(0);
 
-                            valDist.X = neighborhood[j].Value[0] - Points[i].Value[0];
+                        XY valDist = new XY();
 
-                            valDist.Y = EuclideanDistance(neighborhood[j].X - Points[i].X, neighborhood[j].Y - Points[i].Y, neighborhood[j].Z - Points[i].Z);
+                        valDist.X = subsetNeighborhood[j].Value[0] - Points[i].Value[0];
 
-                            valList.Add(valDist);
+                        valDist.Y = EuclideanDistance(subsetNeighborhood[j].X - subset[i].X, subsetNeighborhood[j].Y - subset[i].Y, subsetNeighborhood[j].Z - subset[i].Z);
+
+                        valList.Add(valDist);
                     }
                     catch
                     {

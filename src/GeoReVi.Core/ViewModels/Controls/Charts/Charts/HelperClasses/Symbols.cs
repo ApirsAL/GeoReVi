@@ -95,8 +95,8 @@ namespace GeoReVi
             }
             set
             {
+                value.Freeze();
                 borderColor = value;
-
                 NotifyOfPropertyChange(() => BorderColor);
 
             }
@@ -114,8 +114,8 @@ namespace GeoReVi
             }
             set
             {
+                value.Freeze();
                 fillColor = value;
-
                 NotifyOfPropertyChange(() => FillColor);
             }
         }

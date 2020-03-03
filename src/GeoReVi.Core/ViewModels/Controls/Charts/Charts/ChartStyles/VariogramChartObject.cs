@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GeoReVi
 {
@@ -171,7 +172,7 @@ namespace GeoReVi
         /// <summary>
         /// Creating the variogram chart object
         /// </summary>
-        public override void CreateChart()
+        public override async Task CreateChart()
         {
             if (!ShallRender)
                 return;
@@ -184,35 +185,43 @@ namespace GeoReVi
             List<double> indicatorValues = new List<double>();
             string[] classes = new string[] { };
 
-            if (Vh.IsIndicator)
+
+            //Performing the interpolation
+            CommandHelper ch = new CommandHelper();
+            await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => Updating, async () =>
             {
-                classes = DataSet.Select(x => x.Name).GroupBy(g => g).Select(f => f.Key).ToArray();
 
-                for (int i = 0; i < classes.Length; i++)
+                if (Vh.IsIndicator)
                 {
-                    indicatorValues.Add(Convert.ToDouble(i));
-                }
+                    classes = DataSet.Select(x => x.Name).GroupBy(g => g).Select(f => f.Key).ToArray();
 
-            }
-
-            for (int i = 0; i < DataSet.Count();i++)
-            {
-                try
-                {
-                    MeasuringPoints.AddRange(DataSet[i].Data.AsEnumerable().OrderBy(x => (double)x[1]).OrderBy(x => (double)x[2]).OrderBy(x => (double)x[3]).Select(x => new LocationTimeValue()
+                    for (int i = 0; i < classes.Length; i++)
                     {
-                        Value = new List<double>() { !Vh.IsIndicator ? x.Field<double>(0) : indicatorValues[i] },
-                        X = x.Field<double>(1),
-                        Y = x.Field<double>(2),
-                        Z = x.Field<double>(3),
-                        Name = x.Field<string>(5)
-                    }));
+                        indicatorValues.Add(Convert.ToDouble(i));
+                    }
+
                 }
-                catch
+
+                for (int i = 0; i < DataSet.Count(); i++)
                 {
-                    continue;
+                    await Task.Delay(0);
+
+                    try
+                    {
+                        MeasuringPoints.AddRange(DataSet[i].Data.AsEnumerable().OrderBy(x => (double)x[1]).OrderBy(x => (double)x[2]).OrderBy(x => (double)x[3]).Select(x => new LocationTimeValue()
+                        {
+                            Value = new List<double>() { !Vh.IsIndicator ? x.Field<double>(0) : indicatorValues[i] },
+                            X = x.Field<double>(1),
+                            Y = x.Field<double>(2),
+                            Z = x.Field<double>(3),
+                            Name = x.Field<string>(5)
+                        }));
+                    }
+                    catch
+                    {
+                        continue;
+                    }
                 }
-            }
 
 
             InitializeStandardVariogram();
@@ -222,7 +231,7 @@ namespace GeoReVi
             Vh.DataSet = MeasuringPoints;
 
             //Computes the experimental semivariogram
-            Vh.ComputeExperimentalVariogram();
+            await Task.WhenAll(Vh.ComputeExperimentalVariogram());
 
             Ds[0].LinePoints = null;
             Ds[0].LinePoints = new BindableCollection<LocationTimeValue>();
@@ -265,6 +274,7 @@ namespace GeoReVi
             Maxy = Ds[0].LinePoints.Max(x => DeNormalizePoint(x).Y);
             Miny = Ds[0].LinePoints.Min(x => DeNormalizePoint(x).Y);
 
+            }));
 
             if (Xmin == 0 && Xmax ==0 && Ymin ==0 && Ymax ==0)
                 SubdivideAxes();

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GeoReVi
 {
@@ -291,7 +292,7 @@ namespace GeoReVi
         /// <param name="dataSet"></param>
         /// <param name="steps"></param>
         /// <returns></returns>
-        public void ComputeExperimentalVariogram()
+        public async Task ComputeExperimentalVariogram()
         {
             //Initializing the list of variogram values
             List<XY> variogramValues = new List<XY>();
@@ -314,7 +315,7 @@ namespace GeoReVi
             DataSet = new BindableCollection<LocationTimeValue>(DataSet.OrderBy(x => x.X).OrderBy(x => x.Y).OrderBy(x => x.Z));
 
             //Subdividing into bins
-            valuesDistance = GeographyHelper.DistanceMatrix(DataSet, this);
+            valuesDistance = await GeographyHelper.DistanceMatrix(DataSet, this);
 
             double[] bins = DistributionHelper.Subdivide(valuesDistance.Select(x => x.Y).ToArray(), NumberBins);
             double range = bins[1] - bins[0];

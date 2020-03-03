@@ -437,7 +437,7 @@ namespace GeoReVi
         /// Adding a series of points to the chart
         /// </summary>
         /// <param name="pointSeries"></param>
-        public virtual void CreateChart()
+        public virtual async Task CreateChart()
         {
 
             try
@@ -457,11 +457,8 @@ namespace GeoReVi
                 //Adding values from the 3D chart collection
                 foreach (ObservableCollection<LocationTimeValue> ser in SpatialPointSeries)
                 {
+                    await Task.Delay(0);
                     Ds[i].LinePoints.Clear();
-
-                    int counter = 1;
-                    if (ser.Count() > 1000)
-                        counter = 2;
 
                     List<LocationTimeValue> points = new List<LocationTimeValue>();
 

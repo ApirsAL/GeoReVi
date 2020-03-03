@@ -449,14 +449,17 @@ namespace GeoReVi
                 // Generate two new gaussian values.
                 double x, y, sqr;
 
+                int counter = 0;
+
                 // We need a non-zero random point inside the unit circle.
                 do
                 {
                     x = 2.0 * rnd.NextDouble() - 1.0;
                     y = 2.0 * rnd.NextDouble() - 1.0;
                     sqr = x * x + y * y;
+                    counter++;
                 }
-                while (sqr > 1.0 || sqr == 0);
+                while (counter < 10000 & (sqr > 1.0 || sqr == 0));
 
                 // Make the Box-Muller transformation.
                 double fac = Math.Sqrt(-2.0 * Math.Log(sqr) / sqr);

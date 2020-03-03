@@ -12,7 +12,7 @@ namespace GeoReVi
     {
         #region Methods
 
-        public static IEnumerable<LocationTimeValue> SearchByDistance(IEnumerable<LocationTimeValue> pointSet, 
+        public static async Task<IEnumerable<LocationTimeValue>> SearchByDistance(IEnumerable<LocationTimeValue> pointSet, 
             LocationTimeValue location,  
             double distanceX = 9999, 
             double distanceY = 9999, 
@@ -35,6 +35,8 @@ namespace GeoReVi
             {
                 try
                 {
+                    await Task.Delay(0);
+
                     double[] vec = new double[3] { Math.Abs(location.X - locs[i].X), Math.Abs(location.Y - locs[i].Y), Math.Abs(location.Z - locs[i].Z) };
 
                     vec = vec.Dot(GetTransformationMatrixZ(azimuth));

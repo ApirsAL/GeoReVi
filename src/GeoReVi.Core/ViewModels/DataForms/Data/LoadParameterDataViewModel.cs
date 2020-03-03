@@ -445,6 +445,9 @@ namespace GeoReVi
                     switch (fi.Extension)
                     {
                         case ".gmsh":
+                            if (SelectedMeasPoint.Data.TableName == null)
+                                SelectedMeasPoint.Data.TableName = SelectedMeasPoint.Name;
+
                             SelectedMeasPoint.ToXml(fi.FullName);
                             break;
                     }

@@ -901,7 +901,7 @@ namespace GeoReVi
                         double weightSum = 0;
 
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                        includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                        includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                         if (includedPoints == null || includedPoints.Count() == 0)
                             includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).Take(MaximumNeighborCount).ToList();
@@ -1025,7 +1025,7 @@ namespace GeoReVi
         /// <summary>
         /// Calculate the Root-Mean-Squared-Error of the interpolation
         /// </summary>
-        private void CalculateIDWCrossValidation()
+        private async Task CalculateIDWCrossValidation()
         {
             double mae = 0;
             double rmseSum = 0;
@@ -1041,7 +1041,7 @@ namespace GeoReVi
                     double value = 0;
 
                     List<LocationTimeValue> validationPoints = new List<LocationTimeValue>();
-                    validationPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    validationPoints.AddRange((await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge)).ToList());
 
                     if (validationPoints == null || validationPoints.Count() == 0 || validationPoints.Count() > MaximumNeighborCount)
                         validationPoints = validationPoints.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[i].Name == x.Name : 0 == 0).Take(MaximumNeighborCount).ToList();
@@ -1177,7 +1177,7 @@ namespace GeoReVi
                     DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints == null || includedPoints.Count() == 0 || includedPoints.Count() > MaximumNeighborCount)
                         includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount).ToList();
@@ -1310,7 +1310,7 @@ namespace GeoReVi
                 {
 
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints.Count > MaximumNeighborCount)
                         includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList();
@@ -1497,7 +1497,7 @@ namespace GeoReVi
                         DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                        includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                        includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                         if (includedPoints == null || includedPoints.Count() == 0 || includedPoints.Count() != MaximumNeighborCount)
                             includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount).ToList();
@@ -1647,7 +1647,7 @@ namespace GeoReVi
                     await Task.Delay(0);
 
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints.Count > MaximumNeighborCount)
                         includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList();
@@ -1804,7 +1804,7 @@ namespace GeoReVi
 
                     //Buffer of the original data values where the number of points defined for validation will be removed before kriging
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints.Count > MaximumNeighborCount)
                         includedPoints = new List<LocationTimeValue>(includedPoints.OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount).ToList());
@@ -1951,7 +1951,7 @@ namespace GeoReVi
                     await Task.Delay(0);
 
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints.Count > MaximumNeighborCount)
                         includedPoints = new List<LocationTimeValue>(includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList());
@@ -2288,7 +2288,7 @@ namespace GeoReVi
 
                     //Buffer of the original data values where the number of points defined for validation will be removed before kriging
                     BindableCollection<LocationTimeValue> includedPoints = new BindableCollection<LocationTimeValue>();
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[rnd1], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[rnd1], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints.Count > MaximumNeighborCount - 2)
                         includedPoints = new BindableCollection<LocationTimeValue>(includedPoints.Take(MaximumNeighborCount - 2).ToList());
@@ -2398,11 +2398,11 @@ namespace GeoReVi
                         //Defining the neighborhood
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
 
-                        includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                        includedPoints.AddRange((SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge)).Result);
 
                         if(simulatedValues.Count > 0)
                         {
-                                includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(simulatedValues.ToList(), DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                                includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(simulatedValues.ToList(), DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge).Result);
                         }
 
                         //If selection is too big or too small either a subset is selected or a new selection is made
@@ -2569,8 +2569,8 @@ namespace GeoReVi
                     //Buffer of the original data values where the number of points defined for validation will be removed before kriging
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
 
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
-                    includedPoints.AddRange(SpatialNeighborhoodHelper.SearchByDistance(simulatedValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(simulatedValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints.Count > MaximumNeighborCount)
                         includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList();

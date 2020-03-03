@@ -70,7 +70,7 @@ namespace GeoReVi
         /// </summary>
         public ApirsRepository()
         {
-            if ((bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode)
+            if ((bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode || ((ShellViewModel)IoC.Get<IShell>()).UserId == 0)
             {
                 _apirsLocalLiteDatabase = new LiteDatabase(dbLiteFile);
             }

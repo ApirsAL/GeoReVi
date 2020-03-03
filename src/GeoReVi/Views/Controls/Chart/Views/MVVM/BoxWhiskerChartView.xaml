@@ -497,7 +497,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Bco.TickColor}"
                                                     <TextBlock Text="Y max"
                                                                        FontWeight="DemiBold"/>
                                                     <TextBox Text="{Binding Bco.Ymax, Mode=TwoWay}"/>
-                                                    <TextBlock Text="Y max"
+                                                    <TextBlock Text="Y min"
                                                                        FontWeight="DemiBold"/>
                                                     <TextBox Text="{Binding Bco.Ymin, Mode=TwoWay}"/>
                                                 </StackPanel>
