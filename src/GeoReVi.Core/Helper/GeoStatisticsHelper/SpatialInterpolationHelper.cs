@@ -1310,11 +1310,10 @@ namespace GeoReVi
                 {
 
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
+                    includedPoints.AddRange(await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge));
 
                     if (includedPoints.Count > MaximumNeighborCount)
                         includedPoints = includedPoints.OrderBy(x => x.GetEuclideanDistance(OriginalLocationValues[k])).Take(MaximumNeighborCount).ToList();
-
 
                     //Semivariance matrix for the ordinary kriging system
                     double[,] semivarianceMatrix = new double[includedPoints.Count() + 1, includedPoints.Count() + 1];
@@ -1422,6 +1421,7 @@ namespace GeoReVi
 
                 for (int i = 0; i < pointPairs.Count(); i++)
                 {
+
                     switch (InterpolationFeature)
                     {
                         case InterpolationFeature.Value:
@@ -1501,6 +1501,9 @@ namespace GeoReVi
 
                         if (includedPoints == null || includedPoints.Count() == 0 || includedPoints.Count() != MaximumNeighborCount)
                             includedPoints = OriginalLocationValues.Where(x => ShouldTargetVertexFitSourceGridName ? DiscretizedLocationValues.Vertices[j].Name == x.Name : 0 == 0).OrderBy(x => x.GetEuclideanDistance(DiscretizedLocationValues.Vertices[j])).Take(MaximumNeighborCount).ToList();
+
+                        if (includedPoints.Contains(DiscretizedLocationValues.Vertices[j]))
+                            includedPoints.Remove(DiscretizedLocationValues.Vertices[j]);
 
                         double mean = includedPoints.Average(x => x.Value[0]);
 
