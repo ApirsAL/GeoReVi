@@ -13,17 +13,10 @@ namespace GeoReVi
     {
         #region Properties
 
-        private int colormapLength = 64;
-        private byte alphaValue = 255;
-        private double ymin = 0;
-        private double ymax = 10;
-        private int ydivisions = 64;
-        private ColormapBrushEnum colormapBrushType = ColormapBrushEnum.Jet;
-        private string title = "Default";
-
         /// <summary>
-        /// The type of colormap brush
+        /// The type of color map brush
         /// </summary>
+        private ColormapBrushEnum colormapBrushType = ColormapBrushEnum.Jet;
         public ColormapBrushEnum ColormapBrushType
         {
             get { return colormapBrushType; }
@@ -34,14 +27,15 @@ namespace GeoReVi
                     colormapBrushType = value;
                     CalculateColormapBrushes();
                 }
-                NotifyOfPropertyChange(() => ColormapBrushType);
 
+                NotifyOfPropertyChange(() => ColormapBrushType);
             }
         }
 
         /// <summary>
         /// Title of the colormap
         /// </summary>
+        private string title = "Default";
         public string Title
         {
             get => title;
@@ -53,7 +47,7 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// An observable collection of the brushes used for the colormap
+        /// An observable collection of the brushes used for the color map
         /// </summary>
         private ObservableCollection<Rectangle2D> colormapBrushes = new ObservableCollection<Rectangle2D>();
         public ObservableCollection<Rectangle2D> ColormapBrushes
@@ -67,8 +61,9 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Length of the colormap
+        /// Length of the color map
         /// </summary>
+        private int colormapLength = 64;
         public int ColormapLength
         {
             get => colormapLength;
@@ -111,6 +106,7 @@ namespace GeoReVi
         /// <summary>
         /// Alpha value
         /// </summary>
+        private byte alphaValue = 255;
         public byte AlphaValue
         {
             get => alphaValue;
@@ -124,6 +120,7 @@ namespace GeoReVi
         /// <summary>
         /// Min value
         /// </summary>
+        private double ymin = 0;
         public double Ymin
         {
             get => ymin;
@@ -141,6 +138,7 @@ namespace GeoReVi
         /// <summary>
         /// Max value
         /// </summary>
+        private double ymax = 10;
         public double Ymax
         {
             get => ymax;
@@ -158,6 +156,7 @@ namespace GeoReVi
         /// <summary>
         /// Count of Y divisions
         /// </summary>
+        private int ydivisions = 64;
         public int Ydivisions
         {
             get => ydivisions;
@@ -171,7 +170,7 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Interpolate colormap
+        /// Interpolate color map
         /// </summary>
         private bool isLog = false;
         public bool IsLog
@@ -380,6 +379,16 @@ namespace GeoReVi
                         cmap[i, 3] = 255;
                     }
                     break;
+                case ColormapBrushEnum.BlueRed:
+                    for (int i = 0; i < ColormapLength; i++)
+                    {
+                        array[i] = 1.0 * i / (ColormapLength - 1);
+                        cmap[i, 0] = AlphaValue;
+                        cmap[i, 1] = (byte)(255 * array[i]);
+                        cmap[i, 2] = 0;
+                        cmap[i, 3] = (byte)(255 * (1 - array[i]));
+                    }
+                    break;
             }
 
             return cmap;
@@ -405,7 +414,9 @@ namespace GeoReVi
         [Description("Hot")]
         Hot = 6,
         [Description("Cool")]
-        Cool = 7
+        Cool = 7,
+        [DescriptionAttribute("Blue-Red")]
+        BlueRed = 8
     }
 
     public class Rectangle2D : PropertyChangedBase
