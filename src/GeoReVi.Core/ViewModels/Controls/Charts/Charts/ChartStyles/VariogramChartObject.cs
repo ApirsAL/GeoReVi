@@ -27,20 +27,7 @@ namespace GeoReVi
             }
         }
 
-       
-        /// <summary>
-        /// Measured points of the variogram
-        /// </summary>
-        private BindableCollection<LocationTimeValue> measuringPoints;
-        public BindableCollection<LocationTimeValue> MeasuringPoints
-        {
-            get => this.measuringPoints;
-            set
-            {
-                this.measuringPoints = value;
-                NotifyOfPropertyChange(() => MeasuringPoints);
-            }
-        }
+
         #region Constructor
 
         public VariogramChartObject(VariogramChartObject _vco)
@@ -87,12 +74,10 @@ namespace GeoReVi
             Miny = _vco.Miny;
             SpatialPointSeries = _vco.SpatialPointSeries;
 
-            MeasuringPoints = _vco.MeasuringPoints;
-
             BarType = _vco.BarType;
 
             DataCollection = _vco.DataCollection;
-            Vh = new VariogramHelper(MeasuringPoints);
+            Vh = new VariogramHelper(DataSet);
             Initialize();
         }
 
@@ -102,7 +87,7 @@ namespace GeoReVi
         public VariogramChartObject()
         {
             DataCollection = new BindableCollection<LineSeries>();
-            Vh = new VariogramHelper(MeasuringPoints);
+            Vh = new VariogramHelper(DataSet);
             Initialize();
         }
 
@@ -179,104 +164,106 @@ namespace GeoReVi
 
             List<LocationTimeValue> locVal = new List<LocationTimeValue>();
 
-            MeasuringPoints = new BindableCollection<LocationTimeValue>();
-
             //If we have an indicator variogram
             List<double> indicatorValues = new List<double>();
             string[] classes = new string[] { };
-
 
             //Performing the interpolation
             CommandHelper ch = new CommandHelper();
             await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => Updating, async () =>
             {
-
-                if (Vh.IsIndicator)
+                try
                 {
-                    classes = DataSet.Select(x => x.Name).GroupBy(g => g).Select(f => f.Key).ToArray();
-
-                    for (int i = 0; i < classes.Length; i++)
+                    if (Vh.IsIndicator)
                     {
-                        indicatorValues.Add(Convert.ToDouble(i));
+                        classes = DataSet.Select(x => x.Name).GroupBy(g => g).Select(f => f.Key).ToArray();
+
+                        for (int i = 0; i < classes.Length; i++)
+                        {
+                            indicatorValues.Add(Convert.ToDouble(i));
+                        }
+
+                    }
+
+                    InitializeStandardVariogram();
+
+                    for (int i = 0; i < DataSet.Count(); i++)
+                    {
+                        await Task.Delay(0);
+
+                        if (DataSet[i].Vertices.Count() == 0)
+                            DataSet[i].Vertices.AddRange(new BindableCollection<LocationTimeValue>(DataSet[i].Data.AsEnumerable()
+                                .Select(x => new LocationTimeValue()
+                                {
+                                    Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)) },
+                                    X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
+                                    Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
+                                    Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                                }).ToList()));
+
+                        AddDataSeries();
+
+                        Ds[i].SeriesName = DataSet[i].Name;
+                        Ds[i].LinePoints = null;
+                        Ds[i].LinePoints = new BindableCollection<LocationTimeValue>();
+                    }
+
+                    //Computes the experimental semivariogram
+                    await Task.WhenAll(Vh.ComputeExperimentalVariogram());
+
+
+                    for (int i = 0; i < vh.Variogram.Count(); i++)
+                    {
+                        foreach (var var in vh.Variogram[i])
+                        {
+
+                            if (!double.IsNaN(var.Y))
+                                try
+                                {
+                                    var a = new LocationTimeValue((double)var.X, (double)var.Y);
+
+                                    if (a.X < Xmin || a.X > Xmax)
+                                        continue;
+
+                                    if (a.Y < Ymin || a.Y > Ymax)
+                                        continue;
+
+                                    Ds[i].LinePoints.Add(new LocationTimeValue()
+                                    {
+                                        X = NormalizePoint(a).X - 0.5 * Ds[i].Symbols.SymbolSize,
+                                        Y = NormalizePoint(a).Y - 0.5 * Ds[i].Symbols.SymbolSize,
+                                        Brush = !IsColorMap
+                                            ? Ds[i].Symbols.FillColor
+                                            : ColorMapHelper.GetBrush(ColorMap.IsLog ? Math.Log10((double)a.Value[0]) : (double)a.Value[0], ColorMap.IsLog && ColorMap.Ymin != 0 ? Math.Log10(ColorMap.Ymin) : ColorMap.Ymin, ColorMap.IsLog ? Math.Log10(ColorMap.Ymax) : ColorMap.Ymax, ColorMap)
+
+                                    });
+                                }
+                                catch
+                                {
+                                    continue;
+                                }
+                        }
+
+                        Ds[i].LinePoints.OrderBy(x => x.X);
+
+                        Ds[i].LinePoints = new BindableCollection<LocationTimeValue>(Ds[i].LinePoints);
+
+                        Maxx = Ds[i].LinePoints.Max(x => DeNormalizePoint(x).X);
+                        Minx = Ds[i].LinePoints.Min(x => DeNormalizePoint(x).X);
+                        Maxy = Ds[i].LinePoints.Max(x => DeNormalizePoint(x).Y);
+                        Miny = Ds[i].LinePoints.Min(x => DeNormalizePoint(x).Y);
                     }
 
                 }
-
-                for (int i = 0; i < DataSet.Count(); i++)
+                catch
                 {
-                    await Task.Delay(0);
 
-                    try
-                    {
-                        MeasuringPoints.AddRange(DataSet[i].Data.AsEnumerable().OrderBy(x => (double)x[1]).OrderBy(x => (double)x[2]).OrderBy(x => (double)x[3]).Select(x => new LocationTimeValue()
-                        {
-                            Value = new List<double>() { !Vh.IsIndicator ? x.Field<double>(0) : indicatorValues[i] },
-                            X = x.Field<double>(1),
-                            Y = x.Field<double>(2),
-                            Z = x.Field<double>(3),
-                            Name = x.Field<string>(5)
-                        }));
-                    }
-                    catch
-                    {
-                        continue;
-                    }
                 }
 
-
-            InitializeStandardVariogram();
-            AddDataSeries();
-            Ds[0].SeriesName = "Experimental";
-
-            Vh.DataSet = MeasuringPoints;
-
-            //Computes the experimental semivariogram
-            await Task.WhenAll(Vh.ComputeExperimentalVariogram());
-
-            Ds[0].LinePoints = null;
-            Ds[0].LinePoints = new BindableCollection<LocationTimeValue>();
-
-            foreach (var var in vh.Variogram)
-            {
-                if (!double.IsNaN(var.Y))
-                    try
-                    {
-                        var a = new LocationTimeValue((double)var.X, (double)var.Y);
-
-                        if (a.X < Xmin || a.X > Xmax)
-                            continue;
-
-                        if (a.Y < Ymin || a.Y > Ymax)
-                            continue;
-
-                        Ds[0].LinePoints.Add(new LocationTimeValue()
-                        {
-                            X = NormalizePoint(a).X - 0.5 * Ds[0].Symbols.SymbolSize,
-                            Y = NormalizePoint(a).Y - 0.5 * Ds[0].Symbols.SymbolSize,
-                            Brush = !IsColorMap
-                                ? Ds[0].Symbols.FillColor
-                                : ColorMapHelper.GetBrush(ColorMap.IsLog ? Math.Log10((double)a.Value[0]) : (double)a.Value[0], ColorMap.IsLog && ColorMap.Ymin != 0 ? Math.Log10(ColorMap.Ymin) : ColorMap.Ymin, ColorMap.IsLog ? Math.Log10(ColorMap.Ymax) : ColorMap.Ymax, ColorMap)
-
-                        });
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-            }
-
-            Ds[0].LinePoints.OrderBy(x => x.X);
-
-            Ds[0].LinePoints = new BindableCollection<LocationTimeValue>(Ds[0].LinePoints);
-
-            Maxx = Ds[0].LinePoints.Max(x => DeNormalizePoint(x).X);
-            Minx = Ds[0].LinePoints.Min(x => DeNormalizePoint(x).X);
-            Maxy = Ds[0].LinePoints.Max(x => DeNormalizePoint(x).Y);
-            Miny = Ds[0].LinePoints.Min(x => DeNormalizePoint(x).Y);
 
             }));
 
-            if (Xmin == 0 && Xmax ==0 && Ymin ==0 && Ymax ==0)
+            if (Xmin == 0 && Xmax == 0 && Ymin == 0 && Ymax == 0)
                 SubdivideAxes();
 
             AddModelSeries();
@@ -297,12 +284,12 @@ namespace GeoReVi
                         if (a.Y < Ymin || a.Y > Ymax)
                             continue;
 
-                        Ds[1].LinePoints.Add(new LocationTimeValue()
+                        Ds[Ds.Count -1].LinePoints.Add(new LocationTimeValue()
                         {
-                            X = NormalizePoint(a).X - 0.5 * Ds[1].Symbols.SymbolSize,
-                            Y = NormalizePoint(a).Y - 0.5 * Ds[1].Symbols.SymbolSize,
+                            X = NormalizePoint(a).X - 0.5 * Ds[Ds.Count - 1].Symbols.SymbolSize,
+                            Y = NormalizePoint(a).Y - 0.5 * Ds[Ds.Count - 1].Symbols.SymbolSize,
                             Brush = !IsColorMap
-                                                        ? Ds[1].Symbols.FillColor
+                                                        ? Ds[Ds.Count - 1].Symbols.FillColor
                                                         : ColorMapHelper.GetBrush(ColorMap.IsLog ? Math.Log10((double)a.Value[0]) : (double)a.Value[0], ColorMap.IsLog && ColorMap.Ymin != 0 ? Math.Log10(ColorMap.Ymin) : ColorMap.Ymin, ColorMap.IsLog ? Math.Log10(ColorMap.Ymax) : ColorMap.Ymax, ColorMap)
 
                         });
@@ -313,9 +300,9 @@ namespace GeoReVi
                     }
             }
 
-            Ds[1].LinePoints = new BindableCollection<LocationTimeValue>(Ds[1].LinePoints);
+            Ds[Ds.Count - 1].LinePoints = new BindableCollection<LocationTimeValue>(Ds[Ds.Count - 1].LinePoints);
 
-            Ds[1].SeriesName = "Theoretical";
+            Ds[Ds.Count - 1].SeriesName = "Theoretical";
 
             AddGridlines();
             AddTicksAndLabels();

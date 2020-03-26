@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Xml.Serialization;
@@ -179,6 +180,11 @@ namespace GeoReVi
         public virtual double[] GetNodeIndices(Mesh mesh)
         {
             return new double[] { };
+        }
+
+        public virtual async Task<ICell[]> Subdivide()
+        {
+            return new Cell[1];
         }
 
         #endregion

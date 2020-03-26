@@ -11,8 +11,6 @@ namespace GeoReVi
         Rectangular = 1,
         [Description("X-Y convex hull")]
         ConvexHullXY = 2,
-        [Description("X-Y-Z convex hull")]
-        ConvexHullXYZ = 3,
         [Description("Two bounding surfaces")]
         TwoBoundingSurfaces = 4
     }

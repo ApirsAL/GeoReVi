@@ -240,18 +240,23 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Data set used for the analysis
+        /// Data sets used for the variogram analysis
         /// </summary>
-        public BindableCollection<LocationTimeValue> DataSet
+        private BindableCollection<Mesh> dataSets = new BindableCollection<Mesh>();
+        public BindableCollection<Mesh> DataSets
         {
-            get;
-            set;
+            get => this.dataSets;
+            set
+            {
+                this.dataSets = value;
+                NotifyOfPropertyChange(() => DataSets);
+            }
         }
 
         /// <summary>
-        /// Calculated experimental variogram
+        /// Calculated experimental variograms
         /// </summary>
-        public List<XY> Variogram
+        public List<List<XY>> Variogram
         {
             get;
             private set;
@@ -279,9 +284,9 @@ namespace GeoReVi
         /// Specific constructor
         /// </summary>
         /// <param name="dataSet"></param>
-        public VariogramHelper(BindableCollection<LocationTimeValue> dataSet)
+        public VariogramHelper(BindableCollection<Mesh> dataSet)
         {
-            DataSet = dataSet;
+            DataSets = dataSet;
         }
 
         #endregion
@@ -294,56 +299,55 @@ namespace GeoReVi
         /// <returns></returns>
         public async Task ComputeExperimentalVariogram()
         {
-            //Initializing the list of variogram values
-            List<XY> variogramValues = new List<XY>();
-            for (int a = 0; a < NumberBins+1; a++)
-                variogramValues.Add(new XY());
 
-            if (DataSet != null)
+            Variogram = new List<List<XY>>();
+
+            for (int k = 0; k < DataSets.Count(); k++)
             {
-                if (DataSet.Count < 1)
+                //Initializing the list of variogram values
+                List<XY> variogramValues = new List<XY>();
+
+                for (int a = 0; a < NumberBins + 1; a++)
+                    variogramValues.Add(new XY());
+
+                Tuple<alglib.sparsematrix, alglib.sparsematrix> valuesDistance = await GeographyHelper.DistanceMatrix(new Mesh(DataSets[k]), this, NumberOfIterations);
+
+                double[] bins = DistributionHelper.Subdivide(valuesDistance.Item1.innerobj.vals, NumberBins);
+
+                double range = bins[1] - bins[0];
+
+                //Getting all values of a bin
+                for (int i = 0; i < bins.Count(); i++)
                 {
-                    Variogram = variogramValues;
-                }
-            }
-            else
-            {
-                Variogram = variogramValues;
-            }
+                    variogramValues[i].X = bins[i];
 
-            List<XY> valuesDistance = new List<XY>();
-            DataSet = new BindableCollection<LocationTimeValue>(DataSet.OrderBy(x => x.X).OrderBy(x => x.Y).OrderBy(x => x.Z));
+                    int[] valuesInRange = valuesDistance.Item1.innerobj.vals.Select((value, index) => new { index, Value = value })
+                        .Where(x => x.Value >= 0 && x.Value >= bins[i] && x.Value <= bins[i] + range)
+                        .Select(x => x.index)
+                        .ToArray();
 
-            //Subdividing into bins
-            valuesDistance = await GeographyHelper.DistanceMatrix(DataSet, this);
+                    int n = valuesInRange.Count();
 
-            double[] bins = DistributionHelper.Subdivide(valuesDistance.Select(x => x.Y).ToArray(), NumberBins);
-            double range = bins[1] - bins[0];
+                    double val = 0;
 
-            //Getting all values of a bin
-            for (int i = 0; i < bins.Count(); i++)
-            {
-                variogramValues[i].X = bins[i];
+                    for (int j = 0; j < valuesInRange.Count(); j++)
+                    {
+                        try
+                        {
+                            val += Math.Pow(valuesDistance.Item2.innerobj.vals[valuesInRange[j]], 2);
+                        }
+                        catch
+                        {
+                            n -= 1;
+                            continue;
+                        }
+                    }
 
-                List<XY> valuesInRange = new List<XY>();
-
-                valuesInRange = new List<XY>((from valueDistance in valuesDistance
-                                              where valueDistance.Y >= bins[i] - range && valueDistance.Y <= bins[i]
-                                              select valueDistance).ToList());
-
-                int n = valuesInRange.Count();
-                double val = 0;
-
-                for (int j = 0; j < valuesInRange.Count(); j++)
-                {
-                    val += Math.Pow(valuesInRange[j].X, 2);
-
+                    variogramValues[i].Y = val / (2 * n) == Double.NaN ? 0 : val / (2 * n);
                 }
 
-                variogramValues[i].Y = val / (2 * n) == Double.NaN ? 0 : val / (2 * n);
+                Variogram.Add(variogramValues);
             }
-
-            Variogram = variogramValues;
         }
 
         /// <summary>
@@ -353,8 +357,8 @@ namespace GeoReVi
         /// <returns></returns>
         public void CalculateVariogramModel()
         {
-            double xmin = Variogram.Min(x => x.X);
-            double xmax = Variogram.Max(x => x.X);
+            double xmin = Variogram.Min(x => x.Min(y => y.X));
+            double xmax = Variogram.Max(x => x.Max(y => y.X));
             double step = (xmax - xmin) / 100;
 
             List<XY> ret = new List<XY>();
@@ -384,7 +388,7 @@ namespace GeoReVi
                         ret.Add(new XY { X = i, Y = Nugget + Sill * Math.Pow(i, 2) });
                         break;
                     case GeoReVi.VariogramModel.Kardinal_Sinus:
-                        ret.Add(new XY { X = i, Y = Nugget + Sill * (1-(Math.Sin(i/ Range))/(i/ Range)) });
+                        ret.Add(new XY { X = i, Y = Nugget + Sill * (1 - (Math.Sin(i / Range)) / (i / Range)) });
                         break;
                 }
             }
@@ -397,31 +401,36 @@ namespace GeoReVi
 
             Variogram.ForEach(x =>
                 {
-                    if(!Double.IsNaN(x.Y))
-                        error += Math.Pow(x.Y - CalculateSemivariance(new LocationTimeValue(x.X, 0, 0), new LocationTimeValue()), 2);
+                    x.ForEach(y =>
+                    {
+                        if (!Double.IsNaN(y.Y))
+                            error += Math.Pow(y.Y - CalculateSemivariance(new LocationTimeValue(y.X, 0, 0), new LocationTimeValue()), 2);
+                    });
                 }
             );
 
-            SquaredDifferences = error;
+            SquaredDifferences = error/Convert.ToDouble(Variogram.Sum(x => x.Count()));
             double learningRate = 0.01;
 
-            if(Optimize)
-                while(itters < NumberOfIterations && SquaredDifferences > MaximumError)
+            if (Optimize)
+                while (itters < NumberOfIterations && SquaredDifferences > MaximumError)
                 {
                     double previousNugget = Nugget;
                     double previousSill = Sill;
                     double previousRange = Range;
 
-
                     error = 0;
 
                     Variogram.ForEach(x =>
                     {
-                        if (!Double.IsNaN(x.Y))
-                            error += Math.Pow(x.Y - CalculateSemivariance(new LocationTimeValue(x.X, 0, 0), new LocationTimeValue()), 2);
+                        x.ForEach(y =>
+                        {
+                            if (!Double.IsNaN(y.Y))
+                                error += Math.Pow(y.Y - CalculateSemivariance(new LocationTimeValue(y.X, 0, 0), new LocationTimeValue()), 2);
+                        });
                     });
 
-                    SquaredDifferences = error;
+                    SquaredDifferences = error / Convert.ToDouble(Variogram.Sum(x => x.Count())); ;
                 }
 
         }
@@ -450,7 +459,7 @@ namespace GeoReVi
                 case GeoReVi.VariogramModel.Exponential:
                     if (distance == 0)
                         semivariance = Nugget;
-                    else if(distance > 0 && distance <= range)
+                    else if (distance > 0 && distance <= range)
                         semivariance = Nugget + Sill * (1 - Math.Exp(-1 * Math.Abs(distance / Range)));
                     else
                         semivariance = Nugget + Sill;
@@ -473,7 +482,7 @@ namespace GeoReVi
                     if (distance > 0 && distance <= range)
                         semivariance = Nugget + Sill * (1 - (Math.Sin(distance / Range)) / (distance / Range));
                     else
-                        semivariance = Nugget+Sill;
+                        semivariance = Nugget + Sill;
                     break;
             }
 

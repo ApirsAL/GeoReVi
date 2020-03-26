@@ -34,7 +34,6 @@ namespace GeoReVi
 
             double max = array.Max();
             double min = array.Min();
-            double mean = array.Sum() / Convert.ToDouble(length);
 
             if (min == max)
                 return new double[] { };

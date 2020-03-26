@@ -219,7 +219,7 @@ namespace GeoReVi
             }
             catch
             {
-                return RenderVisual(visual, targetSizeHeight, targetSizeWidth, dpi - 100);
+                throw new Exception("Could not render bitmap");
             }
             finally
             {

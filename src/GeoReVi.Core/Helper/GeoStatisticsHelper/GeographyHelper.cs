@@ -11,56 +11,35 @@ namespace GeoReVi
     public static class GeographyHelper
     {
         //Calculating the distance matrix of a set of points
-        public static async Task<List<XY>> DistanceMatrix(BindableCollection<LocationTimeValue> Points, VariogramHelper vh)
+        public static async Task<Tuple<alglib.sparsematrix, alglib.sparsematrix>> DistanceMatrix(Mesh Points, VariogramHelper vh, int maximumNumberOfPointPairsPerPoint = 50)
         {
-            List<XY> valList = new List<XY>();
+            Points.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(Points.Vertices.PickRandom(maximumNumberOfPointPairsPerPoint).ToList());
 
-            int f = 1;
+            alglib.sparsematrix distanceMatrix;
+            alglib.sparsematrix diffMatrix;
+            alglib.sparsecreate(Points.Vertices.Count(), Points.Vertices.Count(), out distanceMatrix);
+            alglib.sparsecreate(Points.Vertices.Count(), Points.Vertices.Count(), out diffMatrix);
 
-            BindableCollection<LocationTimeValue> subset = new BindableCollection<LocationTimeValue>();
-
-            if (Points.Count() > 500)
+            for (int i = 0; i < Points.Vertices.Count(); i += 1)
             {
-                Points.Shuffle();
-                subset.AddRange(Points.Take(500).ToList());
-            }
-            else
-            {
-                subset.AddRange(Points);
-            }
+                //Searching the neighborhood according to a search ellipsoid
+                int[] neighborhood = await SpatialNeighborhoodHelper.SearchByDistance(Points.Vertices, Points.Vertices[i], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge, maximumNumberOfPointPairsPerPoint);
 
-            for (int i = 0; i < subset.Count(); i+=1)
-            {
                 await Task.Delay(0);
 
-                //Searching the neighborhood according to a search ellipsoid
-                List<LocationTimeValue> neighborhood = (await SpatialNeighborhoodHelper.SearchByDistance(Points, subset[i], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge)).ToList();
-
-                BindableCollection<LocationTimeValue> subsetNeighborhood = new BindableCollection<LocationTimeValue>();
-
-                if (neighborhood.Count() > 500)
-                {
-                    neighborhood.Shuffle();
-                    subsetNeighborhood.AddRange(Points.Take(500).ToList());
-                }
-                else
-                {
-                    subsetNeighborhood.AddRange(Points);
-                }
-
-                for (int j = 0; j < subsetNeighborhood.Count; j++)
+                for (int j = 0; j < neighborhood.Length; j++)
                 {
                     try
                     {
-                        await Task.Delay(0);
+                        if (neighborhood[j] == i)
+                            continue;
 
-                        XY valDist = new XY();
+                        double diff = Points.Vertices[neighborhood[j]].Value[0] - Points.Vertices[i].Value[0];
 
-                        valDist.X = subsetNeighborhood[j].Value[0] - Points[i].Value[0];
+                        double dist = EuclideanDistance(Points.Vertices[neighborhood[j]].X - Points.Vertices[i].X, Points.Vertices[neighborhood[j]].Y - Points.Vertices[i].Y, Points.Vertices[neighborhood[j]].Z - Points.Vertices[i].Z);
 
-                        valDist.Y = EuclideanDistance(subsetNeighborhood[j].X - subset[i].X, subsetNeighborhood[j].Y - subset[i].Y, subsetNeighborhood[j].Z - subset[i].Z);
-
-                        valList.Add(valDist);
+                        alglib.sparseset(diffMatrix, i, neighborhood[j], diff);
+                        alglib.sparseset(distanceMatrix, i, neighborhood[j], dist); 
                     }
                     catch
                     {
@@ -68,9 +47,10 @@ namespace GeoReVi
                     }
 
                 }
+
             }
 
-            return valList;
+            return new Tuple<alglib.sparsematrix, alglib.sparsematrix>(distanceMatrix,diffMatrix);
         }
 
         /// <summary>
@@ -80,14 +60,14 @@ namespace GeoReVi
         /// <param name=""></param>
         /// <param name=""></param>
         /// <returns></returns>
-        public static double EuclideanDistance(double x = 0, 
-            double y = 0, 
-            double z = 0, 
-            bool geographic = 
-            false, 
-            double latitude1 = 0, 
-            double longitude1 = 0, 
-            double latitude2 = 0, 
+        public static double EuclideanDistance(double x = 0,
+            double y = 0,
+            double z = 0,
+            bool geographic =
+            false,
+            double latitude1 = 0,
+            double longitude1 = 0,
+            double latitude2 = 0,
             double longitude2 = 0)
         {
             if (!geographic)
@@ -112,7 +92,7 @@ namespace GeoReVi
         /// <returns></returns>
         public static double EuclideanDistance(LocationTimeValue point1, LocationTimeValue point2)
         {
-            return Math.Sqrt((point2.X - point1.X)*(point2.X - point1.X) + (point2.Y - point1.Y)*(point2.Y - point1.Y) + (point2.Z - point1.Z)*(point2.Z - point1.Z));
+            return Math.Sqrt((point2.X - point1.X) * (point2.X - point1.X) + (point2.Y - point1.Y) * (point2.Y - point1.Y) + (point2.Z - point1.Z) * (point2.Z - point1.Z));
         }
 
         #region Public methods

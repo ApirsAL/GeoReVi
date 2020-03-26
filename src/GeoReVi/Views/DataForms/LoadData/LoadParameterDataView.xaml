@@ -273,7 +273,8 @@
                                               IsExpanded="False">
                                                     <StackPanel Margin="6">
                                                         <TextBlock Text="Change name"
-                                                                    FontWeight="DemiBold"/>
+                                                                    FontWeight="DemiBold">
+                                                        </TextBlock>
                                                         <DockPanel>
                                                             <Button Content="Save"
                                                                     Margin="5,0"
@@ -288,7 +289,20 @@
                                                                 </i:Interaction.Triggers>
                                                             </Button>
                                                             <Grid>
-                                                                <TextBox x:Name="KeyTextBox" Width="250"  VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5"/>
+                                                                <TextBox x:Name="KeyTextBox"
+                                                                         Width="250"  
+                                                                         VerticalAlignment="Top"
+                                                                         HorizontalAlignment="Left" 
+                                                                         Margin="5">
+                                                                    <i:Interaction.Triggers>
+                                                                        <i:EventTrigger EventName="KeyDown">
+                                                                            <cal:ActionMessage MethodName="UpdateHeader">
+                                                                                <cal:Parameter Value="{Binding ElementName=KeyTextBox, Path=Text}"/>
+                                                                                <cal:Parameter Value="$executionContext"/>
+                                                                            </cal:ActionMessage>
+                                                                        </i:EventTrigger>
+                                                                    </i:Interaction.Triggers>
+                                                                </TextBox>
                                                                 <TextBlock IsHitTestVisible="False" Text="New name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
                                                                     <TextBlock.Style>
                                                                         <Style TargetType="{x:Type TextBlock}">
@@ -548,7 +562,7 @@
                                                     </ListView>
                                                 </StackPanel>
                                                 <Expander ExpandDirection="Down"
-                                              Header="Interpolation"
+                                              Header="Interpolation/Simulation"
                                               FontWeight="Bold"
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
@@ -866,6 +880,16 @@
                                                             <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.ExportResiduals, Mode=TwoWay}"
                                                                               HorizontalAlignment="Right"
                                       VerticalAlignment="Center"/>
+                                                            <TextBlock Text="Export component"
+                                                                           FontWeight="DemiBold"/>
+                                                            <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=SpatialInterpolationHelper.Component, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=SpatialInterpolationHelper.Component, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
                                                         </DockPanel>
                                                         <TextBlock Text="Maximum number of CPU cores used for analysis"
                                                                        FontWeight="DemiBold"/>

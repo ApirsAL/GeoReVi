@@ -302,6 +302,7 @@
     <Compile Include="Helper\GeoStatisticsHelper\InterpolationFeature.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\InterpolationMethod.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\MeshingHelper.cs" />
+    <Compile Include="Helper\GeoStatisticsHelper\NeighborLocationInRange.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\SpatialDiscretizationHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\SpatialInterpolationHelper.cs" />
     <Compile Include="Helper\GeoStatisticsHelper\SpatialSearchHelper.cs" />

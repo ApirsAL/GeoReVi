@@ -198,6 +198,7 @@ namespace GeoReVi
             Dimensionality = _mesh.Dimensionality;
             Data = new DataTable();
             Data.Merge(_mesh.Data);
+            Data.TableName = _mesh.Name.ToString();
             Name = _mesh.Name.ToString();
             MeshCellType = _mesh.MeshCellType;
 

@@ -12,41 +12,70 @@ namespace GeoReVi
     {
         #region Methods
 
-        public static async Task<IEnumerable<LocationTimeValue>> SearchByDistance(IEnumerable<LocationTimeValue> pointSet, 
+        public static async Task<int[]> SearchByDistance(IEnumerable<LocationTimeValue> pointSet, 
             LocationTimeValue location,  
             double distanceX = 9999, 
             double distanceY = 9999, 
             double distanceZ = 9999, 
             double azimuth = 0, 
             double dip = 0, 
-            double plunge = 0)
+            double plunge = 0,
+            int maximumNumber = 9999)
         {
             if (pointSet.Count() == 0)
-                return new List<LocationTimeValue>();
+                return new int[0];
+
+            int[] ret = new int[0];
+            Dictionary<int,double> distances = new Dictionary<int, double>();
 
             List<LocationTimeValue> locs = new List<LocationTimeValue>();
-
             lock (pointSet)
             {
                 locs = new List<LocationTimeValue>(pointSet.ToList());
+                ret = new int[pointSet.Count()];
             }
 
-            for(int i = 0; i<locs.Count(); i++)
+            double[,] transZ = GetTransformationMatrixZ(azimuth);
+            double[,] transY = GetTransformationMatrixY(plunge);
+            double[,] transX = GetTransformationMatrixX(dip);
+
+            for (int i = 0; i<ret.Length; i++)
             {
                 try
                 {
                     await Task.Delay(0);
 
+                    //Calculating the relative position of the point with regard to its rotation center
                     double[] vec = new double[3] { Math.Abs(location.X - locs[i].X), Math.Abs(location.Y - locs[i].Y), Math.Abs(location.Z - locs[i].Z) };
 
-                    vec = vec.Dot(GetTransformationMatrixZ(azimuth));
-                    vec = vec.Dot(GetTransformationMatrixX(dip));
-                    vec = vec.Dot(GetTransformationMatrixY(plunge));
+                    //Calculating the new position of the point after rotation
+                    vec = vec.Dot(transZ);
+                    vec = vec.Dot(transX);
+                    vec = vec.Dot(transY);
 
                     if(!IsInsideEllipse(vec, distanceX, distanceY, distanceZ) || (vec[0] == 0 && vec[1] == 0 && vec[2]== 0))
                     {
-                        locs.RemoveAt(i);
-                        i -= 1;
+                        ret[i] = -1;
+                    }
+                    else
+                    {
+                        if(maximumNumber > distances.Count() || distances.Where(x => x.Value > vec.Euclidean())
+                                                                         .Select(e => (KeyValuePair<int, double>?)e)
+                                                                         .FirstOrDefault() != null)
+                        {
+                            ret[i] = i;
+                            distances.Add(i, vec.Euclidean());
+
+                            if(distances.Count() > maximumNumber)
+                            {
+                                //Getting the key of the maximum value
+                                int a = distances.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+                                ret[a] = -1;
+                                distances.Remove(a);
+                            }
+                        }
+                        else
+                            ret[i] = -1;
                     }
                 }
                 catch
@@ -55,7 +84,8 @@ namespace GeoReVi
                 }
             }
 
-            return locs;
+
+            return ret.Where(x => x != -1).ToArray();
         }
 
         /// <summary>

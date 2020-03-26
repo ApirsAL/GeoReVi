@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
 
 namespace GeoReVi
@@ -206,6 +207,32 @@ namespace GeoReVi
             }
 
             return g_num;
+        }
+
+        /// <summary>
+        /// Subdividing an hexahedron based on the octree-logic
+        /// </summary>
+        /// <returns></returns>
+        public override async Task<ICell[]> Subdivide()
+        {
+            try
+            {
+
+            }
+            catch
+            {
+
+            }
+            Hexahedron[] ret = new Hexahedron[8];
+
+            await Task.Delay(0);
+
+            LocationTimeValue loc12 = new LocationTimeValue();
+
+            Hexahedron hex1 = new Hexahedron();
+            hex1.CellType = CellType.Hexahedron;
+
+            return ret;
         }
 
         #endregion

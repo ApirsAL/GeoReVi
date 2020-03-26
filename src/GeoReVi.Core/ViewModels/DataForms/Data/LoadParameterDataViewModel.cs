@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using MoreLinq;
 using System.Net.Http;
 using System.Text;
+using System.Windows.Input;
 
 namespace GeoReVi
 {
@@ -304,6 +305,29 @@ namespace GeoReVi
             {
                 SelectedMeasPoint.Name = newKey;
                 SelectedMeasPoint.Data.TableName = newKey;
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// Updates the dataSet
+        /// </summary>
+        /// <param name="dataSet"></param>
+        /// <param name="newKey"></param>
+        public void UpdateHeader(string newKey, ActionExecutionContext context)
+        {
+            try
+            {
+                var keyArgs = context.EventArgs as KeyEventArgs;
+
+                if (keyArgs != null && keyArgs.Key == Key.Enter)
+                {
+                    SelectedMeasPoint.Name = newKey;
+                    SelectedMeasPoint.Data.TableName = newKey;
+                }
             }
             catch
             {

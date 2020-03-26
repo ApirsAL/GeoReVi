@@ -1847,7 +1847,6 @@ namespace GeoReVi
                 Point3D pb = mesh.Positions[b];
                 Point3D pc = mesh.Positions[c];
 
-
                 meshBuilder.AddCylinder(pa, pb, gridlineThickness, 4, false, false);
                 meshBuilder.AddCylinder(pa, pc, gridlineThickness, 4, false, false);
                 meshBuilder.AddCylinder(pb, pc, gridlineThickness, 4, false, false);

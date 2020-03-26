@@ -93,6 +93,3 @@ If bugs or any other issues are identified we would be grateful for reporting th
 ### Meter-scale permeability distribution
 <img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
 
-### Three-dimensional principal component analysis
-<img src="docs/Samples/MultivariateAnalyses/PCA.gif" width="50%">
-

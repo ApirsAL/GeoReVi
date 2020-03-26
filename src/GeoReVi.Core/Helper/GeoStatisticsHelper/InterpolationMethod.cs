@@ -17,7 +17,7 @@ namespace GeoReVi
         UniversalKriging = 3,
         [Description("Kriging w. external drift")]
         KrigingWithExternalDrift = 4,
-        [Description("Sequential Gaussian Simulation")]
+        [Description("Sequential Simulation")]
         SequentialGaussianSimulation = 5,
         [Description("Simulated Annealing")]
         SimulatedAnnealing = 6
