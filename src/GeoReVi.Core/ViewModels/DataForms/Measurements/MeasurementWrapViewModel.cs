@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace GeoReVi
 {
@@ -14,19 +13,6 @@ namespace GeoReVi
     public class MeasurementWrapViewModel : Screen
     {
         #region Public properties
-        /// <summary>
-        /// Checks whether a computation takes place ATM or not
-        /// </summary>
-        private bool isLoading = false;
-        public bool IsLoading
-        {
-            get => this.isLoading;
-            set
-            {
-                this.isLoading = value;
-                NotifyOfPropertyChange(() => IsLoading);
-            }
-        }
 
         /// <summary>
         /// View model for lab measurements
@@ -70,20 +56,6 @@ namespace GeoReVi
             }
         }
 
-        /// <summary>
-        /// Filter criteria
-        /// </summary>
-        private FilterCriteria filterCriteria = new FilterCriteria();
-        public FilterCriteria FilterCriteria
-        {
-            get => this.filterCriteria;
-            set
-            {
-                this.filterCriteria = value;
-                NotifyOfPropertyChange(() => FilterCriteria);
-            }
-        }
-
         #endregion
 
         #region Constructor
@@ -108,7 +80,7 @@ namespace GeoReVi
         {
             CommandHelper ch = new CommandHelper();
 
-            await Task.WhenAll(ch.RunBackgroundWorkerWithFlagHelperAsync(() => IsLoading, async () =>
+            await ch.RunBackgroundWorkerWithFlagHelperAsync(() => ((ShellViewModel)IoC.Get<IShell>(null)).IsLoading, async () =>
             {
                 try
                 {
@@ -119,12 +91,12 @@ namespace GeoReVi
                             LabMeasurementDetailsViewModel.RockSamples,
                             LabMeasurementDetailsViewModel.SelectedRockSample,
                             LabMeasurementDetailsViewModel.SelectedLaboratoryMeasurement,
-                            FilterCriteria.GroupBy,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.GroupBy,
                             LabMeasurementDetailsViewModel.SelectedProperty.alColumnName,
-                            FilterCriteria.All,
-                            FilterCriteria.Global,
-                            FilterCriteria.FilterByDate ? FilterCriteria.From : null,
-                            FilterCriteria.FilterByDate ? FilterCriteria.To : null,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.All,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.Global,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.From : null,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.To : null,
                             LabMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName != null ? LabMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName : "",
                             LabMeasurementDetailsViewModel.FilterText));
 
@@ -136,12 +108,12 @@ namespace GeoReVi
                             FieldMeasurementDetailsViewModel.FieldMeasurements,
                             FieldMeasurementDetailsViewModel.SelectedFieldMeasurement,
                             FieldMeasurementDetailsViewModel.ObjectsOfInvestigation,
-                            FilterCriteria.GroupBy,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.GroupBy,
                              FieldMeasurementDetailsViewModel.SelectedProperty.alColumnName,
-                             FilterCriteria.All,
-                             FilterCriteria.Global,
-                             FilterCriteria.FilterByDate ? FilterCriteria.From : null,
-                             FilterCriteria.FilterByDate ? FilterCriteria.To : null,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.All,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.Global,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.From : null,
+                             ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.FilterByDate ? ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.SingleParameterViewModel.To : null,
                              FieldMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName != null ? FieldMeasurementDetailsViewModel.SelectedFilterProperty.alColumnName : "",
                              FieldMeasurementDetailsViewModel.FilterText));
 
@@ -151,8 +123,57 @@ namespace GeoReVi
                 {
                     ((ShellViewModel)IoC.Get<IShell>()).LogError(e);
                 }
-            }));
+            });
         }
+
+        /// <summary>
+        /// Loading the multiparametric data table from the database
+        /// </summary>
+        public async void LoadMultiparametricDataMatrix()
+        {
+            CommandHelper ch = new CommandHelper();
+
+            await ch.RunBackgroundWorkerWithFlagHelperAsync(() => ((ShellViewModel)IoC.Get<IShell>(null)).IsLoading, async () =>
+            {
+
+
+                try
+                {
+
+                    if (SelectedIndex == 0)
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblRockSample>().GetLaboratoryPetrophysics(
+                            LabMeasurementDetailsViewModel.RockSamples,
+                            LabMeasurementDetailsViewModel.SelectedRockSample,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.GroupBy,
+                            ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.All));
+                    else
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.AddRange(new ApirsRepository<tblMeasurement>().GetFieldPetrophysics(
+                            FieldMeasurementDetailsViewModel.FieldMeasurements, 
+                            FieldMeasurementDetailsViewModel.SelectedFieldMeasurement, 
+                            FieldMeasurementDetailsViewModel.GroupBy,
+                            FieldMeasurementDetailsViewModel.All));
+
+
+
+                    if (((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.MeasPoints.Count > 0)
+                    {
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SetDataTableNames().AsResult();
+
+
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.SelectedColumn.Add(((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames[0]);
+                    }
+                    else
+                    {
+                        ((ShellViewModel)IoC.Get<IShell>(null)).DatasetManagementAndVisualizationViewModel.MultiParameterViewModel.DataTableColumnNames = new BindableCollection<string>();
+                    }
+                }
+                catch
+                {
+                    return;
+                }
+            });
+        }
+
         #endregion
     }
 }

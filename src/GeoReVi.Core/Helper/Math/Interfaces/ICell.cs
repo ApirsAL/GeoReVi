@@ -35,7 +35,7 @@ namespace GeoReVi
         /// <summary>
         /// Vertices of the cell
         /// </summary>
-        List<int> Vertices { get; set; }
+        List<LocationTimeValue> Vertices { get; set; }
 
         /// <summary>
         /// Type of the cell

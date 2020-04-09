@@ -510,15 +510,17 @@ namespace GeoReVi
         /// <param name="_data"></param>
         public static void ZScoreTransformation(ref Mesh _data)
         {
-            int count = _data.Vertices.Count;
+            int count = _data.Data.Rows.Count;
 
             if (count >= 0)
             {
-                double avg = _data.Vertices.Average(r => r.Value[0]);
-                double standardDeviation = _data.Vertices.Select(r => r.Value[0]).StdDev();
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
+                double standardDeviation = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).StdDev();
 
-                for (int i = 0; i < _data.Vertices.Count(); i++)
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
                 {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - avg) / standardDeviation;
+
                     if (_data.Vertices.Count > 0)
                         _data.Vertices[i].Value[0] = (_data.Vertices[i].Value[0] - avg) / standardDeviation;
                 }
@@ -532,9 +534,11 @@ namespace GeoReVi
         public static void MakeZValue(ref Mesh _data)
         {
             //Transforming data set
-            for (int i = 0; i < _data.Vertices.Count(); i++)
+            for (int i = 0; i < _data.Data.Rows.Count; i++)
             {
-                _data.Vertices[i].Value[0] = (double)_data.Vertices[i].Z;
+                _data.Data.Rows[i][0] = (double)_data.Data.Rows[i][3];
+                if (_data.Vertices.Count > 0)
+                    _data.Vertices[i].Value[0] = (double)_data.Vertices[i].Z;
 
             }
         }
@@ -546,8 +550,9 @@ namespace GeoReVi
         public static void ExponentialTransformation(ref Mesh _data)
         {
             //Transforming data set
-            for (int i = 0; i < _data.Vertices.Count(); i++)
+            for (int i = 0; i < _data.Data.Rows.Count; i++)
             {
+                _data.Data.Rows[i][0] = Math.Pow(10, (double)_data.Data.Rows[i][0]);
                 if (_data.Vertices.Count > 0)
                     _data.Vertices[i].Value[0] = Math.Pow(10, (double)_data.Vertices[i].Value[0]);
             }
@@ -559,16 +564,17 @@ namespace GeoReVi
         /// <param name="_data"></param>
         public static void MeanTransformation(ref Mesh _data)
         {
-            int count = _data.Vertices.Count();
+            int count = _data.Data.Rows.Count;
 
             if (count >= 0)
             {
-                double avg = _data.Vertices.Average(r =>r.Value[0]);
-                double max = _data.Vertices.Select(r => r.Value[0]).Max();
-                double min = _data.Vertices.Select(r => r.Value[0]).Min();
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
+                double max = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Max();
+                double min = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Min();
 
-                for (int i = 0; i < _data.Vertices.Count(); i++)
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
                 {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - avg) / (max - min);
                     if (_data.Vertices.Count > 0)
                         _data.Vertices[i].Value[0] = ((_data.Vertices[i].Value[0] - avg) / (max - min));
                 }
@@ -580,14 +586,15 @@ namespace GeoReVi
         /// </summary>
         public static void SubtractMeanTransformation(ref Mesh _data)
         {
-            int count = _data.Vertices.Count();
+            int count = _data.Data.Rows.Count;
 
             if (count >= 0)
             {
-                double avg = _data.Vertices.Average(r => r.Value[0]);
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
 
-                for (int i = 0; i < _data.Vertices.Count(); i++)
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
                 {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - avg);
                     if (_data.Vertices.Count > 0)
                         _data.Vertices[i].Value[0] = ((double)_data.Vertices[i].Value[0] - avg);
                 }
@@ -600,16 +607,17 @@ namespace GeoReVi
         /// <param name="_data"></param>
         public static void RescalingTransformation(ref Mesh _data)
         {
-            int count =  _data.Vertices.Count();
+            int count = _data.Data.Rows.Count;
 
             if (count >= 0)
             {
-                double avg = _data.Vertices.Average(r => r.Value[0]);
-                double max = _data.Vertices.Select(r => r.Value[0]).Max();
-                double min = _data.Vertices.Select(r => r.Value[0]).Min();
+                double avg = _data.Data.AsEnumerable().Average(r => r.Field<double>(0));
+                double max = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Max();
+                double min = _data.Data.AsEnumerable().Select(r => r.Field<double>(0)).Min();
 
-                for (int i = 0; i < _data.Vertices.Count(); i++)
+                for (int i = 0; i < _data.Data.Rows.Count; i++)
                 {
+                    _data.Data.Rows[i][0] = ((double)_data.Data.Rows[i][0] - min) / (max - min);
                     if (_data.Vertices.Count > 0)
                         _data.Vertices[i].Value[0] = ((double)_data.Vertices[i].Value[0] - min) / (max - min);
                 }
@@ -622,36 +630,19 @@ namespace GeoReVi
         /// <param name="_data"></param>
         public static void LogarithmicTransformation(ref Mesh _data)
         {
-            if (_data.Vertices.Where(y => y.Value[0] <= 0).Count() > 0)
+            if (_data.Data.AsEnumerable().Where(y => y.Field<double>(0) <= 0).Count() > 0)
             {
                 ((ShellViewModel)IoC.Get<IShell>()).ShowError("Cannot log-transform negative values");
                 return;
             }
 
             //Transforming data set
-            for (int i = 0; i <  _data.Vertices.Count(); i++)
+            for (int i = 0; i < _data.Data.Rows.Count; i++)
             {
+                _data.Data.Rows[i][0] = Math.Log10((double)_data.Data.Rows[i][0]);
                 if (_data.Vertices.Count > 0)
                     _data.Vertices[i].Value[0] = Math.Log10((double)_data.Vertices[i].Value[0]);
             }
-        }
-
-        /// <summary>
-        /// Performing a rounding operation
-        /// </summary>
-        /// <param name="_data"></param>
-        public static void RoundingTransformation(ref Mesh _data)
-        {
-            //Transforming data set
-            for (int i = 0; i <  _data.Vertices.Count(); i++)
-            {
-                if (_data.Vertices.Count > 0)
-                    _data.Vertices[i].Value[0] = Math.Round((double)_data.Vertices[i].Value[0]);
-            }
-
-            //Creating the mesh cells
-            if (_data.MeshCellType == MeshCellType.Hexahedral || _data.MeshCellType == MeshCellType.Tetrahedal)
-                _data.CellsFromPointCloud();
         }
 
         /// <summary>
@@ -660,6 +651,17 @@ namespace GeoReVi
         /// <param name="_data">Data set to be transformed</param>
         public static void QuantileQuantileNormalScoreTransformation(ref Mesh _data)
         {
+            if (_data.Vertices.Count() == 0)
+                _data.Vertices.AddRange(new BindableCollection<LocationTimeValue>(_data.Data.AsEnumerable()
+                    .Select(x => new LocationTimeValue()
+                    {
+                        Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)) },
+                        X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
+                        Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
+                        Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                    }).ToList()));
+            else
+            {
                 _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.Select(x =>
                 new LocationTimeValue()
                 {
@@ -678,6 +680,28 @@ namespace GeoReVi
                     IsExterior = x.IsExterior
                 }).ToList());
 
+            }
+
+            _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.OrderBy(x => x.Value[0]).ToList());
+
+            DataView dv = _data.Data.DefaultView;
+            try
+            {
+                dv.Sort = "Item1 asc";
+            }
+            catch
+            {
+                try
+                {
+                    dv.Sort = "Value asc";
+                }
+                catch
+                {
+
+                }
+            }
+
+            _data.Data = dv.ToTable();
 
             //Getting basic statistics
             double[] ccdf = CreateCumulativeRankStandardNormalDistribution(_data.Vertices.Count, -3, 3, 0, 1);
@@ -686,6 +710,8 @@ namespace GeoReVi
             for(int i = 0; i<_data.Vertices.Count();i++)
             {
                 _data.Vertices[i].Value[0] = ccdf[i];
+                if (_data.Vertices.Count > 0)
+                    _data.Data.Rows[i][0] = ccdf[i];
             }
             
         }
@@ -740,6 +766,10 @@ namespace GeoReVi
         /// <param name="_data"></param>
         public static void QuantileQuantileBackTransformation(ref Mesh _data, Mesh targetDistribution)
         {
+            //Checking meshes for consistency
+            CheckForNodeTableConsistency(ref _data);
+            CheckForNodeTableConsistency(ref targetDistribution);
+
             SortByValue(ref _data);
             SortByValue(ref targetDistribution);
 
@@ -753,6 +783,8 @@ namespace GeoReVi
             for(int i = 0; i< _data.Vertices.Count();i++)
             {
                 _data.Vertices[i].Value[0] = ccdfInterp[i,1];
+                if (_data.Vertices.Count > 0)
+                    _data.Data.Rows[i][0] = ccdfInterp[i,1];
             }
 
             //Creating the mesh cells
@@ -784,7 +816,7 @@ namespace GeoReVi
                 {
                     double x = (double)i / (double)targetDistribution.Vertices.Count;
                     ret[i, 0] = x;
-                    ret[i, 1] = (double)targetDistribution.Vertices[i].Value[0];
+                    ret[i, 1] = (double)targetDistribution.Data.Rows[i][0];
                 }
             }
             catch
@@ -833,12 +865,76 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Checks a mesh for consistency between data table and nodes and adapts it if necessary
+        /// </summary>
+        /// <param name="_data"></param>
+        public static void CheckForNodeTableConsistency(ref Mesh _data)
+        {
+            try
+            {
+                if (_data.Vertices.Count() == 0)
+                    _data.Vertices.AddRange(new BindableCollection<LocationTimeValue>(_data.Data.AsEnumerable()
+                        .Select(x => new LocationTimeValue()
+                        {
+                            Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)) },
+                            X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
+                            Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
+                            Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                        }).ToList()));
+                else
+                {
+                    _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.Select(x =>
+                    new LocationTimeValue()
+                    {
+                        X = x.X,
+                        Y = x.Y,
+                        Z = x.Z,
+                        Value = x.Value,
+                        MeshIndex = x.MeshIndex,
+                        IsActive = x.IsActive,
+                        IsDiscretized = x.IsDiscretized,
+                        Brush = x.Brush,
+                        Date = x.Date,
+                        Name = x.Name,
+                        Neighbors = x.Neighbors,
+                        Geographic = x.Geographic,
+                        IsExterior = x.IsExterior
+                    }).ToList());
+
+                }
+            }
+            catch
+            {
+                throw new Exception("Mesh could not be modified.");
+            }
+        }
+
+        /// <summary>
         /// Sorts a mesh by its node values
         /// </summary>
         /// <param name="_data"></param>
         private static void SortByValue(ref Mesh _data)
         {
             _data.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(_data.Vertices.OrderBy(x => x.Value[0]));
+            DataView dv = _data.Data.DefaultView;
+
+            try
+            {
+                dv.Sort = "Item1 asc";
+            }
+            catch
+            {
+                try
+                {
+                    dv.Sort = "Value asc";
+                }
+                catch
+                {
+
+                }
+            }
+
+            _data.Data = dv.ToTable();
         }
     }
     

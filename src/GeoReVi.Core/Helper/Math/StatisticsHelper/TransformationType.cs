@@ -24,9 +24,6 @@ namespace GeoReVi
         [Description("Make elevation to value")]
         Elevation = 8,
         [Description("Quantile-Quantile transformation")]
-        QuantileQuantileTransform = 9,
-        [Description("Round values")]
-        RoundValues = 10
-
+        QuantileQuantileTransform = 9
     }
 }

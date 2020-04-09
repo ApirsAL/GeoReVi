@@ -293,6 +293,9 @@
     <Compile Include="Views\DataForms\LoadData\LoadParameterDataView.xaml.cs">
       <DependentUpon>LoadParameterDataView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DataForms\LoadData\MultivariateDataView.xaml.cs">
+      <DependentUpon>MultivariateDataView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DataForms\Maps\UserControls\ViewPanel3D.xaml.cs">
       <DependentUpon>ViewPanel3D.xaml</DependentUpon>
     </Compile>
@@ -741,6 +744,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DataForms\LoadData\LoadParameterDataView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DataForms\LoadData\MultivariateDataView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

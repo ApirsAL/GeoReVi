@@ -127,6 +127,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// A view model that holds a multi parametric data set of the laboratory MultiParameterViewModel.MeasPoints
+        /// </summary>
+        private MultivariateDataViewModel multiParameterViewModel = new MultivariateDataViewModel();
+        public MultivariateDataViewModel MultiParameterViewModel
+        {
+            get => this.multiParameterViewModel;
+            set
+            {
+                this.multiParameterViewModel = value;
+                NotifyOfPropertyChange(() => MultiParameterViewModel);
+            }
+        }
+
+        /// <summary>
         /// A correlation analysis view model
         /// </summary>
         private CorrelationHelperViewModel correlationHelperViewModel = new CorrelationHelperViewModel();
@@ -215,6 +229,40 @@ namespace GeoReVi
 
         #region Methods
 
+
+        /// <summary>
+        /// Adds the 
+        /// </summary>
+        public async void AddClustersToDataSet()
+        {
+            CommandHelper ch = new CommandHelper();
+
+            await ch.RunBackgroundWorkerWithFlagHelperAsync(() => ((ShellViewModel)IoC.Get<IShell>(null)).IsLoading, async () =>
+            {
+                try
+                {
+                    foreach (var list in ClusteringViewModel.ClusteringHelper.ClusteredDatasetView)
+                    {
+                        MultiParameterViewModel.MeasPoints.Add(new Mesh() { Name = list.Key, Data = list.Value });
+                    }
+
+                    if (MultiParameterViewModel.MeasPoints.Count > 0)
+                    {
+                        MultiParameterViewModel.SetDataTableNames();
+                    }
+                    else
+                    {
+                        MultiParameterViewModel.DataTableColumnNames = new BindableCollection<string>();
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    return;
+                }
+            });
+        }
+
         /// <summary>
         /// Adds data to the cluster window
         /// </summary>
@@ -222,7 +270,16 @@ namespace GeoReVi
         {
             try
             {
-                ClusteringViewModel.ClusteringHelper.DataSet.Add(new Mesh(SingleParameterViewModel.SelectedMeasPoint));
+                MultiParameterViewModel.SelectedMeasPoint.Data.AcceptChanges();
+            }
+            catch
+            {
+
+            }
+
+            try
+            {
+                ClusteringViewModel.ClusteringHelper.DataSet.Add(MultiParameterViewModel.SelectedMeasPoint);
             }
             catch
             {
@@ -253,7 +310,16 @@ namespace GeoReVi
         {
             try
             {
-                PrincipalComponentAnalysisViewModel.PrincipalComponentHelper.DataSet.Add(new Mesh(SingleParameterViewModel.SelectedMeasPoint));
+                MultiParameterViewModel.SelectedMeasPoint.Data.AcceptChanges();
+            }
+            catch
+            {
+
+            }
+
+            try
+            {
+                PrincipalComponentAnalysisViewModel.PrincipalComponentHelper.DataSet.Add(MultiParameterViewModel.SelectedMeasPoint);
             }
             catch
             {
@@ -268,7 +334,16 @@ namespace GeoReVi
         {
             try
             {
-                PrincipalComponentAnalysisViewModel.PrincipalComponentHelper.DataSet.Add(new Mesh(SingleParameterViewModel.SelectedMeasPoint));
+                MultiParameterViewModel.SelectedMeasPoint.Data.AcceptChanges();
+            }
+            catch
+            {
+
+            }
+
+            try
+            {
+                PrincipalComponentAnalysisViewModel.PrincipalComponentHelper.DataSet.Add(MultiParameterViewModel.SelectedMeasPoint);
             }
             catch
             {
@@ -283,7 +358,16 @@ namespace GeoReVi
         {
             try
             {
-                SammonProjectionViewModel.SammonProjectionHelper.DataSet.Add(new Mesh(SingleParameterViewModel.SelectedMeasPoint));
+                MultiParameterViewModel.SelectedMeasPoint.Data.AcceptChanges();
+            }
+            catch
+            {
+
+            }
+
+            try
+            {
+                SammonProjectionViewModel.SammonProjectionHelper.DataSet.Add(MultiParameterViewModel.SelectedMeasPoint);
             }
             catch
             {
@@ -315,7 +399,7 @@ namespace GeoReVi
         {
             try
             {
-                LineAndScatterChartViewModel.Lco.DataSet.Add(new Mesh(SingleParameterViewModel.SelectedMeasPoint));
+                LineAndScatterChartViewModel.Lco.DataSet.Add(SingleParameterViewModel.SelectedMeasPoint);
                 LineAndScatterChartViewModel.Lco.CreateLineChart();
             }
             catch
@@ -327,12 +411,43 @@ namespace GeoReVi
         /// <summary>
         /// Creating a ternary chart
         /// </summary>
-        public void AddToTernaryChart()
+        public void CreateTernaryChart()
         {
             try
             {
                 //Clearing the data collection
-                TernaryChartViewModel.Tco.DataSet.Add(SingleParameterViewModel.SelectedMeasPoint);
+                TernaryChartViewModel.Tco.DataSet.Clear();
+
+                for (int i = 0; i < MultiParameterViewModel.MeasPoints.Count(); i++)
+                {
+                    DataTable dt = new DataTable();
+                    DataColumn dc0 = MultiParameterViewModel.MeasPoints[i].Data.Columns[MultiParameterViewModel.SelectedColumn[0]];
+                    DataColumn dc1 = MultiParameterViewModel.MeasPoints[i].Data.Columns[MultiParameterViewModel.SelectedColumn[1]];
+                    DataColumn dc2 = MultiParameterViewModel.MeasPoints[i].Data.Columns[MultiParameterViewModel.SelectedColumn[2]];
+
+                    dt.Columns.Add("dummy", dc0.DataType);
+                    dt.Columns.Add(dc0.ColumnName, dc0.DataType);
+                    dt.Columns.Add(dc1.ColumnName, dc1.DataType);
+                    dt.Columns.Add(dc2.ColumnName, dc2.DataType);
+
+                    for (int j = 0; j < MultiParameterViewModel.MeasPoints[i].Data.Rows.Count; j++)
+                    {
+                        dt.Rows.Add(
+                            MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc0.ColumnName],
+                            MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc0.ColumnName],
+                            MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc1.ColumnName],
+                            MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc2.ColumnName]);
+                    }
+
+                    MultiParameterViewModel.MeasPoints[i].Data.Clone();
+
+                    Mesh mesh = new Mesh()
+                    {
+                        Data = dt
+                    };
+
+                    TernaryChartViewModel.Tco.DataSet.Add(mesh);
+                }
 
                 TernaryChartViewModel.Tco.CreateTernaryChart();
             }
@@ -382,11 +497,55 @@ namespace GeoReVi
             try
             {
                 //Clearing the data collection
-                SelectedLineChartViewModel.Lco.DataSet.Add(SingleParameterViewModel.SelectedMeasPoint);
+                SelectedLineChartViewModel.Lco.Direction = DirectionEnum.Directionless;
+
+                SelectedLineChartViewModel.Lco.DataSet.Clear();
+
+                for (int i = 0; i<MultiParameterViewModel.MeasPoints.Count();i++)
+                {
+                    DataTable dt = new DataTable();
+                    DataColumn dc0 = MultiParameterViewModel.MeasPoints[i].Data.Columns[MultiParameterViewModel.SelectedColumn[0]];
+                    DataColumn dc1 = MultiParameterViewModel.MeasPoints[i].Data.Columns[MultiParameterViewModel.SelectedColumn[1]];
+
+                    dt.Columns.Add(dc0.ColumnName, dc0.DataType);
+                    dt.Columns.Add(dc1.ColumnName, dc1.DataType);
+                    dt.Columns.Add("dummy1", dc1.DataType);
+                    dt.Columns.Add("dummy2", dc1.DataType);
+
+                    SelectedLineChartViewModel.Lco.YLabel.Text = dc0.ColumnName;
+                    SelectedLineChartViewModel.Lco.XLabel.Text = dc1.ColumnName;
+
+                    for ( int j = 0; j< MultiParameterViewModel.MeasPoints[i].Data.Rows.Count; j++)
+                    {
+                        try
+                        {
+                            dt.Rows.Add(
+                                MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc0.ColumnName],
+                                MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc1.ColumnName],
+                                MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc1.ColumnName],
+                                MultiParameterViewModel.MeasPoints[i].Data.Rows[j][dc1.ColumnName]);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+
+                    MultiParameterViewModel.MeasPoints[i].Data.Clone();
+
+                    Mesh mesh = new Mesh()
+                    {
+                        Data = dt
+                    };
+
+                    SelectedLineChartViewModel.Lco.DataSet.Add(mesh);
+                }
+
+                SelectedLineChartViewModel.Lco.CreateLineChart();
             }
             catch
             {
-                throw new Exception("Data sets couldn't be added to the scatter chart object");
+                return;
             }
         }
 
@@ -397,7 +556,16 @@ namespace GeoReVi
         {
             try
             {
-                 CorrelationHelperViewModel.CorrelationHelper.DataSet.Add(new Mesh(SingleParameterViewModel.SelectedMeasPoint));
+                try
+                {
+                    MultiParameterViewModel.SelectedMeasPoint.Data.AcceptChanges();
+                }
+                catch
+                {
+
+                }
+
+                CorrelationHelperViewModel.CorrelationHelper.DataSet.Add(MultiParameterViewModel.SelectedMeasPoint);
             }
             catch
             {

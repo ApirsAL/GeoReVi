@@ -143,7 +143,7 @@ namespace GeoReVi
                     //temporal storage for measurement values
                     double[] a = new double[] { };
 
-                    a = DataSet[i].Vertices.Select(x => x.Value[0]).Where(x => x != 0).ToArray();
+                    a = DataSet[i].Data.AsEnumerable().Select(x => (double)x[0]).Where(x => x != 0).ToArray();
 
                     Bp[i].BoxPlotStatisticsCollection  = new BoxPlotStatistics(a, OutliersRemoved, OutlierRange);
 

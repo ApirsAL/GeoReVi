@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -310,8 +309,7 @@ namespace GeoReVi
                             // retrieve the data using data adapter
                             OleDbDataAdapter sheetAdapter = new OleDbDataAdapter("SELECT * FROM [" + excelSheets[i] + "]", conn);
 
-                                DataTable dt = new DataTable();
-                            dt.Locale = CultureInfo.CurrentCulture;
+                            DataTable dt = new DataTable();
                             dt.TableName = excelSheets[i];
 
                             //Filling a data sheet
@@ -361,23 +359,13 @@ namespace GeoReVi
 
                 string sql = @"SELECT * FROM [" + fileName + "]";
 
-                string CultureName = Thread.CurrentThread.CurrentCulture.Name;
-                CultureInfo ci = new CultureInfo(CultureName);
-                if (ci.NumberFormat.NumberDecimalSeparator != ".")
-                {
-                    // Forcing use of decimal separator for numerical values
-                    ci.NumberFormat.NumberDecimalSeparator = ".";
-                    ci.NumberFormat.NumberGroupSeparator = ",";
-                    Thread.CurrentThread.CurrentCulture = ci;
-                }
-
                 using (OleDbConnection conn = returnCsvConnection(filePath, isFirstRowHeader))
                 {
                     using (OleDbCommand command = new OleDbCommand(sql, conn))
                     using (OleDbDataAdapter adapter = new OleDbDataAdapter(command))
                     {
                         DataTable dataTable = new DataTable();
-                        dataTable.Locale = Thread.CurrentThread.CurrentCulture;
+                        dataTable.Locale = CultureInfo.CurrentCulture;
                         adapter.Fill(dataTable);
                         return dataTable;
                     }
@@ -501,33 +489,6 @@ namespace GeoReVi
                     ((ShellViewModel)IoC.Get<IShell>()).ShowInformation("Please comply to the file formats .xlsx, .xls or .csv");
                     return false;
             }
-        }
-
-        /// <summary>
-        /// Converts a csv file to a data table
-        /// </summary>
-        /// <param name="strFilePath"></param>
-        /// <returns></returns>
-        public static DataTable ConvertCSVtoDataTable(string strFilePath)
-        {
-            StreamReader sr = new StreamReader(strFilePath);
-            string[] headers = sr.ReadLine().Split(',');
-            DataTable dt = new DataTable();
-            foreach (string header in headers)
-            {
-                dt.Columns.Add(header);
-            }
-            while (!sr.EndOfStream)
-            {
-                string[] rows = Regex.Split(sr.ReadLine(), ",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-                DataRow dr = dt.NewRow();
-                for (int i = 0; i < headers.Length; i++)
-                {
-                    dr[i] = rows[i];
-                }
-                dt.Rows.Add(dr);
-            }
-            return dt;
         }
     }
 

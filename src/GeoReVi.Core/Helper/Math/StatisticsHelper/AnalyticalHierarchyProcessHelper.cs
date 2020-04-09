@@ -202,14 +202,10 @@ namespace GeoReVi
             try
             {
 
-                this.mergedDataSets = MergeDataSets();
-
-                CommandHelper ch = new CommandHelper();
-
                 DataTable dat = new DataTable();
 
-                foreach (DataTable dt in this.mergedDataSets)
-                    dat.Merge(dt, true, MissingSchemaAction.Add);
+                foreach (Mesh dt in DataSet)
+                    dat.Merge(dt.Data, true, MissingSchemaAction.Add);
 
                 dat.RemoveNonNumericColumns();
                 CollectionHelper.ProcessNumericDataTable(dat);

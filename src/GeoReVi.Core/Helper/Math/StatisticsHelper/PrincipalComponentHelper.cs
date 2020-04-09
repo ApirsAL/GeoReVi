@@ -3,7 +3,6 @@ using Accord.Statistics.Analysis;
 using Accord.Statistics.Models.Regression.Linear;
 using Caliburn.Micro;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Linq.Dynamic;
@@ -230,6 +229,20 @@ namespace GeoReVi
         /// <summary>
         /// Objects for the scatter chart
         /// </summary>
+        private LineAndScatterChartViewModel pc13 = new LineAndScatterChartViewModel();
+        public LineAndScatterChartViewModel PC13
+        {
+            get => pc13;
+            set
+            {
+                this.pc13 = value;
+                NotifyOfPropertyChange(() => PC13);
+            }
+        }
+
+        /// <summary>
+        /// Objects for the scatter chart
+        /// </summary>
         private LineAndScatterChartViewModel pc12BiPlot = new LineAndScatterChartViewModel();
         public LineAndScatterChartViewModel PC12BiPlot
         {
@@ -277,14 +290,10 @@ namespace GeoReVi
         {
             try
             {
-                this.mergedDataSets = MergeDataSets();
-
-                CommandHelper ch = new CommandHelper();
-
                 DataTable dat = new DataTable();
 
-                foreach (DataTable dt in this.mergedDataSets)
-                    dat.Merge(dt, true, MissingSchemaAction.Add);
+                foreach (Mesh dt in DataSet)
+                    dat.Merge(dt.Data, true, MissingSchemaAction.Add);
 
                 dat.RemoveNonNumericColumns();
                 CollectionHelper.ProcessNumericDataTable(dat);
@@ -322,25 +331,30 @@ namespace GeoReVi
                         {
                             List<Mesh> projectedData = new List<Mesh>();
 
-                            int j = 0;
+                            string[] columnNames = new string[Merge.Columns.Count];
 
+                            for (int i = 0; i < Merge.Columns.Count; i++)
+                            {
+                                columnNames[i] = Merge.Columns[i].ColumnName.ToString();
+                            }
+
+                            int j = 0;
                             for (int i = 0; i < DataSet.Count(); i++)
                             {
-                                Mesh mesh = new Mesh();
-                                ObservableCollection<LocationTimeValue> locs = new ObservableCollection<LocationTimeValue>();
-                                for (int k = 0; k < DataSet[i].Vertices.Count(); k++)
+                                try
                                 {
-                                    LocationTimeValue loc = new LocationTimeValue(DataSet[i].Vertices[k]);
-                                    for (int l = 0; l < DataSet[i].Properties.Count(); l++)
-                                    {
-                                        loc.Value[l] = ProjectedValues[k + j][l];
-                                    }
+                                    projectedData.Add(new Mesh() { Name = DataSet[i].Name, Data = ProjectedValues.ToTable().AsEnumerable().Skip(j).Take(DataSet[i].Data.Rows.Count).CopyToDataTable() });
 
-                                    locs.Add(loc);
+                                    for (int k = 0; k < projectedData[i].Data.Columns.Count - 1; k++)
+                                        if (k != 0 && k != 2)
+                                            projectedData[i].Data.Columns.RemoveAt(k);
+
+                                    j += DataSet[i].Data.Rows.Count;
                                 }
-
-                                projectedData.Add(new Mesh() { Name = DataSet[i].Name, Vertices = locs, Properties = DataSet[i].Properties });
-                                j += DataSet[i].Vertices.Count();
+                                catch
+                                {
+                                    continue;
+                                }
                             }
 
                             EigenValueBarChart.Barco.ShallRender = true;
@@ -368,14 +382,16 @@ namespace GeoReVi
                             PC12.Lco.ShallRender = true;
                             PC12.Lco.XLabel.Text = "PC1";
                             PC12.Lco.YLabel.Text = "PC2";
-                            PC12.Lco.Xmin = -1;
-                            PC12.Lco.Xmax = 1;
-                            PC12.Lco.Ymin = -1;
-                            PC12.Lco.Ymax = 1;
-                            PC12.Lco.XProperty = SelectedPropertyEnum.Property1;
-                            PC12.Lco.YProperty = SelectedPropertyEnum.Property2;
                             PC12.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
                             PC12.Lco.CreateLineChart();
+
+                            //Creating visualization of the projected values
+                            PC13.Lco.ShallRender = true;
+                            PC13.Lco.Direction = DirectionEnum.XZ;
+                            PC13.Lco.XLabel.Text = "PC1";
+                            PC13.Lco.YLabel.Text = "PC3";
+                            PC13.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
+                            PC13.Lco.CreateLineChart();
 
                             foreach (DataColumn column in dat.Columns)
                             {
@@ -386,34 +402,42 @@ namespace GeoReVi
                             PC12BiPlot.Lco.ShallRender = true;
                             PC12BiPlot.Lco.XLabel.Text = "PC1";
                             PC12BiPlot.Lco.YLabel.Text = "PC2";
+                            PC12BiPlot.Lco.Direction = DirectionEnum.X;
                             PC12BiPlot.Lco.DataSet.Clear();
 
-                            ////Adding a data series for each biplot member
-                            //for (int i = 1; i < EigenVectorsView.Rows.Count; i++)
-                            //{
-                            //    Mesh biplot = new Mesh() { Name = columnNames[i] };
-                            //    DataTable dt = EigenVectorsView.Clone();
-                            //    dt.Rows.Add(EigenVectorsView.Rows[i].ItemArray);
+                            //Creating visualization of the projected values
+                            PC13BiPlot.Lco.ShallRender = true;
+                            PC13BiPlot.Lco.DataSet.Clear();
+                            PC13BiPlot.Lco.Direction = DirectionEnum.Y;
+                            PC13BiPlot.Lco.XLabel.Text = "PC1";
+                            PC13BiPlot.Lco.YLabel.Text = "PC3";
 
-                            //    for (int f = 0; f < dt.Columns.Count; f++)
-                            //        dt.Rows[0][f] = 0;
+                            //Adding a data series for each biplot member
+                            for (int i = 1; i < EigenVectorsView.Rows.Count; i++)
+                            {
+                                Mesh biplot = new Mesh() { Name = columnNames[i] };
+                                DataTable dt = EigenVectorsView.Clone();
+                                dt.Rows.Add(EigenVectorsView.Rows[i].ItemArray);
 
-                            //    dt.Rows.Add(EigenVectorsView.Rows[i].ItemArray);
+                                for (int f = 0; f < dt.Columns.Count; f++)
+                                    dt.Rows[0][f] = 0;
 
-                            //    biplot.Data = dt;
+                                dt.Rows.Add(EigenVectorsView.Rows[i].ItemArray);
 
-                            //    PC12BiPlot.Lco.DataSet.Add(biplot);
-                            //    PC13BiPlot.Lco.DataSet.Add(biplot);
-                            //}
+                                biplot.Data = dt;
 
-                            //PC12BiPlot.Lco.CreateLineChart();
-                            //PC13BiPlot.Lco.CreateLineChart();
+                                PC12BiPlot.Lco.DataSet.Add(biplot);
+                                PC13BiPlot.Lco.DataSet.Add(biplot);
+                            }
 
-                            //for(int i = 0; i< PC12BiPlot.Lco.DataCollection.Count(); i++)
-                            //{
-                            //    PC12BiPlot.Lco.DataCollection[i].Symbols.FillColor = ColorHelper.PickBrush();
-                            //    PC13BiPlot.Lco.DataCollection[i].Symbols.FillColor = ColorHelper.PickBrush();
-                            //}
+                            PC12BiPlot.Lco.CreateLineChart();
+                            PC13BiPlot.Lco.CreateLineChart();
+
+                            for(int i = 0; i< PC12BiPlot.Lco.DataCollection.Count(); i++)
+                            {
+                                PC12BiPlot.Lco.DataCollection[i].Symbols.FillColor = ColorHelper.PickBrush();
+                                PC13BiPlot.Lco.DataCollection[i].Symbols.FillColor = ColorHelper.PickBrush();
+                            }
                         }
                         catch
                         {

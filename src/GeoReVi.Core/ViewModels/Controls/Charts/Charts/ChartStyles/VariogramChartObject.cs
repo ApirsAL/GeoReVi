@@ -72,6 +72,7 @@ namespace GeoReVi
             Maxy = _vco.Maxy;
             Minx = _vco.Minx;
             Miny = _vco.Miny;
+            SpatialPointSeries = _vco.SpatialPointSeries;
 
             BarType = _vco.BarType;
 
@@ -189,6 +190,16 @@ namespace GeoReVi
                     for (int i = 0; i < DataSet.Count(); i++)
                     {
                         await Task.Delay(0);
+
+                        if (DataSet[i].Vertices.Count() == 0)
+                            DataSet[i].Vertices.AddRange(new BindableCollection<LocationTimeValue>(DataSet[i].Data.AsEnumerable()
+                                .Select(x => new LocationTimeValue()
+                                {
+                                    Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)) },
+                                    X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
+                                    Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
+                                    Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                                }).ToList()));
 
                         AddDataSeries();
 

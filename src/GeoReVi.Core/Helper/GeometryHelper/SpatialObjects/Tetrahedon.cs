@@ -16,9 +16,9 @@ namespace GeoReVi
         /// </summary>
         /// <param name="i"></param>
         /// <returns>Position of the i-th vertex</returns>
-        public override Point3D GetPosition(int i, Mesh mesh)
+        public override Point3D GetPosition(int i)
         {
-            return base.GetPosition(i, mesh);
+            return Vertices[i].ToPoint3D();
         }
 
         /// <summary>
@@ -30,17 +30,17 @@ namespace GeoReVi
         /// <param name="k"></param>
         /// <param name="center"></param>
         /// <param name="indices"></param>
-        public override void MakeFace(int i, int j, int k, Vector3D center, Int32Collection indices, Mesh mesh)
+        public override void MakeFace(int i, int j, int k, Vector3D center, Int32Collection indices)
         {
-            var u = GetPosition(j,mesh) - GetPosition(i, mesh);
-            var v = GetPosition(k, mesh) - GetPosition(j, mesh);
+            var u = GetPosition(j) - GetPosition(i);
+            var v = GetPosition(k) - GetPosition(j);
 
             // compute the normal and the plane corresponding to the side [i,j,k]
             var n = Vector3D.CrossProduct(u, v);
             var d = -Vector3D.DotProduct(n, center);
 
             // check if the normal faces towards the center
-            var t = Vector3D.DotProduct(n, (Vector3D)GetPosition(i, mesh)) + d;
+            var t = Vector3D.DotProduct(n, (Vector3D)GetPosition(i)) + d;
             if (t >= 0)
             {
                 // swapping indices j and k also changes the sign of the normal, because cross product is anti-commutative
@@ -59,10 +59,10 @@ namespace GeoReVi
         /// <param name="color"></param>
         /// <param name="radius"></param>
         /// <returns>A model representing the tetrahedron</returns>
-        public override void CreateFaces(Mesh mesh)
+        public override void CreateFaces()
         {
            
-            var points = new Point3DCollection(Enumerable.Range(0, 4).Select(i => GetPosition(i, mesh)));
+            var points = new Point3DCollection(Enumerable.Range(0, 4).Select(i => GetPosition(i)));
 
             Faces.Clear();
 
@@ -76,13 +76,12 @@ namespace GeoReVi
         /// Calculates the volume of the tetrahedon
         /// </summary>
         /// <returns></returns>
-        public override double GetVolume(Mesh mesh)
+        public override double GetVolume()
         {
             double ret = 0;
             try
             {
-                LocationTimeValue[] vert = GetVertices(mesh);
-                LocationTimeValue loc = vert.OrderByDescending(x => Faces[0].PointDistanceToPlane(x.ToVector3D())).First();
+                LocationTimeValue loc = Vertices.OrderByDescending(x => Faces[0].PointDistanceToPlane(x.ToVector3D())).First();
                 double a = Faces[0].PointDistanceToPlane(loc.ToVector3D());
                 ret = Faces[0].GetArea() * Faces[0].PointDistanceToPlane(loc.ToVector3D()) * (1.0 / 3.0); 
             }

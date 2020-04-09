@@ -11,8 +11,6 @@ using MoreLinq;
 using System.Net.Http;
 using System.Text;
 using System.Windows.Input;
-using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace GeoReVi
 {
@@ -124,6 +122,101 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// variable to check to show all objects
+        /// </summary>
+        private bool all;
+        public bool All
+        {
+            get => this.all;
+            set
+            {
+                this.all = value;
+                NotifyOfPropertyChange(() => All);
+            }
+        }
+
+        /// <summary>
+        /// Variable the data set will be grouped by
+        /// </summary>
+        private string groupBy;
+        public string GroupBy
+        {
+            get => this.groupBy;
+            set
+            {
+                this.groupBy = value;
+                NotifyOfPropertyChange(() => GroupBy);
+            }
+        }
+
+        //Checks if values should be filtered by a date range
+        private bool filterByDate = false;
+        public bool FilterByDate
+        {
+            get => this.filterByDate;
+            set
+            {
+                this.filterByDate = value;
+                NotifyOfPropertyChange(() => FilterByDate);
+            }
+        }
+
+        /// <summary>
+        /// Lower time limit
+        /// </summary>
+        private DateTime? from = new DateTime(1900, 1, 1, 0, 0, 0);
+        public DateTime? From
+        {
+            get => this.from;
+            set
+            {
+                this.from = value;
+                NotifyOfPropertyChange(() => From);
+            }
+        }
+
+        /// <summary>
+        /// Upper time limit
+        /// </summary>
+        private DateTime? to = DateTime.Now;
+        public DateTime? To
+        {
+            get => this.to;
+            set
+            {
+                this.to = value;
+                NotifyOfPropertyChange(() => To);
+            }
+        }
+
+        /// <summary>
+        /// The kind of date time range
+        /// </summary>
+        private DateRangeKind? kind = DateRangeKind.Custom;
+        public DateRangeKind? Kind
+        {
+            get => this.kind;
+            set
+            {
+                this.kind = value;
+                NotifyOfPropertyChange(() => Kind);
+            }
+        }
+
+        /// <summary>
+        /// Variable to select the global or local reference system
+        /// </summary>
+        private bool global;
+        public bool Global
+        {
+            get => this.global;
+            set
+            {
+                this.global = value;
+                NotifyOfPropertyChange(() => Global);
+            }
+        }
 
         /// <summary>
         /// An object to conduct spatial interpolations
@@ -150,35 +243,6 @@ namespace GeoReVi
             {
                 this.transformationType = value;
                 NotifyOfPropertyChange(() => TransformationType);
-            }
-        }
-
-
-        /// <summary>
-        /// The type of join that should be applied
-        /// </summary>
-        private JoinMethod joinMethod= JoinMethod.Exact;
-        public JoinMethod JoinMethod
-        {
-            get => this.joinMethod;
-            set
-            {
-                this.joinMethod = value;
-                NotifyOfPropertyChange(() => JoinMethod);
-            }
-        }
-
-        /// <summary>
-        /// The threshold for the joining algorithm
-        /// </summary>
-        private double threshold = 0.2;
-        public double Threshold
-        {
-            get => this.threshold;
-            set
-            {
-                this.threshold = value;
-                NotifyOfPropertyChange(() => Threshold);
             }
         }
 
@@ -240,47 +304,7 @@ namespace GeoReVi
             try
             {
                 SelectedMeasPoint.Name = newKey;
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Updates the dataSet
-        /// </summary>
-        /// <param name="dataSet"></param>
-        /// <param name="newKey"></param>
-        public void UpdateProperty(string newKey)
-        {
-            try
-            {
-                int index = SelectedMeasPoint.Properties.IndexOf(SelectedMeasPoint.Properties.First(x => x.Equals(SelectedMeasPoint.SelectedProperty)));
-
-                var a = SelectedMeasPoint.Properties.First(x => x.Equals(SelectedMeasPoint.SelectedProperty));
-
-                a = new KeyValuePair<int, string>(SelectedMeasPoint.SelectedProperty.Key, newKey);
-
-                SelectedMeasPoint.Properties.RemoveAt(index);
-
-                SelectedMeasPoint.Properties.Insert(index, a);
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Brings up the actually selected property
-        /// </summary>
-        /// <returns></returns>
-        public async Task BringUp()
-        {
-            try
-            {
-                await SelectedMeasPoint.BringToFront();
+                SelectedMeasPoint.Data.TableName = newKey;
             }
             catch
             {
@@ -302,6 +326,7 @@ namespace GeoReVi
                 if (keyArgs != null && keyArgs.Key == Key.Enter)
                 {
                     SelectedMeasPoint.Name = newKey;
+                    SelectedMeasPoint.Data.TableName = newKey;
                 }
             }
             catch
@@ -337,116 +362,46 @@ namespace GeoReVi
                     FileInfo fi = new FileInfo(file);
 
                     DataTable table = new DataTable() { TableName = "MyTableName" };
+                    DataTable tableCloned = new DataTable();
 
                     if (fi.Extension == ".XLSX" || fi.Extension == ".xlsx")
                     {
-
                         DataSet tables = FileHelper.LoadWorksheetsInDataSheets(fi.FullName, false, "", fi.Extension);
                         table = tables.Tables[0];
 
                         ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
 
-                        DataTable tableCloned = table.Clone();
-                        tableCloned.ConvertColumnType("Value1", typeof(double));
-                        tableCloned.ConvertColumnType("X", typeof(double));
-                        tableCloned.ConvertColumnType("Y", typeof(double));
-                        tableCloned.ConvertColumnType("Z", typeof(double));
-                        tableCloned.ConvertColumnType("DateTime", typeof(DateTime));
-                        tableCloned.Columns["DateTime"].DefaultValue = DateTime.Now;
+                        tableCloned = table.Clone();
+                        tableCloned.Columns["Value1"].DataType = typeof(double);
+                        tableCloned.Columns["X"].DataType = typeof(double);
+                        tableCloned.Columns["Y"].DataType = typeof(double);
+                        tableCloned.Columns["Z"].DataType = typeof(double);
 
-                        foreach (DataRow row in table.Rows)
+                        foreach (DataRow row1 in table.Rows)
                         {
-                            try
-                            {
-                                tableCloned.ImportRow(row);
-                            }
-                            catch
-                            {
-                                continue;
-                            }
+                            tableCloned.ImportRow(row1);
                         }
 
-                        ObservableCollection<LocationTimeValue> vertices = new ObservableCollection<LocationTimeValue>(tableCloned.AsEnumerable()
-                        .Select(x => new LocationTimeValue()
-                        {
-                            Value = new List<double>() { (x.Field<double?>("Value1") == -9999 || x.Field<double?>("Value1") == -999999 || x.Field<double?>("Value1") == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>("Value1")) },
-                            X = (x.Field<double?>("X") == -9999 || x.Field<double?>("X") == -999999 || x.Field<double?>("X") == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>("X")))) ? 0 : Convert.ToDouble(x.Field<double?>("X")),
-                            Y = (x.Field<double?>("Y") == -9999 || x.Field<double?>("Y") == -999999 || x.Field<double?>("Y") == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>("Y")),
-                            Z = (x.Field<double?>("Z") == -9999 || x.Field<double?>("Z") == -999999 || x.Field<double?>("Z") == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>("Z")),
-                            Name = x.Field<string>("Name"),
-                            Date = x.Field<DateTime?>("DateTime").HasValue ? x.Field<DateTime>("DateTime") : DateTime.Now
-                        }).ToList());
-
-                        MeasPoints.Add(new Mesh() { Name = "New data set", Vertices = vertices});
+                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
                     }
                     else if (fi.Extension == ".CSV" || fi.Extension == ".csv")
                     {
-                        if (Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
-                            table = FileHelper.ConvertCSVtoDataTable(fi.FullName);
-                        else
-                            table = FileHelper.CsvToDataTable(fi.FullName, true);
+                        table = FileHelper.CsvToDataTable(fi.FullName, true);
 
                         ((ShellViewModel)IoC.Get<IShell>()).ShowLocationValueImport(ref table);
 
-                        DataTable tableCloned = table.Clone();
-                        tableCloned.ConvertColumnType("Value1", typeof(double));
-                        tableCloned.ConvertColumnType("Value2", typeof(double));
-                        tableCloned.ConvertColumnType("Value3", typeof(double));
-                        tableCloned.ConvertColumnType("Value4", typeof(double));
-                        tableCloned.ConvertColumnType("Value5", typeof(double));
-                        tableCloned.ConvertColumnType("Value6", typeof(double));
-                        tableCloned.ConvertColumnType("Value7", typeof(double));
-                        tableCloned.ConvertColumnType("Value8", typeof(double));
-                        tableCloned.ConvertColumnType("Value9", typeof(double));
-                        tableCloned.ConvertColumnType("Value10", typeof(double));
-                        tableCloned.ConvertColumnType("X", typeof(double));
-                        tableCloned.ConvertColumnType("Y", typeof(double));
-                        tableCloned.ConvertColumnType("Z", typeof(double));
-                        tableCloned.ConvertColumnType("DateTime", typeof(DateTime));
-                        tableCloned.Columns["DateTime"].DefaultValue = DateTime.Now;
+                        tableCloned = table.Clone();
+                        tableCloned.Columns["Value1"].DataType = typeof(double);
+                        tableCloned.Columns["X"].DataType = typeof(double);
+                        tableCloned.Columns["Y"].DataType = typeof(double);
+                        tableCloned.Columns["Z"].DataType = typeof(double);
 
-                        table.Locale = System.Globalization.CultureInfo.GetCultureInfo("en-US");
-                        tableCloned.Locale = System.Globalization.CultureInfo.GetCultureInfo("en-US");
-
-                        foreach (DataRow row in table.Rows)
+                        foreach (DataRow row1 in table.Rows)
                         {
-                            try
-                            {
-                                tableCloned.ImportRow(row);
-                            }
-                            catch
-                            {
-                                continue;
-                            }
+                            tableCloned.ImportRow(row1);
                         }
 
-                        ObservableCollection<LocationTimeValue> vertices = new ObservableCollection<LocationTimeValue>(tableCloned.AsEnumerable()
-                        .Select(x => new LocationTimeValue()
-                        {
-                            Value = new List<double>()
-                            {
-                                Convert.ToDouble(x.Field<double?>("Value1")),
-                                Convert.ToDouble(x.Field<double?>("Value2")),
-                                Convert.ToDouble(x.Field<double?>("Value3")),
-                                Convert.ToDouble(x.Field<double?>("Value4")),
-                                Convert.ToDouble(x.Field<double?>("Value5")),
-                                Convert.ToDouble(x.Field<double?>("Value6")),
-                                Convert.ToDouble(x.Field<double?>("Value7")),
-                                Convert.ToDouble(x.Field<double?>("Value8")),
-                                Convert.ToDouble(x.Field<double?>("Value9")),
-                                Convert.ToDouble(x.Field<double?>("Value10")),
-                            },
-                            X = (x.Field<double?>("X") == -9999 || x.Field<double?>("X") == -999999 || x.Field<double?>("X") == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>("X")))) ? 0 : Convert.ToDouble(x.Field<double?>("X")),
-                            Y = (x.Field<double?>("Y") == -9999 || x.Field<double?>("Y") == -999999 || x.Field<double?>("Y") == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>("Y")),
-                            Z = (x.Field<double?>("Z") == -9999 || x.Field<double?>("Z") == -999999 || x.Field<double?>("Z") == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>("Z")),
-                            Name = x.Field<string>("Name"),
-                            Date = x.Field<DateTime?>("DateTime").HasValue ? x.Field<DateTime>("DateTime") : DateTime.Now
-                        }).ToList());
-
-                        Mesh importMesh = new Mesh() { Name = "New data set", Vertices = vertices, Dimensionality = Dimensionality.ThreeD };
-                        importMesh.GetProperties();
-
-                        MeasPoints.Add(importMesh);
+                        MeasPoints.Add(new Mesh() { Name = "New data set", Data = tableCloned });
                     }
                     else if (fi.Extension == ".gmsh" || fi.Extension == ".gmsh")
                     {
@@ -467,7 +422,6 @@ namespace GeoReVi
                                     }
                                 }
 
-                            importMesh.GetProperties();
                             importMesh.Cells.Clear();
                             importMesh.Faces.Clear();
 
@@ -494,8 +448,7 @@ namespace GeoReVi
 
         /// <summary>
         /// Saving the chart object
-        /// </summary>+		$exception	{"DBNull.Value kann nicht in den Typ 'System.DateTime' umgewandelt werden. Verwenden Sie einen Typ, der NULL-Werte zulässt."}	System.InvalidCastException
-
+        /// </summary>
         public void ExportMesh()
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -516,6 +469,9 @@ namespace GeoReVi
                     switch (fi.Extension)
                     {
                         case ".gmsh":
+                            if (SelectedMeasPoint.Data.TableName == null)
+                                SelectedMeasPoint.Data.TableName = SelectedMeasPoint.Name;
+
                             SelectedMeasPoint.ToXml(fi.FullName);
                             break;
                     }
@@ -527,37 +483,6 @@ namespace GeoReVi
             }
         }
 
-        /// <summary>
-        /// Merges the selected meshes
-        /// </summary>
-        public void MergeMeshes()
-        {
-            try
-            {
-                var a = MeshJoiner.JoinMeshes(SpatialInterpolationHelper.SelectedMeasPoints.ToList(), JoinMethod, Threshold);
-                MeasPoints.Add(a);
-            }
-            catch
-            {
-                throw new Exception("Cannot merge meshes.");
-            }
-        }
-
-        /// <summary>
-        /// Removes the actually selected property
-        /// </summary>
-        /// <returns></returns>
-        public async Task RemoveProperty()
-        {
-            try
-            {
-                await SelectedMeasPoint.RemoveProperty();
-            }
-            catch
-            {
-
-            }
-        }
 
         /// <summary>
         /// Applying a mean normalization on the dataset
@@ -598,9 +523,6 @@ namespace GeoReVi
                         var b = new Mesh(SpatialInterpolationHelper.SelectedMeasPoints[0]);
                         DistributionHelper.QuantileQuantileBackTransformation(ref a, b);
                         break;
-                    case TransformationType.RoundValues:
-                        DistributionHelper.RoundingTransformation(ref a);
-                        break;
                 }
 
                 a.Name += " transformed";
@@ -622,11 +544,12 @@ namespace GeoReVi
             {
                 List<Mesh> groupedMeshes = new List<Mesh>();
 
-                List<string> names =  SelectedMeasPoint.Vertices.Select(x => x.Name).Distinct().ToList();
+                List<string> names =  SelectedMeasPoint.Data.AsEnumerable().Select(x => x.Field<string>("Name")).Distinct().ToList();
 
                 names.ForEach(x =>
                 {
                     Mesh mesh = new Mesh();
+                    mesh.Data = SelectedMeasPoint.Data.AsEnumerable().Where(y => y.Field<string>("Name") == x).CopyToDataTable();
                     mesh.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(SelectedMeasPoint.Vertices.Where(y => y.Name == x).ToList());
                     mesh.Name = x;
                     groupedMeshes.Add(mesh);
@@ -651,7 +574,7 @@ namespace GeoReVi
 
                 for (int i = 0; i < MeasPoints.Count; i++)
                 {
-                    double[] dataSet = MeasPoints[i].Vertices.Select(x => x.Value[0]).ToArray();
+                    double[] dataSet = MeasPoints[i].Data.AsEnumerable().Select(x => x.Field<double>(0)).ToArray();
 
                     HeterogeneityStatisticsViewModel.UnivariateHeterogeneityMeasuresHelper.Add(new KeyValuePair<string, UnivariateHeterogeneityMeasuresHelper>(MeasPoints[i].Name, new UnivariateHeterogeneityMeasuresHelper(dataSet)));
                 }
@@ -665,7 +588,7 @@ namespace GeoReVi
         /// <summary>
         /// Computing the univariate tests for the sample meshes
         /// </summary>
-        public void CreateBasicUnivariateTestsHelper()
+        public void CreateBasicUnivariateTestssHelper()
         {
             try
             {
@@ -673,7 +596,7 @@ namespace GeoReVi
 
                 for (int i = 0; i < MeasPoints.Count; i++)
                 {
-                    double[] dataSet = MeasPoints[i].Vertices.Select(x => x.Value[0]).ToArray();
+                    double[] dataSet = MeasPoints[i].Data.AsEnumerable().Select(x => x.Field<double>(0)).ToArray();
 
                     UnivariateStatisticalTestViewModel.UnivariateTestHelper.Add(new KeyValuePair<string, UnivariateDistributionTestHelper>(MeasPoints[i].Name, new UnivariateDistributionTestHelper(dataSet)));
                 }
@@ -746,6 +669,10 @@ namespace GeoReVi
                     LocationTimeValue loc = SelectedMeasPoint.Vertices[i];
 
                     SelectedMeasPoint.Vertices[i].Z = dList[i];
+
+                    var a = SelectedMeasPoint.Data.AsEnumerable().Where(x => x.Field<double>(1) == SelectedMeasPoint.Vertices[i].X && x.Field<double>(2) == SelectedMeasPoint.Vertices[i].Y).First();
+
+                    a[3] = dList[i];
                 }
             }
             catch

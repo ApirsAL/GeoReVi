@@ -411,46 +411,5 @@ namespace GeoReVi
             // Return the selected items.
             return results;
         }
-
-        /// <summary>
-        /// Basically swaps to entries in a list based on their index
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="list"></param>
-        /// <param name="indexA"></param>
-        /// <param name="indexB"></param>
-        public static void Swap<T>(this IList<T> list, int indexA, int indexB)
-        {
-            T tmp = list[indexA];
-            list[indexA] = list[indexB];
-            list[indexB] = tmp;
-        }
-
-        /// <summary>
-        /// Converts the column type of a data table
-        /// </summary>
-        /// <param name="dt"></param>
-        /// <param name="columnName"></param>
-        /// <param name="newType"></param>
-        public static void ConvertColumnType(this DataTable dt, string columnName, Type newType)
-        {
-            using (DataColumn dc = new DataColumn(columnName + "_new", newType))
-            {
-                // Add the new column which has the new type, and move it to the ordinal of the old column
-                int ordinal = dt.Columns[columnName].Ordinal;
-                dt.Columns.Add(dc);
-                dc.SetOrdinal(ordinal);
-
-                // Get and convert the values of the old column, and insert them into the new
-                foreach (DataRow dr in dt.Rows)
-                    dr[dc.ColumnName] = Convert.ChangeType(dr[columnName], newType);
-
-                // Remove the old column
-                dt.Columns.Remove(columnName);
-
-                // Give the new column the old column's name
-                dc.ColumnName = columnName;
-            }
-        }
     }
 }

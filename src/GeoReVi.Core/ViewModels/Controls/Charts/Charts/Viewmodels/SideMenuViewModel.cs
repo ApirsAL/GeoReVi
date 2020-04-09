@@ -1,6 +1,5 @@
 ﻿using Caliburn.Micro;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace GeoReVi
 {
@@ -109,10 +108,7 @@ namespace GeoReVi
 
         #region Methods
 
-        /// <summary>
-        /// Loading the projects from the database
-        /// </summary>
-        /// <param name="userId"></param>
+        //Load the projects datasets
         public void LoadProjects(int userId = 0)
         {
             try
@@ -135,20 +131,6 @@ namespace GeoReVi
 
         }
 
-        /// <summary>
-        /// Backing up the local DB
-        /// </summary>
-        public async Task BackupLocalDB()
-        {
-            try
-            {
-                await new ApirsRepository<tblAlia>().BackupLocalDatabase();
-            }
-            catch
-            {
-
-            }
-        }
         #endregion
 
     }

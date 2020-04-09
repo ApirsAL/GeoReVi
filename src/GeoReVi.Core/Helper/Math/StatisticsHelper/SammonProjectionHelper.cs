@@ -2,7 +2,6 @@
 using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -155,14 +154,10 @@ namespace GeoReVi
             if (DataSet.Count() == 0)
                 return;
 
-            this.mergedDataSets = MergeDataSets();
-
-            CommandHelper ch = new CommandHelper();
-
             DataTable dat = new DataTable();
 
-            foreach (DataTable dt in this.mergedDataSets)
-                dat.Merge(dt, true, MissingSchemaAction.Add);
+            foreach (Mesh dt in DataSet)
+                dat.Merge(dt.Data);
 
             dat.RemoveNonNumericColumns();
             dat.RemoveNanRowsAndColumns();
@@ -189,43 +184,13 @@ namespace GeoReVi
                 int j = 0;
                 for (int i = 0; i < DataSet.Count(); i++)
                 {
-                    Mesh mesh = new Mesh();
-                        ObservableCollection<LocationTimeValue> locs = new ObservableCollection<LocationTimeValue>();
-                    for(int k = 0; k< DataSet[i].Vertices.Count();k++)
-                    {
-                        LocationTimeValue loc = new LocationTimeValue(DataSet[i].Vertices[k]);
-                        for(int l = 0; l < DataSet[i].Properties.Count(); l++)
-                        {
-                            if(l<4)
-                                loc.Value[l] = ProjectedValues[k + j][l];
-                            else
-                            {
-                                try
-                                {
-                                    loc.Value.RemoveAt(l);
-                                }
-                                catch
-                                {
-                                    continue;
-                                }
-                            }
-                        }
-
-                        locs.Add(loc);
-                    }
-
-                    projectedData.Add(new Mesh() { Name = DataSet[i].Name, Vertices = locs});
-                    j += DataSet[i].Vertices.Count();
+                    projectedData.Add(new Mesh() { Name = DataSet[i].Name, Data = ProjectedValues.ToTable().AsEnumerable().Skip(j).Take(DataSet[i].Data.Rows.Count).CopyToDataTable() });
+                    projectedData[i].Data.Columns[projectedData[i].Data.Columns.Count - 1].SetOrdinal(0);
+                    j += DataSet[i].Data.Rows.Count;
                 }
 
                 LineChartViewModel.Lco.ShallRender = true;
-
-                LineChartViewModel.Lco.Xmin = ProjectedValues.GetColumn(0).Min();
-                LineChartViewModel.Lco.Xmax = ProjectedValues.GetColumn(0).Max();
-                LineChartViewModel.Lco.Ymin = ProjectedValues.GetColumn(1).Min();
-                LineChartViewModel.Lco.Ymax = ProjectedValues.GetColumn(1).Max();
-                LineChartViewModel.Lco.XProperty = SelectedPropertyEnum.Property1;
-                LineChartViewModel.Lco.YProperty = SelectedPropertyEnum.Property2;
+                LineChartViewModel.Lco.Direction = DirectionEnum.XY;
                 LineChartViewModel.Lco.DataSet = new BindableCollection<Mesh>(projectedData);
                 LineChartViewModel.Lco.CreateLineChart();
                 LineChartViewModel.Lco.XLabel.Text = "Dimension 1";

@@ -181,10 +181,10 @@ namespace GeoReVi
 
                     //Sorting and filtering
                     if (!IsXLog)
-                        Bs[i].Values = DataSet[i].Vertices.Where(x => x.Value[0] != 0).OrderBy(x => x.Value[0]).Select(x => x.Value[0]).ToList();
+                        Bs[i].Values = DataSet[i].Data.AsEnumerable().Where(x => (double)x[0] != 0).OrderBy(x => (double)x[0]).Select(x => (double)x[0]).ToList();
                     else
                     {
-                        Bs[i].Values = DataSet[i].Vertices.Select(x => Math.Log10(x.Value[0])).Where(x => !double.IsNegativeInfinity(x)).OrderBy(x => x).ToList();
+                        Bs[i].Values = DataSet[i].Data.AsEnumerable().Select(x => Math.Log10((double)x[0])).Where(x => !double.IsNegativeInfinity(x)).OrderBy(x => x).ToList();
                     }
 
                     AllValues.AddRange(Bs[i].Values);

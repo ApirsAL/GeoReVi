@@ -80,8 +80,8 @@ namespace GeoReVi
         /// <summary>
         /// Vertices of the grid cell
         /// </summary>
-        private List<int> vertices = new List<int>();
-        public List<int> Vertices
+        private List<LocationTimeValue> vertices = new List<LocationTimeValue>();
+        public List<LocationTimeValue> Vertices
         {
             get => this.vertices;
             set
@@ -126,12 +126,12 @@ namespace GeoReVi
         /// </summary>
         /// <param name="i"></param>
         /// <returns>Position of the i-th vertex</returns>
-        public virtual Point3D GetPosition(int i, Mesh mesh)
+        public virtual Point3D GetPosition(int i)
         {
-            return mesh.Vertices[Vertices[i]].ToPoint3D();
+            return Vertices[i].ToPoint3D();
         }
 
-        public virtual void MakeFace(int i, int j, int k, Vector3D center, Int32Collection indices, Mesh mesh)
+        public virtual void MakeFace(int i, int j, int k, Vector3D center, Int32Collection indices)
         {
 
         }
@@ -142,7 +142,7 @@ namespace GeoReVi
         /// <param name="color"></param>
         /// <param name="radius"></param>
         /// <returns>A model representing the tetrahedron</returns>
-        public virtual void CreateFaces(Mesh mesh)
+        public virtual void CreateFaces()
         {
 
         }
@@ -151,7 +151,7 @@ namespace GeoReVi
         /// Calculates the volume of the element
         /// </summary>
         /// <returns></returns>
-        public virtual double GetVolume(Mesh mesh)
+        public virtual double GetVolume()
         {
             return 0;
         }
@@ -180,16 +180,6 @@ namespace GeoReVi
         public virtual double[] GetNodeIndices(Mesh mesh)
         {
             return new double[] { };
-        }
-
-        /// <summary>
-        /// Getting an elements vertices
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        public virtual LocationTimeValue[] GetVertices(Mesh mesh)
-        {
-            return new LocationTimeValue[] { };
         }
 
         public virtual async Task<ICell[]> Subdivide()

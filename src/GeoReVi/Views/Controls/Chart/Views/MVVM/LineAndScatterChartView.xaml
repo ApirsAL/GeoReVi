@@ -685,16 +685,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                                                           Template="{StaticResource StretchyExpanderTemp}"
                                                                           IsExpanded="False">
                                                         <StackPanel Margin="6">
-                                                            <TextBlock Text="Y axis element"
-                                                                       FontWeight="DemiBold"/>
-                                                            <ComboBox HorizontalAlignment="Left" 
-                                                              VerticalAlignment="Center" 
-                                                              MinWidth="60"
-                                                              ItemsSource="{Binding Path=Lco.XProperty, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
-                                                              SelectedValuePath="Value"
-                                                              DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=Lco.XProperty, Mode=TwoWay}"
-                                                                              SelectedIndex="0"/>
                                                             <TextBlock Text="X max"
                                                                        FontWeight="DemiBold"/>
                                                             <TextBox Text="{Binding Path=Lco.Xmax, Mode=TwoWay}"/>
@@ -719,16 +709,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                                                           Template="{StaticResource StretchyExpanderTemp}"
                                                                           IsExpanded="False">
                                                         <StackPanel>
-                                                            <TextBlock Text="Y axis element"
-                                                                       FontWeight="DemiBold"/>
-                                                            <ComboBox HorizontalAlignment="Left" 
-                                                              VerticalAlignment="Center" 
-                                                              MinWidth="60"
-                                                              ItemsSource="{Binding Path=Lco.YProperty, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
-                                                              SelectedValuePath="Value"
-                                                              DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=Lco.YProperty, Mode=TwoWay}"
-                                                                              SelectedIndex="0"/>
                                                             <TextBlock Text="Y max"
                                                                        FontWeight="DemiBold"
                                                                                    Margin="0,5,0,0"/>
@@ -745,16 +725,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                                                 <CheckBox IsChecked="{Binding Lco.IsYLog, Mode=TwoWay}"
                                                                                       HorizontalAlignment="Right"/>
                                                             </DockPanel>
-                                                            <TextBlock Text="Color element"
-                                                                       FontWeight="DemiBold"/>
-                                                            <ComboBox HorizontalAlignment="Left" 
-                                                              VerticalAlignment="Center" 
-                                                              MinWidth="60"
-                                                              ItemsSource="{Binding Path=Lco.ZProperty, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
-                                                              SelectedValuePath="Value"
-                                                              DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=Lco.ZProperty, Mode=TwoWay}"
-                                                                              SelectedIndex="0"/>
                                                         </StackPanel>
                                                     </Expander>
                                                 </StackPanel>

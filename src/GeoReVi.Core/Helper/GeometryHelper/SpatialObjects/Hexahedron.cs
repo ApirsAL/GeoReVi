@@ -15,9 +15,9 @@ namespace GeoReVi
         /// </summary>
         /// <param name="i"></param>
         /// <returns>Position of the i-th vertex</returns>
-        public override Point3D GetPosition(int i, Mesh mesh)
+        public override Point3D GetPosition(int i)
         {
-            return base.GetPosition(i, mesh);
+            return Vertices[i].ToPoint3D();
         }
 
         /// <summary>
@@ -26,25 +26,24 @@ namespace GeoReVi
         /// <param name="color"></param>
         /// <param name="radius"></param>
         /// <returns>A model representing the tetrahedron</returns>
-        public override void CreateFaces(Mesh mesh)
+        public override void CreateFaces()
         {
-            LocationTimeValue[] vert = GetVertices(mesh);
 
-            int xMinIndex = vert.Min(x => x.MeshIndex[0]);
-            int xMaxIndex = vert.Max(x => x.MeshIndex[0]);
-            int yMinIndex = vert.Min(x => x.MeshIndex[1]);
-            int yMaxIndex = vert.Max(x => x.MeshIndex[1]);
-            int zMinIndex = vert.Min(x => x.MeshIndex[2]);
-            int zMaxIndex = vert.Max(x => x.MeshIndex[2]);
+            int xMinIndex = Vertices.Min(x => x.MeshIndex[0]);
+            int xMaxIndex = Vertices.Max(x => x.MeshIndex[0]);
+            int yMinIndex = Vertices.Min(x => x.MeshIndex[1]);
+            int yMaxIndex = Vertices.Max(x => x.MeshIndex[1]);
+            int zMinIndex = Vertices.Min(x => x.MeshIndex[2]);
+            int zMaxIndex = Vertices.Max(x => x.MeshIndex[2]);
 
-            LocationTimeValue[] XZFrontFaceVertices = vert.Where(x => x.MeshIndex[1] == yMinIndex).ToArray();
-            LocationTimeValue[] XZBackFaceVertices = vert.Where(x => x.MeshIndex[1] == yMaxIndex).ToArray();
+            LocationTimeValue[] XZFrontFaceVertices = Vertices.Where(x => x.MeshIndex[1] == yMinIndex).ToArray();
+            LocationTimeValue[] XZBackFaceVertices = Vertices.Where(x => x.MeshIndex[1] == yMaxIndex).ToArray();
 
-            LocationTimeValue[] YZFrontFaceVertices = vert.Where(x => x.MeshIndex[0] == xMinIndex).ToArray();
-            LocationTimeValue[] YZBackFaceVertices = vert.Where(x => x.MeshIndex[0] == xMaxIndex).ToArray();
+            LocationTimeValue[] YZFrontFaceVertices = Vertices.Where(x => x.MeshIndex[0] == xMinIndex).ToArray();
+            LocationTimeValue[] YZBackFaceVertices = Vertices.Where(x => x.MeshIndex[0] == xMaxIndex).ToArray();
 
-            LocationTimeValue[] XYFrontFaceVertices = vert.Where(x => x.MeshIndex[2] == zMinIndex).ToArray();
-            LocationTimeValue[] XYBackFaceVertices = vert.Where(x => x.MeshIndex[2] == zMaxIndex).ToArray();
+            LocationTimeValue[] XYFrontFaceVertices = Vertices.Where(x => x.MeshIndex[2] == zMinIndex).ToArray();
+            LocationTimeValue[] XYBackFaceVertices = Vertices.Where(x => x.MeshIndex[2] == zMaxIndex).ToArray();
 
             Faces.Clear();
 
@@ -60,23 +59,21 @@ namespace GeoReVi
         /// Calculating the value of the hexahedron
         /// </summary>
         /// <returns></returns>
-        public override double GetVolume(Mesh mesh)
+        public override double GetVolume()
         {
             //returning value
             double ret = 0;
 
             try
             {
-                LocationTimeValue[] vert = GetVertices(mesh);
-
                 //Splitting up the hexahedron into six tetrahedons
                 LocationTimeValue centerPoint = new LocationTimeValue(
-                        vert.Average(x => x.X),
-                        vert.Average(x => x.Y),
-                        vert.Average(x => x.Z)
+                        Vertices.Average(x => x.X),
+                        Vertices.Average(x => x.Y),
+                        Vertices.Average(x => x.Z)
                     );
 
-                CreateFaces(mesh);
+                CreateFaces();
 
                 for(int i = 0; i<6;i++)
                 {
@@ -97,53 +94,51 @@ namespace GeoReVi
         /// Converts a hexahedron to a list of tetrahedons
         /// </summary>
         /// <returns></returns>
-        public List<Cell> ToTetrahedons(Mesh mesh)
+        public List<Cell> ToTetrahedons()
         {
             //return object
             List<Cell> ret = new List<Cell>();
 
             try
             {
-                LocationTimeValue[] vert = GetVertices(mesh);
+                CreateFaces();
 
-                CreateFaces(mesh);
-
-                LocationTimeValue loc1 = vert[0];
-                LocationTimeValue loc2 = vert.OrderByDescending(x => GeographyHelper.EuclideanDistance(x, loc1)).First();
+                LocationTimeValue loc1 = Vertices[0];
+                LocationTimeValue loc2 = Vertices.OrderByDescending(x => GeographyHelper.EuclideanDistance(x, loc1)).First();
 
                 for(int i = 0; i<Faces.Count();i++)
                 {
                     Faces[i].Vertices.OrderBy(x => GeographyHelper.EuclideanDistance(x, Faces[i].Vertices[0]));
 
                     Tetrahedron tet = new Tetrahedron();
-                    tet.Vertices = new List<int>()
+                    tet.Vertices = new List<LocationTimeValue>()
                                    {
-                                       mesh.Vertices.IndexOf(Faces[i].Vertices[0]),
-                                       mesh.Vertices.IndexOf(Faces[i].Vertices[1]),
-                                       mesh.Vertices.IndexOf(Faces[i].Vertices[2])
+                                       Faces[i].Vertices[0],
+                                       Faces[i].Vertices[1],
+                                       Faces[i].Vertices[2]
                                    };
 
                     if(Faces[i].Vertices.Contains(loc1))
-                        tet.Vertices.Add(mesh.Vertices.IndexOf(loc2));
+                        tet.Vertices.Add(loc2);
                     else
-                        tet.Vertices.Add(mesh.Vertices.IndexOf(loc1));
+                        tet.Vertices.Add(loc1);
 
-                    tet.CreateFaces(mesh);
+                    tet.CreateFaces();
 
                     tet = new Tetrahedron();
-                    tet.Vertices = new List<int>()
+                    tet.Vertices = new List<LocationTimeValue>()
                                    {
-                                       mesh.Vertices.IndexOf(Faces[i].Vertices[3]),
-                                       mesh.Vertices.IndexOf(Faces[i].Vertices[1]),
-                                       mesh.Vertices.IndexOf(Faces[i].Vertices[2])
+                                       Faces[i].Vertices[3],
+                                       Faces[i].Vertices[1],
+                                       Faces[i].Vertices[2]
                                    };
 
                     if (Faces[i].Vertices.Contains(loc1))
-                        tet.Vertices.Add(mesh.Vertices.IndexOf(loc2));
+                        tet.Vertices.Add(loc2);
                     else
-                        tet.Vertices.Add(mesh.Vertices.IndexOf(loc1));
+                        tet.Vertices.Add(loc1);
 
-                    tet.CreateFaces(mesh);
+                    tet.CreateFaces();
 
                     ret.Add(tet);
                 }   
@@ -190,23 +185,21 @@ namespace GeoReVi
 
             try
             {
-                LocationTimeValue[] vert = GetVertices(mesh);
-
                 if (mesh.locs.Length == 0)
                     mesh.CreateVerticeArray();
 
-                int xMinIndex = vert.Min(x => x.MeshIndex[0]);
-                int yMinIndex = vert.Min(x => x.MeshIndex[1]);
-                int zMinIndex = vert.Min(x => x.MeshIndex[2]);
+                int xMinIndex = Vertices.Min(x => x.MeshIndex[0]);
+                int yMinIndex = Vertices.Min(x => x.MeshIndex[1]);
+                int zMinIndex = Vertices.Min(x => x.MeshIndex[2]);
 
-                g_num[0] = mesh.locs[xMinIndex, yMinIndex, zMinIndex]; // node 1
-                g_num[1] = mesh.locs[xMinIndex, yMinIndex, zMinIndex + 1]; //node 2
-                g_num[2] = mesh.locs[xMinIndex + 1, yMinIndex, zMinIndex + 1]; // node 3
-                g_num[3] = mesh.locs[xMinIndex + 1, yMinIndex, zMinIndex]; // node 4
-                g_num[4] = mesh.locs[xMinIndex, yMinIndex + 1, zMinIndex]; // node 5
-                g_num[5] = mesh.locs[xMinIndex, yMinIndex + 1, zMinIndex + 1]; // node 6
-                g_num[6] = mesh.locs[xMinIndex + 1, yMinIndex + 1, zMinIndex + 1]; // node 7
-                g_num[7] = mesh.locs[xMinIndex + 1, yMinIndex + 1, zMinIndex]; // node 8
+                g_num[0] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex, zMinIndex]); // node 1
+                g_num[1] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex, zMinIndex + 1]); //node 2
+                g_num[2] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex, zMinIndex + 1]); // node 3
+                g_num[3] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex, zMinIndex]); // node 4
+                g_num[4] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex + 1, zMinIndex]); // node 5
+                g_num[5] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex, yMinIndex + 1, zMinIndex + 1]); // node 6
+                g_num[6] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex + 1, zMinIndex + 1]); // node 7
+                g_num[7] = mesh.Vertices.IndexOf(mesh.locs[xMinIndex + 1, yMinIndex + 1, zMinIndex]); // node 8
             }
             catch
             {
@@ -214,23 +207,6 @@ namespace GeoReVi
             }
 
             return g_num;
-        }
-
-        /// <summary>
-        /// Identifies the vertice objects of the mesh
-        /// </summary>
-        /// <param name="mesh"></param>
-        /// <returns></returns>
-        public override LocationTimeValue[] GetVertices(Mesh mesh)
-        {
-            LocationTimeValue[] ret = new LocationTimeValue[8];
-
-            for(int i = 0; i<Vertices.Count(); i++)
-            {
-                ret[i] = mesh.Vertices[Vertices[i]];
-            }
-
-            return ret;
         }
 
         /// <summary>

@@ -21,112 +21,240 @@
                   VerticalAlignment="Stretch">
                 <TabControl HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch">
-                    <TabItem Header="Data">
-                        <Grid>
-                            <Grid.ContextMenu>
-                                <ContextMenu>
-
-                                    <MenuItem Header="Add to line chart"
-                                              cal:Message.Attach="[Event Click] = [Action AddToLineChart]"/>
-                                    <MenuItem Header="Add to variogram chart"
-                                              cal:Message.Attach="[Event Click] = [Action AddToVariogramChart]"/>
-                                    <MenuItem Header="Add to box-whisker chart"
-                                              cal:Message.Attach="[Event Click] = [Action AddToBoxWhiskerChart]"/>
-                                    <MenuItem Header="Add to bar chart"
-                                              cal:Message.Attach="[Event Click] = [Action AddToBarChart]"/>
-                                    <MenuItem Header="Add to 3D chart"
-                                              cal:Message.Attach="[Event Click] = [Action AddTo3DChart]"/>
-                                    <MenuItem Header="Add to ternary chart"
-                                              cal:Message.Attach="[Event Click] = [Action AddToTernaryChart]"/>
-                                    <MenuItem Header="Add to cluster"
-                                              cal:Message.Attach="[Event Click] = [Action AddToCluster]"/>
-                                    <MenuItem Header="Add to PCA"
-                                              cal:Message.Attach="[Event Click] = [Action AddToPca]"/>
-                                    <MenuItem Header="Add to Sammon"
-                                              cal:Message.Attach="[Event Click] = [Action AddToSammon]"/>
-                                    <MenuItem Header="Add to Correlation"
-                                              cal:Message.Attach="[Event Click] = [Action AddToCorrelation]"/>
-                                </ContextMenu>
-                            </Grid.ContextMenu>
-                            <ContentControl cal:View.Model="{Binding SingleParameterViewModel}"/>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Charts">
-                        <Grid>
-                            <TabControl VerticalAlignment="Stretch">
-                                <TabItem Header="Line chart">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding LineAndScatterChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Semi-variogram">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding VariogramChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Box-Whisker-Chart">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding BoxWhiskerChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Histogram">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding BarChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="3D">
-                                    <Grid >
-                                        <ContentControl cal:View.Model="{Binding LineChart3DUnivariateViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Ternary chart">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding TernaryChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                            </TabControl>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Statistical analyses">
+                    <TabItem Header="Univariate">
                         <TabControl>
-                            <TabItem Header="Correlation analysis">
+                            <TabItem Header="Data">
                                 <Grid>
-                                    <ContentControl
+                                    <Grid.ContextMenu>
+                                        <ContextMenu>
+                                           
+                                            <MenuItem Header="Add to line chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToLineChart]"/>
+                                            <MenuItem Header="Add to variogram chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToVariogramChart]"/>
+                                            <MenuItem Header="Add to box-whisker chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToBoxWhiskerChart]"/>
+                                            <MenuItem Header="Add to bar chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddToBarChart]"/>
+                                            <MenuItem Header="Add to 3D chart"
+                                              cal:Message.Attach="[Event Click] = [Action AddTo3DChart]"/>
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                    <ContentControl cal:View.Model="{Binding SingleParameterViewModel}"/>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Header="Charts">
+                                <Grid>
+                                    <TabControl VerticalAlignment="Stretch">
+                                        <TabItem Header="Log chart">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <StackPanel Margin="10" Orientation="Horizontal">
+                                                    <TextBlock Text="Direction"
+                                                                           FontWeight="DemiBold"
+                                                                           VerticalAlignment="Center"/>
+                                                    <ComboBox HorizontalAlignment="Left" 
+                                                                          VerticalAlignment="Center" 
+                                                                          MinWidth="100"
+                                                                          ItemsSource="{Binding Path=LineAndScatterChartViewModel.Lco.Direction, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                                          SelectedValuePath="Value"
+                                                                          DisplayMemberPath="Description"
+                                                                          SelectedValue="{Binding Path=LineAndScatterChartViewModel.Lco.Direction, Mode=OneWayToSource}"
+                                                                          SelectedIndex="0"/>
+                                                </StackPanel>
+                                                <ContentControl  Grid.Row="1"
+                                            cal:View.Model="{Binding LineAndScatterChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Semi-variogram">
+                                            <Grid>
+                                                <ContentControl
+                                                    cal:View.Model="{Binding VariogramChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Box-Whisker-Chart">
+                                            <Grid>
+                                                <ContentControl
+                                                    cal:View.Model="{Binding BoxWhiskerChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Histogram">
+                                            <Grid>
+                                                <ContentControl
+                                                    cal:View.Model="{Binding BarChartViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="3D">
+                                            <Grid >
+                                                <ContentControl cal:View.Model="{Binding LineChart3DUnivariateViewModel}"/>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                    </TabItem>
+                    <TabItem Header="Multivariate">
+                        <ScrollViewer>
+                            <TabControl HorizontalAlignment="Stretch"
+                                        MaxHeight="800">
+                                <TabItem Header="Data">
+                                    <Grid>
+                                        <Grid.ContextMenu>
+                                            <ContextMenu>
+
+                                                <MenuItem Header="Add to cluster"
+                                              cal:Message.Attach="[Event Click] = [Action AddToCluster]"/>
+                                                <MenuItem Header="Add to PCA"
+                                              cal:Message.Attach="[Event Click] = [Action AddToPca]"/>
+                                                <MenuItem Header="Add to Sammon"
+                                              cal:Message.Attach="[Event Click] = [Action AddToSammon]"/>
+                                                <MenuItem Header="Add to Correlation"
+                                              cal:Message.Attach="[Event Click] = [Action AddToCorrelation]"/>
+                                            </ContextMenu>
+                                        </Grid.ContextMenu>
+                                        <Grid>
+                                            <ContentControl
+                                                        cal:View.Model="{Binding MultiParameterViewModel}"/>
+                                        </Grid>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Statistics">
+                                    <TabControl>
+                                        <TabItem Header="Correlation analysis">
+                                            <Grid>
+                                                <ContentControl
                                                         cal:View.Model="{Binding CorrelationHelperViewModel}"/>
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="Principal Component Analysis">
-                                <Grid>
-                                    <ContentControl
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Principal Component Analysis">
+                                            <Grid>
+                                                <ContentControl
                                             cal:View.Model="{Binding PrincipalComponentAnalysisViewModel}"/>
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="Sammon Projection">
-                                <Grid>
-                                    <ContentControl
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Sammon Projection">
+                                            <Grid>
+                                                <ContentControl
                                             cal:View.Model="{Binding SammonProjectionViewModel}"/>
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="Cluster Analysis">
-                                <Grid>
-                                    <ContentControl cal:View.Model="{Binding ClusteringViewModel}"/>
-                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Cluster Analysis">
+                                            <Grid>
+                                                <ContentControl cal:View.Model="{Binding ClusteringViewModel}"/>
+                                                <Button Style="{StaticResource HyperlinkButton}"
                                                     Content="Refresh data"
                                                     HorizontalAlignment="Right"
                                                     FontSize="{StaticResource FontSizeVerySmall}"
                                                     VerticalAlignment="Top"
                                                     Margin="0"
                                                     cal:Message.Attach="AddDataToCluster"/>
-                                </Grid>
-                            </TabItem>
-                            <!--<TabItem Header="AHP">
-                                <Grid>
-                                    <ContentControl
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="AHP">
+                                            <Grid>
+                                                <ContentControl
                                             cal:View.Model="{Binding AnalyticalHierarchyProcessViewModel}"/>
-                                </Grid>
-                            </TabItem>-->
-                        </TabControl>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
+                                </TabItem>
+                                <TabItem Header="Charts">
+                                    <Grid>
+                                        <TabControl>
+                                            <TabItem Header="Scatter chart">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Margin="10"
+                                                    Orientation="Horizontal">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Y axis"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+
+                                                        <TextBlock Margin="10,0,5,0" 
+                                                                   VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="X axis"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                                                Content="Create chart"
+                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                HorizontalAlignment="Left"
+                                                                cal:Message.Attach="CreateScatterCharts"/>
+                                                    </StackPanel>
+                                                    <ContentControl Grid.Row="1"
+                                            cal:View.Model="{Binding SelectedLineChartViewModel}"/>
+                                                </Grid>
+                                            </TabItem>
+                                            <TabItem Header="Ternary chart">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Margin="10"
+                                                    Orientation="Horizontal">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Lower right"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Lower left"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   Margin="10,0,5,0"
+                                                                   FontSize="{StaticResource FontSizeSmall}" Text="Top"/>
+                                                        <ComboBox HorizontalAlignment="Left" 
+                                                                      VerticalAlignment="Center" 
+                                                                      MinWidth="120"
+                                                                      ItemsSource="{Binding Path=MultiParameterViewModel.DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
+                                                                      SelectedValue="{Binding Path=MultiParameterViewModel.SelectedColumn[2], Mode=TwoWay, NotifyOnSourceUpdated=True}"/>
+
+                                                        <Button Style="{StaticResource HyperlinkButton}"
+                                                                Content="Create chart"
+                                                                FontSize="{StaticResource FontSizeSmall}"
+                                                                HorizontalAlignment="Left"
+                                                                cal:Message.Attach="CreateTernaryChart"/>
+                                                    </StackPanel>
+                                                    <ContentControl Grid.Row="1"
+                                            cal:View.Model="{Binding TernaryChartViewModel}"/>
+                                                </Grid>
+                                            </TabItem>
+                                        </TabControl>
+                                    </Grid>
+                                </TabItem>
+                            </TabControl>
+                        </ScrollViewer>
                     </TabItem>
+
                 </TabControl>
             </Grid>
         </ControlTemplate>
