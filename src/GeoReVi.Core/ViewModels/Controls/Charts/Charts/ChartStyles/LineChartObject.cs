@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Xml.Serialization;
 
 namespace GeoReVi
@@ -16,6 +15,48 @@ namespace GeoReVi
     public class LineChartObject : ChartObject<LineSeries>, INotifyPropertyChanged
     {
         #region Public properties
+
+        /// <summary>
+        /// The selected property for the x axis
+        /// </summary>
+        private SelectedPropertyEnum xProperty = SelectedPropertyEnum.XAxis;
+        public SelectedPropertyEnum XProperty
+        {
+            get => this.xProperty;
+            set
+            {
+                this.xProperty = value;
+                NotifyOfPropertyChange(() => XProperty);
+            }
+        }
+
+        /// <summary>
+        /// The selected property for the y axis
+        /// </summary>
+        private SelectedPropertyEnum yProperty = SelectedPropertyEnum.YAxis;
+        public SelectedPropertyEnum YProperty
+        {
+            get => this.yProperty;
+            set
+            {
+                this.yProperty = value;
+                NotifyOfPropertyChange(() => YProperty);
+            }
+        }
+
+        /// <summary>
+        /// The selected property for the z axis
+        /// </summary>
+        private SelectedPropertyEnum zProperty = SelectedPropertyEnum.ZAxis;
+        public SelectedPropertyEnum ZProperty
+        {
+            get => this.zProperty;
+            set
+            {
+                this.zProperty = value;
+                NotifyOfPropertyChange(() => ZProperty);
+            }
+        }
 
         /// <summary>
         /// Checks if the line chart should be a colormap
@@ -47,46 +88,6 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => ColorMap);
             }
         }
-
-        //Providing information about the direction
-        private DirectionEnum direction = DirectionEnum.Directionless;
-        [XmlIgnore]
-        public DirectionEnum Direction
-        {
-            get => this.direction;
-            set
-            {
-                this.direction = value;
-
-                switch (value)
-                {
-                    case DirectionEnum.X:
-                        YLabel.Text = "x-direction [m]";
-                        break;
-                    case DirectionEnum.Y:
-                        YLabel.Text = "y-direction [m]";
-                        break;
-                    case DirectionEnum.Z:
-                        YLabel.Text = "z-direction [m]";
-                        break;
-                    case DirectionEnum.XY:
-                        YLabel.Text = "y-direction [m]";
-                        XLabel.Text = "x-direction [m]"; ;
-                        break;
-                    case DirectionEnum.XZ:
-                        YLabel.Text = "z-direction [m]";
-                        XLabel.Text = "x-direction [m]";
-                        break;
-                    case DirectionEnum.YZ:
-                        YLabel.Text = "z-direction [m]";
-                        XLabel.Text = "y-direction [m]";
-                        break;
-                }
-
-                NotifyOfPropertyChange(() => Direction);
-            }
-        }
-
 
         /// <summary>
         /// Fill color of the line 
@@ -134,19 +135,6 @@ namespace GeoReVi
             }
         }
 
-        /// <summary>
-        /// Point series for the line series
-        /// </summary>
-        private ObservableCollection<ObservableCollection<LocationTimeValue>> spatialPointSeries = new ObservableCollection<ObservableCollection<LocationTimeValue>>();
-        public ObservableCollection<ObservableCollection<LocationTimeValue>> SpatialPointSeries
-        {
-            get => this.spatialPointSeries;
-            set
-            {
-                this.spatialPointSeries = value;
-                NotifyOfPropertyChange(() => SpatialPointSeries);
-            }
-        }
 
         /// <summary>
         /// Shows or hides the regression line
@@ -202,7 +190,6 @@ namespace GeoReVi
         public LineChartObject(LineChartObject _lco)
         {
             DataCollection = new BindableCollection<LineSeries>();
-            SpatialPointSeries = new ObservableCollection<ObservableCollection<LocationTimeValue>>();
 
             DataSet = _lco.DataSet;
             Title = _lco.Title;
@@ -235,7 +222,6 @@ namespace GeoReVi
             IsXLog = _lco.IsXLog;
             IsXGrid = _lco.IsXGrid;
 
-            Direction = _lco.Direction;
             Ds = _lco.Ds;
             FillColor = _lco.FillColor;
 
@@ -243,7 +229,6 @@ namespace GeoReVi
             Maxy = _lco.Maxy;
             Minx = _lco.Minx;
             Miny = _lco.Miny;
-            SpatialPointSeries = _lco.SpatialPointSeries;
 
             BarType = _lco.BarType;
 
@@ -256,7 +241,6 @@ namespace GeoReVi
         public LineChartObject()
         {
             DataCollection = new BindableCollection<LineSeries>();
-            SpatialPointSeries = new ObservableCollection<ObservableCollection<LocationTimeValue>>();
         }
 
         #endregion
@@ -273,32 +257,6 @@ namespace GeoReVi
             i.Symbols.SymbolSize = 6;
             i.Symbols.SymbolType = SymbolTypeEnum.Dot;
             i.Symbols.BorderThickness = 0;
-
-            switch (Direction)
-            {
-                case DirectionEnum.X:
-                    YLabel.Text = "x-direction [m]";
-                    break;
-                case DirectionEnum.Y:
-                    YLabel.Text = "y-direction [m]";
-                    break;
-                case DirectionEnum.Z:
-                    YLabel.Text = "z-direction [m]";
-                    break;
-                case DirectionEnum.XY:
-                    YLabel.Text = "y-direction [m]";
-                    XLabel.Text = "x-direction [m]"; ;
-                    break;
-                case DirectionEnum.XZ:
-                    YLabel.Text = "z-direction [m]";
-                    XLabel.Text = "x-direction [m]";
-                    break;
-                case DirectionEnum.YZ:
-                    YLabel.Text = "z-direction [m]";
-                    XLabel.Text = "y-direction [m]";
-                    break;
-            }
-
             Ds.Add(i);
         }
 
@@ -306,22 +264,13 @@ namespace GeoReVi
         public void InitializeStandardScatterplot()
         {
             Title = "";
+            YLabel.Text = "Y";
+            XLabel.Text = "X";
             DataCollection = null;
             DataCollection = new BindableCollection<LineSeries>();
             Ds = null;
             Ds = new BindableCollection<LineSeries>();
         }
-        //Initializing a standard spatial log
-        public void InitializeStandardSpatialLog()
-        {
-            Title = "";
-            DataCollection = null;
-            DataCollection = new BindableCollection<LineSeries>();
-            Ds = null;
-            Ds = new BindableCollection<LineSeries>();
-            SpatialPointSeries.Clear();
-        }
-
         public override void Initialize()
         {
             Maxx = 0;
@@ -341,56 +290,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Creating a scatter chart from the data set
-        /// </summary>
-        public void CreateMatrixChart()
-        {
-            try
-            {
-                if (!ShallRender)
-                    return;
-
-                Direction = DirectionEnum.XY;
-
-                Initialize();
-                InitializeStandardSpatialLog();
-
-                SpatialPointSeries = new ObservableCollection<ObservableCollection<LocationTimeValue>>();
-                int i = 0;
-
-                foreach (var meas in DataSet)
-                {
-                    SpatialPointSeries.Add(new ObservableCollection<LocationTimeValue>());
-
-                    try
-                    {
-                        for(int j = 0; j<meas.Data.Rows.Count; j++)
-                        {
-                            for (int k = 0; k < meas.Data.Columns.Count; k++)
-                                SpatialPointSeries[i].Add(new LocationTimeValue(k, j, 0, "", Convert.ToDouble(meas.Data.Rows[j][k])));
-                        }
-
-                        AddDataSeries();
-
-                        Ds[i].SeriesName = meas.Name;
-                    }
-                    catch
-                    {
-                    }
-
-                    i = Ds.Count();
-                }
-
-                if (SpatialPointSeries.Count() != 0)
-                    CreateChart();
-            }
-            catch
-            {
-
-            }
-        }
-
-        /// <summary>
         /// Creating a line chart
         /// </summary>
         public void CreateLineChart()
@@ -400,24 +299,14 @@ namespace GeoReVi
                 return;
 
             Initialize();
-            InitializeStandardSpatialLog();
+            InitializeStandardScatterplot();
 
-            SpatialPointSeries = new ObservableCollection<ObservableCollection<LocationTimeValue>>();
             int i = 0;
 
             foreach (var meas in DataSet)
             {
                 try
                 {
-                    SpatialPointSeries.Add(new ObservableCollection<LocationTimeValue>(meas.Data.AsEnumerable().OrderBy(x => x.Field<double>(1)).OrderBy(x => x.Field<double>(2)).OrderBy(x => x.Field<double>(3))
-                        .Select(x => new LocationTimeValue()
-                        {
-                            Value = new List<double>() { x.Field<double>(0) },
-                            X = x.Field<double>(1),
-                            Y = x.Field<double>(2),
-                            Z = x.Field<double>(3)
-                        }).ToList()));
-
                     AddDataSeries();
 
                     Ds[i].SeriesName = meas.Name;
@@ -429,7 +318,7 @@ namespace GeoReVi
                 i = Ds.Count();
             }
 
-            if (SpatialPointSeries.Count() != 0)
+            if (Ds.Count() != 0)
                 CreateChart();
         }
 
@@ -455,7 +344,7 @@ namespace GeoReVi
                 }
 
                 //Adding values from the 3D chart collection
-                foreach (ObservableCollection<LocationTimeValue> ser in SpatialPointSeries)
+                foreach (Mesh mesh in DataSet)
                 {
                     await Task.Delay(0);
                     Ds[i].LinePoints.Clear();
@@ -463,34 +352,86 @@ namespace GeoReVi
                     List<LocationTimeValue> points = new List<LocationTimeValue>();
 
                     //Adding all points from the line series to the chart
-                    for (int j = 0; j < ser.Count(); j++)
+                    for (int j = 0; j < mesh.Vertices.Count(); j++)
                     {
-                        LocationTimeValue a = new LocationTimeValue();
+                        await Task.Delay(0);
+                        double x = 0;
+                        double y = 0;
+                        double z = 0;
 
-                        switch (Direction)
+                        //Assigning the property for the x axis
+                        switch (XProperty)
                         {
-                            case DirectionEnum.X:
-                                a = new LocationTimeValue((double)ser[j].Value[0], (double)ser[j].X, 0, ser[j].Name);
+                            case SelectedPropertyEnum.XAxis:
+                                x = (double)mesh.Vertices[j].X;
                                 break;
-                            case DirectionEnum.Y:
-                                a = new LocationTimeValue((double)ser[j].Value[0], (double)ser[j].Y, 0, ser[j].Name);
+                            case SelectedPropertyEnum.YAxis:
+                                x = (double)mesh.Vertices[j].Y;
                                 break;
-                            case DirectionEnum.Z:
-                                a = new LocationTimeValue((double)ser[j].Value[0], (double)ser[j].Z, 0, ser[j].Name);
-                                break;
-                            case DirectionEnum.XY:
-                                a = new LocationTimeValue((double)ser[j].X, (double)ser[j].Y, (double)ser[j].Value[0], ser[j].Name);
-                                break;
-                            case DirectionEnum.XZ:
-                                a = new LocationTimeValue((double)ser[j].X, (double)ser[j].Z, (double)ser[j].Value[0], ser[j].Name);
-                                break;
-                            case DirectionEnum.YZ:
-                                a = new LocationTimeValue((double)ser[j].Y, (double)ser[j].Z, (double)ser[j].Value[0], ser[j].Name);
+                            case SelectedPropertyEnum.ZAxis:
+                                x = (double)mesh.Vertices[j].Z;
                                 break;
                             default:
-                                a = new LocationTimeValue((double)ser[j].X, (double)ser[j].Value[0], (double)ser[j].Z, ser[j].Name);
+                                try
+                                {
+                                    x = (double)mesh.Vertices[j].Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), XProperty))];
+                                }
+                                catch
+                                {
+                                    throw new Exception("Property not available.");
+                                }
                                 break;
                         }
+
+                        //Assigning the property for the y axis
+                        switch (YProperty)
+                        {
+                            case SelectedPropertyEnum.XAxis:
+                                y = (double)mesh.Vertices[j].X;
+                                break;
+                            case SelectedPropertyEnum.YAxis:
+                                y = (double)mesh.Vertices[j].Y;
+                                break;
+                            case SelectedPropertyEnum.ZAxis:
+                                y = (double)mesh.Vertices[j].Z;
+                                break;
+                            default:
+                                try
+                                {
+                                    y = (double)mesh.Vertices[j].Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), YProperty))];
+                                }
+                                catch
+                                {
+                                    throw new Exception("Property not available.");
+                                }
+                                break;
+                        }
+
+                        //Assigning the property for the colormap
+                        switch (ZProperty)
+                        {
+                            case SelectedPropertyEnum.XAxis:
+                                z = (double)mesh.Vertices[j].X;
+                                break;
+                            case SelectedPropertyEnum.YAxis:
+                                z = (double)mesh.Vertices[j].Y;
+                                break;
+                            case SelectedPropertyEnum.ZAxis:
+                                z = (double)mesh.Vertices[j].Z;
+                                break;
+                            default:
+                                try
+                                {
+                                    z = (double)mesh.Vertices[j].Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), ZProperty))];
+                                }
+                                catch
+                                {
+                                    throw new Exception("Property not available.");
+                                }
+                                break;
+                        }
+
+                        LocationTimeValue a = new LocationTimeValue(x, y, z, mesh.Vertices[j].Name);
 
                         if (a.X < Xmin || a.X > Xmax)
                             continue;
@@ -499,7 +440,7 @@ namespace GeoReVi
                             continue;
 
                         if (IsColorMap)
-                            a.Value = ser[j].Value;
+                            a.Value = new List<double>() { z };
 
                         points.Add(new LocationTimeValue()
                         {
@@ -524,7 +465,7 @@ namespace GeoReVi
                         Miny = Ds[i].LinePoints.Min(x => DeNormalizePoint(x).Y);
                     }
 
-                    if(ShowConvexHull)
+                    if (ShowConvexHull)
                     {
                         Ds[i].ComputeConvexHull();
                     }
@@ -554,7 +495,7 @@ namespace GeoReVi
 
             try
             {
-                for(int i = 0;i<DataCollection.Count();i++)
+                for (int i = 0; i < DataCollection.Count(); i++)
                 {
                     DataCollection[i].LinePoints = new BindableCollection<LocationTimeValue>(DataCollection[i].LinePoints);
                 }
@@ -661,7 +602,7 @@ namespace GeoReVi
                     Legend.LegendObjects[i].Symbol = DataCollection[i].Symbols.SymbolType;
 
                     if (ShowRegression)
-                        Legend.LegendObjects[i].Label.Text = Legend.LegendObjects[i].Label.Text + " (" + DataCollection[i].RegressionHelper.Function + ") R^2 = " + DataCollection[i].RegressionHelper.RSquare.ToString().Substring(0,5);
+                        Legend.LegendObjects[i].Label.Text = Legend.LegendObjects[i].Label.Text + " (" + DataCollection[i].RegressionHelper.Function + ") R^2 = " + DataCollection[i].RegressionHelper.RSquare.ToString().Substring(0, 5);
                 }
             }
             catch
@@ -678,10 +619,10 @@ namespace GeoReVi
 
             try
             {
-                double minX = SpatialPointSeries.SelectMany(x => x.Select(y => y.X)).Min();
-                double minY = SpatialPointSeries.SelectMany(x => x.Select(y => y.Y)).Min();
-                double maxX = SpatialPointSeries.SelectMany(x => x.Select(y => y.X)).Max();
-                double maxY = SpatialPointSeries.SelectMany(x => x.Select(y => y.X)).Min();
+                double minX = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).X)).Min();
+                double minY = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).Y)).Min();
+                double maxX = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).X)).Max();
+                double maxY = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).Y)).Max();
 
                 LocationTimeValue Mins = new LocationTimeValue(
                     minX,
@@ -701,89 +642,6 @@ namespace GeoReVi
             {
 
             }
-
-
-            //local = Math.Round(DataCollection.Min(x => x.LinePoints.Min(y => y.X)), 1) == 0 ?
-            //    (Math.Round(Minx, 2) == 0 ?
-            //    (Math.Round(Minx, 3) == 0 ?
-            //    (Math.Round(Minx, 4) == 0 ?
-            //      Math.Round(Minx, 4)
-            //    : Math.Round(Minx, 4))
-            //    : Math.Round(Minx, 3))
-            //    : Math.Round(Minx, 2))
-            //    : Math.Round(Minx, 1);
-
-            ////Math.Round(minx, 1);
-
-            //if (local > 0 && local < Xmin) { Xmin = local - local * 0.1; }
-            //else if (local < Xmin) { Xmin = local + local * 0.1; }
-
-            //local = Math.Round(Maxx, 1) == 0 ?
-            //    (Math.Round(Maxx, 2) == 0 ?
-            //    (Math.Round(Maxx, 3) == 0 ?
-            //    (Math.Round(Maxx, 4) == 0 ?
-            //      Math.Round(Maxx, 4)
-            //    : Math.Round(Maxx, 4))
-            //    : Math.Round(Maxx, 3))
-            //    : Math.Round(Maxx, 2))
-            //    : Math.Round(Maxx, 1);
-
-            ////Math.Round(Ds.LinePoints.Max(x => x.X), 1);
-
-            //if (local > 0 && local > Xmax) { Xmax = local + local * 0.1; }
-            //else if (local > Xmax) { Xmax = local - local * 0.1; }
-
-            //local = Math.Round(Miny, 1) == 0 ?
-            //    (Math.Round(Miny, 2) == 0 ?
-            //    (Math.Round(Miny, 3) == 0 ?
-            //    (Math.Round(Miny, 4) == 0 ?
-            //      Math.Round(Miny, 4)
-            //    : Math.Round(Miny, 4))
-            //    : Math.Round(Miny, 3))
-            //    : Math.Round(Miny, 2))
-            //    : Math.Round(Miny, 1);
-
-            ////Math.Round(Ds.LinePoints.Min(y => y.Y), 1);
-
-            //if (local > 0 && local < Ymin) { Ymin = local - local * 0.1; }
-            //else if (local < Ymin) { Ymin = local + local * 0.1; }
-
-            //local = Math.Round(Maxy, 1) == 0 ?
-            //    (Math.Round(Maxy, 2) == 0 ?
-            //    (Math.Round(Maxy, 3) == 0 ?
-            //    (Math.Round(Maxy, 4) == 0 ?
-            //      Math.Round(Maxy, 4)
-            //    : Math.Round(Maxy, 4))
-            //    : Math.Round(Maxy, 3))
-            //    : Math.Round(Maxy, 2))
-            //    : Math.Round(Maxy, 1);
-
-            //if (local > 0 && local > Ymax) { Ymax = local + local * 0.1; }
-            //else if (local == 0 && local > Ymax)
-            //    Ymax = 1;
-            //else if (local > Ymax) { Ymax = local - local * 0.1; }
-
-            //if (XTick == 0)
-            //    XTick = Math.Round((Xmax - Xmin) / 10, 1) == 0 ?
-            //        (Math.Round((Xmax - Xmin) / 10, 2) == 0 ?
-            //        (Math.Round((Xmax - Xmin) / 10, 3) == 0 ?
-            //        (Math.Round((Xmax - Xmin) / 10, 4) == 0 ?
-            //          Math.Round((Xmax - Xmin) / 10, 4)
-            //        : Math.Round((Xmax - Xmin) / 10, 4))
-            //        : Math.Round((Xmax - Xmin) / 10, 3))
-            //        : Math.Round((Xmax - Xmin) / 10, 2))
-            //        : Math.Round((Xmax - Xmin) / 10, 1);
-
-            //if (YTick == 0)
-            //    YTick = Math.Round((Ymax - Ymin) / 10, 1) == 0 ?
-            //        (Math.Round((Ymax - Ymin) / 10, 2) == 0 ?
-            //        (Math.Round((Ymax - Ymin) / 10, 3) == 0 ?
-            //        (Math.Round((Ymax - Ymin) / 10, 4) == 0 ?
-            //          Math.Round((Ymax - Ymin) / 10, 4)
-            //        : Math.Round((Ymax - Ymin) / 10, 4))
-            //        : Math.Round((Ymax - Ymin) / 10, 3))
-            //        : Math.Round((Ymax - Ymin) / 10, 2))
-            //        : Math.Round((Ymax - Ymin) / 10, 1);
         }
 
 

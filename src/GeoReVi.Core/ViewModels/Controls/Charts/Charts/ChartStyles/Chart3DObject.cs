@@ -725,26 +725,6 @@ namespace GeoReVi
                     //Adding a point to a selected data sets
                     case EditingTypeEnum.AddPoints:
                         SelectedSeries.Mesh.Vertices.AddRange(ThreeDEditor.AddedPoints);
-                        for (int i = 0; i < ThreeDEditor.AddedPoints.Count(); i++)
-                        {
-                            await Task.Delay(0);
-                            try
-                            {
-                                DataRow dr = SelectedSeries.Mesh.Data.NewRow();
-                                dr[0] = ThreeDEditor.AddedPoints[i].Value[0];
-                                dr[1] = ThreeDEditor.AddedPoints[i].X;
-                                dr[2] = ThreeDEditor.AddedPoints[i].Y;
-                                dr[3] = ThreeDEditor.AddedPoints[i].Z;
-                                dr[4] = ThreeDEditor.AddedPoints[i].Date;
-                                dr[5] = ThreeDEditor.AddedPoints[i].Name;
-
-                                SelectedSeries.Mesh.Data.Rows.Add(dr);
-                            }
-                            catch
-                            {
-
-                            }
-                        }
                         break;
                     //Extracting a vertical section from the selected model
                     case EditingTypeEnum.ExtractVerticalSection:
@@ -777,7 +757,7 @@ namespace GeoReVi
             {
                 if (SelectedSeries != null)
                 {
-                    SelectedDataSet = DataSet.Where(x => x.Data.Equals(SelectedSeries.Mesh.Data)).FirstOrDefault();
+                    SelectedDataSet = DataSet.Where(x => x.Equals(SelectedSeries.Mesh)).FirstOrDefault();
                     if (SelectedDataSet == null)
                     {
                         DataCollection.Remove(SelectedSeries);
@@ -813,19 +793,6 @@ namespace GeoReVi
                 for (int i = 0; i < DataSet.Count; i++)
                     try
                     {
-                        if (DataSet[i].Data.Rows.Count != DataSet[i].Vertices.Count())
-                        {
-                            DataSet[i].Vertices.Clear();
-                            DataSet[i].Vertices.AddRange(DataSet[i].Data.AsEnumerable()
-                                .Select(x => new LocationTimeValue()
-                                {
-                                    Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)) },
-                                    X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                                    Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                                    Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
-                                }));
-                        }
-
                         ///Only add the mesh to the chart series if it is not yet included
                         if (!Ds.Any(x => x.Mesh.Equals(DataSet[i])))
                         {
@@ -1207,10 +1174,10 @@ namespace GeoReVi
                             foreach (var cell in ls3D.Mesh.Cells)
                             {
                                 if (cell.Faces.Count < 1)
-                                    cell.CreateFaces();
+                                    cell.CreateFaces(ls3D.Mesh);
 
                                 ///Adding all points to the model group
-                                if (cell.Vertices.Where(x => x.IsExterior).Count() > 0)
+                                if (cell.GetVertices(ls3D.Mesh).Where(x => x.IsExterior).Count() > 0)
                                 {
                                     foreach (var face in cell.Faces)
                                     {
@@ -1296,7 +1263,7 @@ namespace GeoReVi
                                 {
                                     int verticesCut = 0;
 
-                                    foreach (var vertice in cell.Vertices)
+                                    foreach (var vertice in cell.GetVertices(ls3D.Mesh))
                                         switch (Plane3D.RelativeOrientation)
                                         {
                                             case RelativeOrientation.Above:
@@ -1313,7 +1280,7 @@ namespace GeoReVi
                                                 break;
                                         }
 
-                                    if ((verticesCut > 0 && verticesCut < cell.Vertices.Count()) || (cell.Vertices.Any(x => x.IsExterior) && verticesCut < cell.Vertices.Count()))
+                                    if ((verticesCut > 0 && verticesCut < cell.Vertices.Count()) || (cell.GetVertices(ls3D.Mesh).Any(x => x.IsExterior) && verticesCut < cell.Vertices.Count()))
                                     {
                                         List<Face> faces = cell.Faces.ToList();
 

@@ -146,15 +146,6 @@ namespace GeoReVi
         {
             try
             {
-                foreach (DataRow row in mesh.Data.Rows)
-                {
-                    LocationTimeValue loc = new LocationTimeValue((double)row[1], (double)row[2], (double)row[3]);
-                    await Task.WhenAll(ConvertCoordinate(loc));
-
-                    row[1] = loc.X;
-                    row[2] = loc.Y;
-                    row[3] = loc.Z;
-                }
                 for (int i = 0; i<mesh.Vertices.Count();i++)
                 {
                     LocationTimeValue loc = mesh.Vertices[i];

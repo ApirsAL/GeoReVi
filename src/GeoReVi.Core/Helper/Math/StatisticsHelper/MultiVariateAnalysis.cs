@@ -13,6 +13,9 @@ namespace GeoReVi
     /// </summary>
     public abstract class MultiVariateAnalysis : PropertyChangedBase, IMultidimensionalDataSetHolder, IStatisticalAnalysis
     {
+        //An intermediate list object for buffering the processed meshes
+        protected List<DataTable> mergedDataSets = new List<DataTable>();
+
         /// <summary>
         /// The calculation dataSet
         /// </summary>
@@ -27,7 +30,7 @@ namespace GeoReVi
             }
         }
 
-        //Data set in jaggged format
+        //Data set in jagged format
         public double[][] CalculationJaggedDataSet
         {
             get => CalculationDataSet.ToJagged();
@@ -54,7 +57,7 @@ namespace GeoReVi
         {
             get
             {
-                return this.CalculationDataSet.ToTable(DataSet.First().Data.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray());
+                return this.CalculationDataSet.ToTable(DataSet.First().Properties.Select(x => x.Value).ToArray());
             }
         }
 
@@ -71,6 +74,7 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => DataSet);
             }
         }
+
 
         /// <summary>
         /// Checks if the class holds a data set
@@ -116,6 +120,20 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// Defines, how a mesh should be joined
+        /// </summary>
+        private JoinMethod joinMethod = JoinMethod.Exact;
+        public JoinMethod JoinMethod
+        {
+            get => this.joinMethod;
+            set
+            {
+                this.joinMethod = value;
+                NotifyOfPropertyChange(() => JoinMethod);
+            }
+        }
+
+        /// <summary>
         /// Checks whether a computation takes place ATM or not
         /// </summary>
         private bool isComputing = false;
@@ -155,34 +173,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Joining the selected meshes
-        /// </summary>
-        /// <returns></returns>
-        public virtual DataTable JoinMeshes()
-        {
-            DataTable dat = new DataTable();
-
-            try
-            {
-                for(int i = 0; i<DataSet.Count();i++)
-                {
-                    if (i == 0)
-                        dat = DataSet[i].Data;
-                    else
-                    {
-
-                    }
-                }
-            }
-            catch
-            {
-
-            }
-
-            return dat;
-        }
-
-        /// <summary>
         /// Converting a Accord.Statistics.Analysis.AnalysisMethod to a Accord.Statistics.Analysis.PrincipalComponentMethod
         /// </summary>
         /// <param name="method"></param>
@@ -214,6 +204,30 @@ namespace GeoReVi
             {
 
             }
+        }
+
+        /// <summary>
+        /// Merges the data sets according to their group assignment
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<DataTable> MergeDataSets()
+        {
+            List<DataTable> ret = new List<DataTable>();
+
+            try
+            {
+                for(int i = 0; i< DataSet.Count();i++)
+                {
+                    DataTable dat = MeshJoiner.ExtractDataTable(DataSet[i]);
+                    ret.Add(dat);
+                }
+            }
+            catch
+            {
+                throw new System.Exception("Data sets cannot be merged");
+            }
+
+            return ret;
         }
     }
 }

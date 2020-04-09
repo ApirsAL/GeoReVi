@@ -48,12 +48,42 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// The properties of the mesh
+        /// </summary>
+        private BindableCollection<KeyValuePair<int, string>> properties = new BindableCollection<KeyValuePair<int, string>>();
+        [XmlIgnore]
+        public BindableCollection<KeyValuePair<int, string>> Properties
+        {
+            get => this.properties;
+            set
+            {
+                this.properties = value;
+                NotifyOfPropertyChange(() => Properties);
+            }
+        }
+
+        /// <summary>
+        /// The selected property of the mesh
+        /// </summary>
+        private KeyValuePair<int, string> selectedProperty = new KeyValuePair<int, string>();
+        [XmlIgnore]
+        public KeyValuePair<int, string> SelectedProperty
+        {
+            get => this.selectedProperty;
+            set
+            {
+                this.selectedProperty = value;
+                NotifyOfPropertyChange(() => SelectedProperty);
+            }
+        }
+
         #endregion
 
         #region Public properties
 
         [XmlIgnore]
-        public LocationTimeValue[,,] locs = new LocationTimeValue[,,] { };
+        public int[,,] locs = new int[,,] { };
 
         /// <summary>
         /// Name of the mesh
@@ -116,6 +146,7 @@ namespace GeoReVi
         /// Cells of the mesh
         /// </summary>
         private ObservableCollection<Cell> cells = new ObservableCollection<Cell>();
+        [XmlIgnore]
         public ObservableCollection<Cell> Cells
         {
             get => this.cells;
@@ -153,19 +184,6 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Data associated with the grid
-        /// </summary>
-        private DataTable data = new DataTable() { TableName = "MyTableName" };
-        public DataTable Data
-        {
-            get => this.data;
-            set
-            {
-                this.data = value;
-            }
-        }
-
-        /// <summary>
         /// The count of the cells.
         /// </summary>
         public int Count
@@ -196,12 +214,9 @@ namespace GeoReVi
         public Mesh(Mesh _mesh)
         {
             Dimensionality = _mesh.Dimensionality;
-            Data = new DataTable();
-            Data.Merge(_mesh.Data);
-            Data.TableName = _mesh.Name.ToString();
             Name = _mesh.Name.ToString();
             MeshCellType = _mesh.MeshCellType;
-
+            Properties = _mesh.Properties;
             Vertices = new ObservableCollection<LocationTimeValue>(_mesh.Vertices.Select( x => new LocationTimeValue(x)).ToList());
         }
 
@@ -226,7 +241,7 @@ namespace GeoReVi
 
             foreach (var b in a)
             {
-                Cells.Add(new Tetrahedron() { Vertices = b.Vertices.ToList(), CellType = CellType.Tetrahedon });
+                Cells.Add(new Tetrahedron() { Vertices = b.Vertices.Select((v,i) => new { Vertice = v, index = i }).Select(x => x.index).ToList(), CellType = CellType.Tetrahedon });
             }
         }
 
@@ -354,7 +369,6 @@ namespace GeoReVi
                     int zMinIndex = 0;
                     int zMaxIndex = 0;
 
-
                     xMinIndex = Vertices.Min(x => x.MeshIndex[0]);
                     xMaxIndex = Vertices.Max(x => x.MeshIndex[0]);
                     yMinIndex = Vertices.Min(x => x.MeshIndex[1]);
@@ -389,13 +403,13 @@ namespace GeoReVi
                                     if (hex.Vertices.Any(x => x == null))
                                         continue;
 
-                                    if (!hex.Vertices.Any(x => !x.IsExterior))
+                                    if (!hex.GetVertices(this).Any(x => !x.IsExterior))
                                         continue;
 
                                     if (MeshCellType == MeshCellType.Hexahedral)
                                         Cells.Add(hex);
                                     else if (MeshCellType == MeshCellType.Tetrahedal)
-                                        Cells.AddRange(hex.ToTetrahedons());
+                                        Cells.AddRange(hex.ToTetrahedons(this));
 
                                 }
                                 catch
@@ -437,12 +451,12 @@ namespace GeoReVi
                 zMaxIndex = Vertices.Max(x => x.MeshIndex[2]);
 
                 //3D collection of vertices
-                this.locs = new LocationTimeValue[(xMaxIndex - xMinIndex) + 1, (yMaxIndex - yMinIndex) + 1, (zMaxIndex - zMinIndex) + 1];
+                this.locs = new int[(xMaxIndex - xMinIndex) + 1, (yMaxIndex - yMinIndex) + 1, (zMaxIndex - zMinIndex) + 1];
 
                 //Adding vertices to the collection based on the count
                 for (int i = 0; i < Vertices.Count(); i++)
                 {
-                    locs[Vertices[i].MeshIndex[0], Vertices[i].MeshIndex[1], Vertices[i].MeshIndex[2]] = Vertices[i];
+                    locs[Vertices[i].MeshIndex[0], Vertices[i].MeshIndex[1], Vertices[i].MeshIndex[2]] = i;
                 }
             }
             catch
@@ -463,7 +477,7 @@ namespace GeoReVi
             try
             {
                 for (int i = 0; i < Cells.Count(); i++)
-                    ret += Cells[i].GetVolume();
+                    ret += Cells[i].GetVolume(this);
             }
             catch
             {
@@ -552,10 +566,10 @@ namespace GeoReVi
                 {
                     case Dimensionality.TwoD:
 
-                        retLocs.Add(locs[indexX - 1, indexY, indexZ]);
-                        retLocs.Add(locs[indexX, indexY - 1, indexZ]);
-                        retLocs.Add(locs[indexX + 1, indexY, indexZ]);
-                        retLocs.Add(locs[indexX, indexY + 1, indexZ]);
+                        retLocs.Add(Vertices[locs[indexX - 1, indexY, indexZ]]);
+                        retLocs.Add(Vertices[locs[indexX, indexY - 1, indexZ]]);
+                        retLocs.Add(Vertices[locs[indexX + 1, indexY, indexZ]]);
+                        retLocs.Add(Vertices[locs[indexX, indexY + 1, indexZ]]);
 
                         if (retLocs.Count() > 4 && !loc.IsExterior)
                         {
@@ -565,17 +579,17 @@ namespace GeoReVi
                     case Dimensionality.ThreeD:
 
                         if(indexX != 0)
-                            retLocs.Add(locs[indexX - 1, indexY, indexZ]);
+                            retLocs.Add(Vertices[locs[indexX - 1, indexY, indexZ]]);
                         if(indexY != 0)
-                            retLocs.Add(locs[indexX, indexY - 1, indexZ]);
+                            retLocs.Add(Vertices[locs[indexX, indexY - 1, indexZ]]);
                         if(indexZ != 0)
-                            retLocs.Add(locs[indexX, indexY, indexZ - 1]);
+                            retLocs.Add(Vertices[locs[indexX, indexY, indexZ - 1]]);
                         if(indexX != locs.GetLength(0)-1)
-                            retLocs.Add(locs[indexX + 1, indexY, indexZ]);
+                            retLocs.Add(Vertices[locs[indexX + 1, indexY, indexZ]]);
                         if(indexY != locs.GetLength(1)-1)
-                            retLocs.Add(locs[indexX, indexY + 1, indexZ]);
+                            retLocs.Add(Vertices[locs[indexX, indexY + 1, indexZ]]);
                         if(indexZ != locs.GetLength(2)-1)
-                            retLocs.Add(locs[indexX, indexY, indexZ + 1]);
+                            retLocs.Add(Vertices[locs[indexX, indexY, indexZ + 1]]);
 
                         if (retLocs.Count() > 6 && !loc.IsExterior)
                         {
@@ -700,19 +714,21 @@ namespace GeoReVi
 
                 for (int i = 0; i < Cells.Count(); i++)
                 {
-                    int[] lowest = Cells[i].Vertices.OrderBy(x => x.MeshIndex[0]).OrderBy(x => x.MeshIndex[1]).OrderBy(x => x.MeshIndex[2]).Select(x => x.MeshIndex).First();
+                    LocationTimeValue[] vert = Cells[i].GetVertices(this);
+
+                    int[] lowest = vert.OrderBy(x => x.MeshIndex[0]).OrderBy(x => x.MeshIndex[1]).OrderBy(x => x.MeshIndex[2]).Select(x => x.MeshIndex).First();
                     int xMinIndex = lowest[0];
                     int yMinIndex = lowest[1];
                     int zMinIndex = lowest[2];
 
-                    g_num[0, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex, zMinIndex]); // node 1
-                    g_num[1, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex, zMinIndex + 1]); //node 2
-                    g_num[2, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex, zMinIndex + 1]); // node 3
-                    g_num[3, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex, zMinIndex]); // node 4
-                    g_num[4, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex + 1, zMinIndex]); // node 5
-                    g_num[5, i] = Vertices.IndexOf(locs[xMinIndex, yMinIndex + 1, zMinIndex + 1]); // node 6
-                    g_num[6, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex + 1, zMinIndex + 1]); // node 7
-                    g_num[7, i] = Vertices.IndexOf(locs[xMinIndex + 1, yMinIndex + 1, zMinIndex]); // node 8
+                    g_num[0, i] = locs[xMinIndex, yMinIndex, zMinIndex]; // node 1
+                    g_num[1, i] = locs[xMinIndex, yMinIndex, zMinIndex + 1]; //node 2
+                    g_num[2, i] = locs[xMinIndex + 1, yMinIndex, zMinIndex + 1]; // node 3
+                    g_num[3, i] = locs[xMinIndex + 1, yMinIndex, zMinIndex]; // node 4
+                    g_num[4, i] = locs[xMinIndex, yMinIndex + 1, zMinIndex]; // node 5
+                    g_num[5, i] = locs[xMinIndex, yMinIndex + 1, zMinIndex + 1]; // node 6
+                    g_num[6, i] = locs[xMinIndex + 1, yMinIndex + 1, zMinIndex + 1]; // node 7
+                    g_num[7, i] = locs[xMinIndex + 1, yMinIndex + 1, zMinIndex]; // node 8
                 }
 
                 return g_num;
@@ -783,17 +799,6 @@ namespace GeoReVi
                 
                 //Adding interpolated values and variances to the original data set
                 mesh.Name = "Vertical section";
-                mesh.Data =
-                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                        new List<Tuple<double, double, double, double, DateTime, string>>(mesh.Vertices.Select(a =>
-                           new Tuple<double, double, double, double, DateTime, string>(
-                               (a.Value[0] == null ? 0 : a.Value[0]),
-                               a.X,
-                               a.Y,
-                               a.Z,
-                               a.Date,
-                               a.Name
-                               )).ToList()));
 
                 mesh.FacesFromPointCloud();
             }
@@ -804,6 +809,124 @@ namespace GeoReVi
 
             return mesh;
         }
+
+        /// <summary>
+        /// Getting the properties of the mesh
+        /// </summary>
+        /// <returns></returns>
+        public bool GetProperties()
+        {
+
+            bool ret = true;
+
+            try
+            {
+                List<string> names = new List<string>();
+
+                if (Properties != null && Properties.Count() > 0 )
+                {
+                    names = Properties.Select(x => x.Value).ToList();
+                }
+
+                Properties = new BindableCollection<KeyValuePair<int, string>>();
+
+                for(int i = 0; i<Vertices[0].Value.Count(); i++)
+                {
+                    if(names.Count() >= i && names.Count() > 0)
+                        Properties.Add(new KeyValuePair<int, string>(i,  names[i]));
+                    else
+                        Properties.Add(new KeyValuePair<int, string>(i,  "Property " + (i+1).ToString()));
+                }
+            }
+            catch
+            {
+                ret = false;
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Checks if the list of properties fits to the vertices values
+        /// </summary>
+        /// <returns>True if properties are consistent</returns>
+        public bool CheckProperties()
+        {
+            bool check = true;
+
+            try
+            {
+                for(int i = 0; i<Vertices.Count(); i++)
+                {
+                    if(Vertices[i].Value.Count() != Properties.Count())
+                    {
+                        check = false;
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                throw new Exception("Mesh validation check failed.");
+            }
+
+            return check;
+        }
+
+        /// <summary>
+        /// Removes the acutally selected property
+        /// </summary>
+        /// <returns></returns>
+        public async Task RemoveProperty()
+        {
+            try
+            {
+                int index = Properties.IndexOf(SelectedProperty);
+
+                for(int i = 0; i<Vertices.Count(); i++)
+                {
+                    Vertices[i].Value.RemoveAt(index);
+                }
+
+                Properties.RemoveAt(index);
+            }
+            catch
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task BringToFront()
+        {
+            try
+            {
+                for (int i = 0; i < Vertices.Count(); i++)
+                {
+                    await Task.Delay(0);
+
+                    int s = SelectedProperty.Key;
+
+                    Vertices[i].SwapProperties(0, s);
+                }
+
+                KeyValuePair<int, string> prop1 = Properties[0];
+
+                Properties.Swap(0, SelectedProperty.Key);
+
+                GetProperties();
+
+                NotifyOfPropertyChange(()=>Vertices);
+            }
+            catch
+            {
+
+            }
+        }
+
 
         #endregion
 

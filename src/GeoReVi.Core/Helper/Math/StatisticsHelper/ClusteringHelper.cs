@@ -136,12 +136,14 @@ namespace GeoReVi
             if (DataSet.Count() == 0)
                 return;
 
+            this.mergedDataSets = MergeDataSets();
+
             CommandHelper ch = new CommandHelper();
 
             DataTable dat = new DataTable();
 
-            foreach (Mesh dt in DataSet)
-                dat.Merge(dt.Data);
+            foreach (DataTable dt in this.mergedDataSets)
+                dat.Merge(dt);
 
             dat.RemoveNonNumericColumns();
             dat.RemoveNanRowsAndColumns();
@@ -176,14 +178,14 @@ namespace GeoReVi
                             }
 
                             var a = new BindableCollection<KeyValuePair<string, DataTable>>();
-                            dat = DataSet.First().Data.Clone();
+                            dat = mergedDataSets.First().Clone();
 
-                            foreach (Mesh dt in DataSet)
-                                dat.Merge(dt.Data);
+                            foreach (DataTable dt in mergedDataSets)
+                                dat.Merge(dt);
 
                             //Adding a collection to the list for each cluster
                             for (int i = 0; i < NumberOfClusters; i++)
-                                a.Add(new KeyValuePair<string, DataTable>("Cluster " + (i + 1).ToString(), DataSet.First().Data.Clone()));
+                                a.Add(new KeyValuePair<string, DataTable>("Cluster " + (i + 1).ToString(), mergedDataSets.First().Clone()));
 
                             try
                             {

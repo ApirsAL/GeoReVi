@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:GeoReVi"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              xmlns:cal="http://www.caliburnproject.org"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -20,14 +21,128 @@
     </UserControl.Triggers>
     <Grid Background="{StaticResource BackgroundDarkSlateGrayBrush}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"
+                           MinHeight="40"/>
             <RowDefinition Height="*"
                            MinHeight="100"/>
         </Grid.RowDefinitions>
+        <WrapPanel Grid.Row="0">
+            <DockPanel Margin="10,0">
+                <fa:ImageAwesome Icon="Braille"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Select from all objects in the list"/>
+                <CheckBox IsChecked="{Binding Path=FilterCriteria.All, Mode=TwoWay}"
+                                                                          HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"/>
+            </DockPanel>
+            <DockPanel Margin="10,0">
+                <fa:ImageAwesome Icon="Globe"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Use global reference system"/>
+                <CheckBox IsChecked="{Binding Path=FilterCriteria.Global, Mode=TwoWay}"
+                                                                          HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"/>
+            </DockPanel>
+            <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+            <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+            <DockPanel Margin="10,0">
+                <fa:ImageAwesome Icon="Calendar"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Filter by date range"/>
+                <CheckBox IsChecked="{Binding Path=FilterCriteria.FilterByDate, Mode=TwoWay}"
+                                                                          HorizontalAlignment="Right"
+                                  VerticalAlignment="Center"/>
+                <DockPanel Visibility="{Binding Path=FilterCriteria.FilterByDate, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="From" VerticalAlignment="Center"/>
+                    <DatePicker HorizontalAlignment="Right" 
+                                                    Width="129"
+                                        Height="25"
+                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
+                        <DatePicker.SelectedDate>
+                            <Binding Path="From"
+                                                                 Mode="TwoWay"
+                                                                 NotifyOnValidationError="True"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 ValidatesOnExceptions="True">
+                            </Binding>
+                        </DatePicker.SelectedDate>
+                    </DatePicker>
+                    <TextBox Text="{Binding Path=FilterCriteria.To, StringFormat='{}{0:hh\\:mm\\:ss tt}'}"/>
+                    <TextBlock Text="To" VerticalAlignment="Center"/>
+                    <DatePicker HorizontalAlignment="Right" 
+                                                    Width="129"
+                                        Height="25"
+                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
+                        <DatePicker.SelectedDate>
+                            <Binding Path="To"
+                                                                 Mode="TwoWay"
+                                                                 NotifyOnValidationError="True"
+                                                                 UpdateSourceTrigger="PropertyChanged"
+                                                                 ValidatesOnExceptions="True">
+                            </Binding>
+                        </DatePicker.SelectedDate>
+                    </DatePicker>
+                    <TextBox Text="{Binding Path=FilterCriteria.From, StringFormat='{}{1:hh\\:mm\\:ss tt}'}"/>
+                </DockPanel>
+            </DockPanel>
+            <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+            <DockPanel Margin="10,0">
+                <fa:ImageAwesome Icon="ObjectGroup"
+                                         Width="20"
+                                         Height="20"
+                                         ToolTip="Group by"/>
+                <ComboBox  SelectedIndex="0"
+                                                                                   MinWidth="100"
+                                                                            Text="{Binding Path=FilterCriteria.GroupBy,
+                                                                                    Mode=TwoWay}">
+                    <ComboBoxItem Content="Nothing"/>
+                    <ComboBoxItem Content="Sample type"/>
+                    <ComboBoxItem Content="Object of investigation"/>
+                    <ComboBoxItem Content="Lithostratigraphy"/>
+                    <ComboBoxItem Content="Chronostratigraphy"/>
+                    <ComboBoxItem Content="Facies"/>
+                    <ComboBoxItem Content="Architectural element"/>
+                    <ComboBoxItem Content="Depositional environment"/>
+                    <ComboBoxItem Content="Petrography"/>
+                </ComboBox>
+            </DockPanel>
+            <Rectangle Height="25"
+                                   Width="1"
+                                   Margin="5,0"
+                                   Fill="Black"/>
+            <DockPanel HorizontalAlignment="Right"
+                   VerticalAlignment="Bottom">
+                <Button Style="{StaticResource IconButton}"
+                Content="{StaticResource FontAwesomeDownload}"
+                ToolTip="Load univariate data matrix from the selected property"
+                HorizontalAlignment="Right"
+                    
+                VerticalAlignment="Top"
+                Foreground="Black"
+                Margin="30,0,0,0"
+                cal:Message.Attach="LoadSingleParameterDataMatrix"/>
+            </DockPanel>
+        </WrapPanel>
+        <Grid Background="Gray"
+                      Opacity="0.4"
+                      Visibility="{Binding Path=IsLoading, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
         <TabControl Background="Transparent"
                     TabStripPlacement="Top"
                     BorderThickness="0"
                     SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
-                    Grid.Row="0">
+                    Grid.Row="1">
             <TabItem Header="Laboratory measurements"
                      BorderThickness="0">
 
@@ -42,25 +157,5 @@
                 </ContentControl>
             </TabItem>
         </TabControl>
-        <DockPanel HorizontalAlignment="Right"
-                   VerticalAlignment="Bottom">
-            <Button Style="{StaticResource IconButton}"
-                Content="{StaticResource FontAwesomeDownload}"
-                ToolTip="Load univariate data matrix"
-                HorizontalAlignment="Right"
-                    
-                VerticalAlignment="Top"
-                Foreground="Black"
-                Margin="30,0,0,0"
-                cal:Message.Attach="LoadSingleParameterDataMatrix"/>
-            <Button Style="{StaticResource IconButton}"
-                Content="{StaticResource FontAwesomeDownload}"
-                ToolTip="Load multivariate data matrix"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Foreground="Gray"
-                Margin="50,0,0,0"
-                cal:Message.Attach="LoadMultiparametricDataMatrix"/>
-        </DockPanel>
     </Grid>
 </UserControl>

@@ -97,7 +97,57 @@ namespace GeoReVi
                 new tblAlia()
                 {
                     alColumnName = "Value1",
-                    alAlias = "Value"
+                    alAlias = "Value1"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value2",
+                    alAlias = "Value2"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value3",
+                    alAlias = "Value3"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value4",
+                    alAlias = "Value4"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value5",
+                    alAlias = "Value5"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value6",
+                    alAlias = "Value6"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value6",
+                    alAlias = "Value6"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value7",
+                    alAlias = "Value7"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value8",
+                    alAlias = "Value8"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value9",
+                    alAlias = "Value9"
+                },
+                new tblAlia()
+                {
+                    alColumnName = "Value10",
+                    alAlias = "Value10"
                 },
                 new tblAlia()
                 {
@@ -323,7 +373,7 @@ namespace GeoReVi
 
                     int numberOfColumns = ImportedTable.Columns.Count;
 
-                    for (int i = 0; i < numberOfColumns ; i++)
+                    for (int i = 0; i < numberOfColumns; i++)
                     {
                         try
                         {
@@ -347,6 +397,24 @@ namespace GeoReVi
 
                         if (!columnHeaders.Contains("Value1"))
                             ImportedTable.Columns.Add("Value1", typeof(double));
+                        if (!columnHeaders.Contains("Value2"))
+                            ImportedTable.Columns.Add("Value2", typeof(double));
+                        if (!columnHeaders.Contains("Value3"))
+                            ImportedTable.Columns.Add("Value3", typeof(double));
+                        if (!columnHeaders.Contains("Value4"))
+                            ImportedTable.Columns.Add("Value4", typeof(double));
+                        if (!columnHeaders.Contains("Value5"))
+                            ImportedTable.Columns.Add("Value5", typeof(double));
+                        if (!columnHeaders.Contains("Value6"))
+                            ImportedTable.Columns.Add("Value6", typeof(double));
+                        if (!columnHeaders.Contains("Value7"))
+                            ImportedTable.Columns.Add("Value7", typeof(double));
+                        if (!columnHeaders.Contains("Value8"))
+                            ImportedTable.Columns.Add("Value8", typeof(double));
+                        if (!columnHeaders.Contains("Value9"))
+                            ImportedTable.Columns.Add("Value9", typeof(double));
+                        if (!columnHeaders.Contains("Value10"))
+                            ImportedTable.Columns.Add("Value10", typeof(double));
                         if (!columnHeaders.Contains("X"))
                             ImportedTable.Columns.Add("X", typeof(double));
                         if (!columnHeaders.Contains("Y"))
@@ -359,12 +427,21 @@ namespace GeoReVi
                             ImportedTable.Columns.Add("Name", typeof(string));
 
                         ImportedTable.Columns["Value1"].SetOrdinal(0);
-                        ImportedTable.Columns["Value1"].DefaultValue = new double[9] {0,0,0,0,0,0,0,0,0 };
-                        ImportedTable.Columns["X"].SetOrdinal(1);
-                        ImportedTable.Columns["Y"].SetOrdinal(2);
-                        ImportedTable.Columns["Z"].SetOrdinal(3);
-                        ImportedTable.Columns["DateTime"].SetOrdinal(4);
-                        ImportedTable.Columns["Name"].SetOrdinal(5);
+                        ImportedTable.Columns["Value2"].SetOrdinal(1);
+                        ImportedTable.Columns["Value3"].SetOrdinal(2);
+                        ImportedTable.Columns["Value4"].SetOrdinal(3);
+                        ImportedTable.Columns["Value5"].SetOrdinal(4);
+                        ImportedTable.Columns["Value6"].SetOrdinal(5);
+                        ImportedTable.Columns["Value7"].SetOrdinal(6);
+                        ImportedTable.Columns["Value8"].SetOrdinal(7);
+                        ImportedTable.Columns["Value9"].SetOrdinal(8);
+                        ImportedTable.Columns["Value10"].SetOrdinal(9);
+                        ImportedTable.Columns["X"].SetOrdinal(10);
+                        ImportedTable.Columns["Y"].SetOrdinal(11);
+                        ImportedTable.Columns["Z"].SetOrdinal(12);
+                        ImportedTable.Columns["DateTime"].SetOrdinal(13);
+                        ImportedTable.Columns["DateTime"].DefaultValue = DateTime.Now;
+                        ImportedTable.Columns["Name"].SetOrdinal(14);
                     }
                     catch
                     {

@@ -29,6 +29,7 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
                                 <Border Background="{StaticResource ApirsMediumGrayBrush}"
                                             Grid.Row="0"
@@ -119,6 +120,10 @@
                                         <Separator Margin="0,0,0,5"/>
                                     </StackPanel>
                                 </Border>
+                                <Button Grid.Row="3" Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Backup the local database"
+                                cal:Message.Attach="BackupLocalDB"/>
                             </Grid>
                         </TabItem>
 

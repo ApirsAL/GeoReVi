@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Caliburn.Micro;
+using System.Collections.ObjectModel;
 
 namespace GeoReVi
 {
@@ -168,31 +169,43 @@ namespace GeoReVi
             double[][] correlationMatrix = new double[][] { };
 
 
-                try
+            try
+            {
+                if (PearsonCorrelationMatrix == null || PearsonCorrelationMatrix.Rows.Count == 0)
+                    return;
+
+                Mesh matrix = new Mesh() { Dimensionality = Dimensionality.ThreeD, Properties = new BindableCollection<KeyValuePair<int, string>>() { new KeyValuePair<int, string>(0, "PearsonCorrelation") } };
+                ObservableCollection<LocationTimeValue> locs = new ObservableCollection<LocationTimeValue>();
+
+                DataTable dat = PearsonCorrelationMatrix.Copy();
+                dat.Columns.RemoveAt(0);
+
+                for (int i = 0; i<dat.Rows.Count; i++)
                 {
-                    if (PearsonCorrelationMatrix == null || PearsonCorrelationMatrix.Rows.Count == 0)
-                        return;
+                    for(int j = 0; j<dat.Columns.Count; j++)
+                     locs.Add(new LocationTimeValue(i + 1, j+1, 0, "default", Convert.ToDouble(dat.Rows[i][j])));
+                }
 
-                    DataTable dat = PearsonCorrelationMatrix.Copy();
-                    dat.Columns.RemoveAt(0);
+                matrix.Vertices.AddRange(locs);
 
-                    PearsonBubbleChartViewModel.Lco.IsColorMap = true;
-                    PearsonBubbleChartViewModel.Lco.ColorMap.Ymax = 1;
-                    PearsonBubbleChartViewModel.Lco.ColorMap.Ymin = -1;
-                    PearsonBubbleChartViewModel.Lco.XTick = 1;
-                    PearsonBubbleChartViewModel.Lco.YTick = 1;
-                    PearsonBubbleChartViewModel.Lco.IsXGrid = false;
-                    PearsonBubbleChartViewModel.Lco.IsYGrid = false;
-                    PearsonBubbleChartViewModel.Lco.Direction = DirectionEnum.XY;
-                    PearsonBubbleChartViewModel.Lco.DataSet = new BindableCollection<Mesh>(new List<Mesh>() { new Mesh() { Name = "CorrelationTable", Data = dat } }.ToList());
-                    PearsonBubbleChartViewModel.Lco.CreateMatrixChart();
+                PearsonBubbleChartViewModel.Lco.IsColorMap = true;
+                PearsonBubbleChartViewModel.Lco.ColorMap.Ymax = 1;
+                PearsonBubbleChartViewModel.Lco.ColorMap.Ymin = -1;
+                PearsonBubbleChartViewModel.Lco.XTick = 1;
+                PearsonBubbleChartViewModel.Lco.YTick = 1;
+                PearsonBubbleChartViewModel.Lco.ZProperty = SelectedPropertyEnum.Property1;
+                PearsonBubbleChartViewModel.Lco.IsXGrid = false;
+                PearsonBubbleChartViewModel.Lco.IsYGrid = false;
+                PearsonBubbleChartViewModel.Lco.DataSet.Clear();
+                PearsonBubbleChartViewModel.Lco.DataSet.Add(matrix);
+                PearsonBubbleChartViewModel.Lco.CreateLineChart();
                 PearsonBubbleChartViewModel.Lco.DataCollection[0].LineThickness = 0;
 
             }
             catch
-                {
-                    return;
-                }
+            {
+                return;
+            }
         }
 
 
@@ -202,34 +215,33 @@ namespace GeoReVi
         /// <param name="par"></param>
         public async Task CreateSpearmanMatrixChart()
         {
-            CommandHelper ch = new CommandHelper();
+            Mesh matrix = new Mesh() { Dimensionality = Dimensionality.ThreeD, Properties = new BindableCollection<KeyValuePair<int, string>>() { new KeyValuePair<int, string>(0, "PearsonCorrelation") } };
+            ObservableCollection<LocationTimeValue> locs = new ObservableCollection<LocationTimeValue>();
 
-            double[][] correlationMatrix = new double[][] { };
+            DataTable dat = SpearmanCorrelationMatrix.Copy();
+            dat.Columns.RemoveAt(0);
 
-                try
-                {
-                    if (SpearmanCorrelationMatrix == null || SpearmanCorrelationMatrix.Rows.Count == 0)
-                        return;
+            for (int i = 0; i < dat.Rows.Count; i++)
+            {
+                for (int j = 0; j < dat.Columns.Count; j++)
+                    locs.Add(new LocationTimeValue(i + 1, j + 1, 0, "default", Convert.ToDouble(dat.Rows[i][j])));
+            }
 
-                    DataTable dat = SpearmanCorrelationMatrix.Copy();
-                    dat.Columns.RemoveAt(0);
+            matrix.Vertices.AddRange(locs);
 
-                    SpearmanBubbleChartViewModel.Lco.IsColorMap = true;
-                SpearmanBubbleChartViewModel.Lco.ColorMap.Ymax = 1;
-                SpearmanBubbleChartViewModel.Lco.ColorMap.Ymin = -1;
-                SpearmanBubbleChartViewModel.Lco.XTick = 1;
-                SpearmanBubbleChartViewModel.Lco.YTick = 1;
-                SpearmanBubbleChartViewModel.Lco.IsXGrid = false;
-                SpearmanBubbleChartViewModel.Lco.IsYGrid = false;
-                SpearmanBubbleChartViewModel.Lco.Direction = DirectionEnum.XY;
-                    SpearmanBubbleChartViewModel.Lco.DataSet = new BindableCollection<Mesh>(new List<Mesh>() { new Mesh() { Name = "CorrelationTable", Data = dat } }.ToList());
-                    SpearmanBubbleChartViewModel.Lco.CreateMatrixChart();
-                    SpearmanBubbleChartViewModel.Lco.DataCollection[0].LineThickness = 0;
-                }
-                catch
-                {
-                    return;
-                }
+            SpearmanBubbleChartViewModel.Lco.IsColorMap = true;
+            SpearmanBubbleChartViewModel.Lco.ColorMap.Ymax = 1;
+            SpearmanBubbleChartViewModel.Lco.ColorMap.Ymin = -1;
+            SpearmanBubbleChartViewModel.Lco.XTick = 1;
+            SpearmanBubbleChartViewModel.Lco.YTick = 1;
+            SpearmanBubbleChartViewModel.Lco.ZProperty = SelectedPropertyEnum.Property1;
+            SpearmanBubbleChartViewModel.Lco.IsXGrid = false;
+            SpearmanBubbleChartViewModel.Lco.IsYGrid = false;
+            SpearmanBubbleChartViewModel.Lco.DataSet.Clear();
+            SpearmanBubbleChartViewModel.Lco.DataSet.Add(matrix);
+            SpearmanBubbleChartViewModel.Lco.CreateLineChart();
+            SpearmanBubbleChartViewModel.Lco.DataCollection[0].LineThickness = 0;
+
         }
 
         /// <summary>
@@ -377,14 +389,22 @@ namespace GeoReVi
             });
         }
 
+        /// <summary>
+        /// Computing the correlation
+        /// </summary>
+        /// <returns></returns>
         public override async Task Compute()
         {
             try
             {
                 DataTable dat = new DataTable();
 
-                foreach (Mesh dt in DataSet)
-                    dat.Merge(dt.Data);
+                this.mergedDataSets = MergeDataSets();
+
+                CommandHelper ch = new CommandHelper();
+
+                foreach (DataTable dt in this.mergedDataSets)
+                    dat.Merge(dt);
 
                 dat.RemoveNonNumericColumns();
                 dat.RemoveNanRowsAndColumns();

@@ -438,19 +438,6 @@ namespace GeoReVi
                         //Building the mesh
                         Solution.CellsFromPointCloud();
 
-                        //Build data table
-                        Solution.Data =
-                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                        new List<Tuple<double, double, double, double, DateTime, string>>(Solution.Vertices.Select(b =>
-                           new Tuple<double, double, double, double, DateTime, string>(
-                               b.Value[0],
-                               b.X,
-                               b.Y,
-                               b.Z,
-                               b.Date,
-                               b.Name
-                               )).ToList()));
-
                         break;
                 }
             }

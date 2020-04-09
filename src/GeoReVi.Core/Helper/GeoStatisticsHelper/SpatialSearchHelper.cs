@@ -1,9 +1,7 @@
 ﻿using Accord.Math;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GeoReVi
@@ -11,7 +9,19 @@ namespace GeoReVi
     public static class SpatialNeighborhoodHelper
     {
         #region Methods
-
+        /// <summary>
+        /// Builds a search ellipsoid, rotates the point set and determines, which points are contained in the search ellipsoid and which are not
+        /// </summary>
+        /// <param name="pointSet"></param>
+        /// <param name="location"></param>
+        /// <param name="distanceX"></param>
+        /// <param name="distanceY"></param>
+        /// <param name="distanceZ"></param>
+        /// <param name="azimuth"></param>
+        /// <param name="dip"></param>
+        /// <param name="plunge"></param>
+        /// <param name="maximumNumber"></param>
+        /// <returns></returns>
         public static async Task<int[]> SearchByDistance(IEnumerable<LocationTimeValue> pointSet, 
             LocationTimeValue location,  
             double distanceX = 9999, 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace GeoReVi
 {
@@ -389,14 +390,33 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Rotating the point along the origin
+        /// Swapt the properties of the indexes
         /// </summary>
-        /// <param name="zTransform"></param>
-        /// <param name="xTransform"></param>
-        /// <param name="yTransform"></param>
-        public void Rotate(double[,] zTransform, double[,] xTransform, double[,] yTransform)
+        /// <param name="prop1"></param>
+        /// <param name="prop2"></param>
+        public bool SwapProperties(int prop1 = 0, int prop2 = 1 )
         {
+            bool ret = true;
 
+            try
+            {
+                if (prop1 == prop2)
+                    ret = false;
+                else if(Value.Count() < prop1 || Value.Count() < prop2)
+                {
+                        ret = false;
+                }
+                else
+                {
+                    Value.Swap(prop1, prop2);
+                }
+            }
+            catch
+            {
+
+            }
+
+            return ret;
         }
 
         #endregion

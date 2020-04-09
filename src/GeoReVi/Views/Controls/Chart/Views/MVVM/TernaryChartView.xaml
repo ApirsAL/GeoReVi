@@ -622,12 +622,42 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Tco.TickColor}"
                                                                           Template="{StaticResource StretchyExpanderTemp}"
                                                                           IsExpanded="False">
                                                 <StackPanel Margin="6">
+                                                    <TextBlock Text="Left property"
+                                                                       FontWeight="DemiBold"/>
+                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=Tco.XProperty, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Tco.XProperty, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
                                                     <TextBlock Text="Left label"
                                                                        FontWeight="DemiBold"/>
                                                     <TextBox Text="{Binding Tco.XLabel.Text, Mode=TwoWay}"/>
+                                                    <TextBlock Text="Right property"
+                                                                       FontWeight="DemiBold"/>
+                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=Tco.YProperty, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Tco.YProperty, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
                                                     <TextBlock Text="Right label"
                                                                        FontWeight="DemiBold"/>
                                                     <TextBox Text="{Binding Tco.YLabel.Text, Mode=TwoWay}"/>
+                                                    <TextBlock Text="Top property"
+                                                                       FontWeight="DemiBold"/>
+                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                              MinWidth="60"
+                                                              ItemsSource="{Binding Path=Tco.ZProperty, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=Tco.ZProperty, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
                                                     <TextBlock Text="Top label"
                                                                        FontWeight="DemiBold"/>
                                                     <TextBox Text="{Binding Tco.ZLabel.Text, Mode=TwoWay}"/>
@@ -827,29 +857,6 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Tco.TickColor}"
                                 </TabControl.ContentTemplate>
                             </TabControl>
                         </ScrollViewer>
-                    </TabItem>
-                    <TabItem Style="{StaticResource LeftSideTabItem}"
-                                                             Header="Data">
-                        <StackPanel Margin="10">
-                            <ComboBox HorizontalAlignment="Left" 
-                                                                      VerticalAlignment="Center" 
-                                                                      MinWidth="120"
-                                                                      ItemsSource="{Binding Path=DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=Tco.ColumnList[0], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
-                            <ComboBox HorizontalAlignment="Left" 
-                                                                      VerticalAlignment="Center" 
-                                                                      MinWidth="120"
-                                                                      ItemsSource="{Binding Path=DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=Tco.ColumnList[1], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
-                            <ComboBox HorizontalAlignment="Left" 
-                                                                      VerticalAlignment="Center" 
-                                                                      MinWidth="120"
-                                                                      ItemsSource="{Binding Path=DataTableColumnNames, Mode=OneWay, NotifyOnSourceUpdated=True}" 
-                                                                      SelectedValue="{Binding Path=Tco.ColumnList[2], Mode=TwoWay, NotifyOnSourceUpdated=True}"
-                                                                      cal:Message.Attach="[Event SelectionChanged] = [Action CreateTernaryChart]"/>
-                        </StackPanel>
                     </TabItem>
                 </TabControl>
             </Expander>
