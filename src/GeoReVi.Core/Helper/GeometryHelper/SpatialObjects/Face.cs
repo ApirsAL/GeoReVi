@@ -35,7 +35,6 @@ namespace GeoReVi
 
         #endregion
 
-
         #region Public methods
 
         /// <summary>

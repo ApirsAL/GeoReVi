@@ -263,6 +263,7 @@
     <Compile Include="Helper\DifferentialEquationHelper\ThermalConductionHelper.cs" />
     <Compile Include="Helper\EnumHelper\EnumHelper.cs" />
     <Compile Include="Helper\Export\ExportHelper.cs" />
+    <Compile Include="Helper\Export\FilterCriteria.cs" />
     <Compile Include="Helper\FileHandler\FileHelper.cs" />
     <Compile Include="Helper\FileHandler\SerializerHelper.cs" />
     <Compile Include="Helper\Functions\Number.cs" />
@@ -289,6 +290,7 @@
     <Compile Include="Helper\GeometryHelper\SpatialObjects\MeshCellType.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\MeshDisplayType.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Quadrilateral.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\SelectedPropertyEnum.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\SpatialOperationType.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Tetrahedon.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Triangle.cs" />
@@ -317,6 +319,7 @@
     <Compile Include="Helper\Math\StatisticsHelper\AnalyticalHierarchyProcessHelper.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\ClusteringHelper.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\DataSetType.cs" />
+    <Compile Include="Helper\Math\StatisticsHelper\MeshJoiner.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\MissingDataTreatment.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\RegressionFunctionBiVariate.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\SammonProjectionHelper.cs" />
@@ -399,6 +402,7 @@
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\EditingTypeEnum.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\EditorBaseClass.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Image.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\LineChartTypeEnum.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\SymbolType.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\ThreeDEditor.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BarChartViewModel.cs" />
@@ -433,7 +437,6 @@
     <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\SiliciclasticDetailsViewModel.cs" />
     <Compile Include="ViewModels\DataForms\Lithologies\FaciesTypes\VolcanicDetailsViewModel.cs" />
     <Compile Include="ViewModels\DataForms\Lithologies\LithologiesWrapViewModel.cs" />
-    <Compile Include="ViewModels\DataForms\Data\MultivariateDataViewModel.cs" />
     <Compile Include="ViewModels\DataForms\Maps\Maps\MapStyle.cs" />
     <Compile Include="ViewModels\DataForms\Maps\MapViewModel.cs" />
     <Compile Include="ViewModels\DataForms\Maps\MapViewWrapViewModel.cs" />

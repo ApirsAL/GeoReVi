@@ -121,8 +121,9 @@
             BorderBrush="{StaticResource ForegroundVeryDarkBrush}" 
             BorderThickness="1" 
             CornerRadius="5"
+            MaxHeight="300"
             Padding="7">
-        <DockPanel>
+        <DockPanel MaxHeight="300">
             <Expander Visibility="{Binding Path=HasDetails, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=False, Mode=OneWay, NotifyOnSourceUpdated=True}"
                       x:Name="DetailsExpander" 
                     Margin="0,7,0,0" 
@@ -242,6 +243,7 @@
                 <TextBlock Text="{Binding Path=MessageText, NotifyOnSourceUpdated=True}"
                            x:Name="MessageText"
                            TextWrapping="Wrap"
+            MaxHeight="4275"
                            Foreground="{StaticResource ForegroundVeryDarkBrush}"/>
             </Label>
         </DockPanel>

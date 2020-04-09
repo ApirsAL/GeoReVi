@@ -35,7 +35,7 @@ namespace GeoReVi
         {
             get
             {
-                return this.CalculationDataSet.ToTable(DataSet.First().Data.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray());
+                return this.CalculationDataSet.ToTable(DataSet.First().Properties.Select(x => x.Value).ToArray());
             }
         }
 

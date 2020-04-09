@@ -12,6 +12,8 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Collections.ObjectModel;
+using Microsoft.Win32;
 
 namespace GeoReVi
 {
@@ -306,6 +308,25 @@ namespace GeoReVi
         #endregion
 
         #region Specific queries
+
+        /// <summary>
+        /// Makes a backup of the local database
+        /// </summary>
+        /// <returns></returns>
+        public async Task BackupLocalDatabase()
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "db (*.db)|*.db";
+            saveFileDialog1.RestoreDirectory = true;
+
+            saveFileDialog1.ShowDialog();
+
+            if (saveFileDialog1.FileName != "")
+            {
+                await Task.Delay(0);
+                File.Copy(dbLiteFile, saveFileDialog1.FileName);
+            }
+        }
 
         /// <summary>
         /// Returns a set of laboratory measurements 
@@ -717,21 +738,31 @@ namespace GeoReVi
                         )).Where(x => x.Item1 != 0).ToList();
                         }
 
-                        DataTable dat = (DataTable)CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(values);
-                        dat.Columns[0].ColumnName = "Value";
-                        dat.Columns[1].ColumnName = "X";
-                        dat.Columns[2].ColumnName = "Y";
-                        dat.Columns[3].ColumnName = "Z";
-                        dat.Columns[4].ColumnName = "Date";
-                        dat.Columns[5].ColumnName = "Name";
+                        ObservableCollection<LocationTimeValue> vertices = new ObservableCollection<LocationTimeValue>(
+                            values.Select(x => new LocationTimeValue()
+                            {
+                                Value = new List<double>() { x.Item1 },
+                                X = x.Item2,
+                                Y = x.Item3,
+                                Z = x.Item4,
+                                Date = x.Item5,
+                                Name = x.Item6
+                            }));
 
-                        MeasPoints.Add(new Mesh() { Name = group, Data = (DataTable)CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(values) });
+                        MeasPoints.Add(new Mesh() { Name = group, Vertices = vertices, Dimensionality = Dimensionality.ThreeD });
                         allValues.Add(values);
                     }
                     catch
                     {
                         continue;
                     }
+
+                    //Naming the loaded property
+                    MeasPoints.ForEach(x =>
+                    {
+                        x.GetProperties();
+                        x.Properties[0] = new KeyValuePair<int, string>(x.Properties[0].Key, laboratoryMeasurement.measParameter);
+                    });
                 }
 
 
@@ -745,180 +776,20 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// Returns a set of laboratory measurements 
+        /// Returns a set of field measurements
         /// </summary>
-        /// <param name="samples"></param>
-        /// <param name="rockSample"></param>
-        /// <param name="laboratoryMeasurement"></param>
+        /// <param name="fieldMeasurements"></param>
+        /// <param name="selectedFieldMeasurement"></param>
+        /// <param name="oois"></param>
         /// <param name="groupClause"></param>
-        /// <param name="additionalParameter"></param>
+        /// <param name="property"></param>
         /// <param name="all"></param>
+        /// <param name="global"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="filterProperty"></param>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        public List<Mesh> GetLaboratoryPetrophysics(IEnumerable<tblRockSample> samples, tblRockSample rockSample, string groupClause = "", bool all = false)
-        {
-            #region Variable declaration
-
-            List<Mesh> Petrophysics = new List<Mesh>();
-
-            if (all)
-                samples = new List<tblRockSample>(samples.ToList());
-            else
-                samples = new List<tblRockSample>(samples.Where(samp => samp.sampooiName == rockSample.sampooiName));
-
-            List<string> c = new List<string>();
-
-            IEnumerable<IGrouping<string, tblRockSample>> groups = new List<IGrouping<string, tblRockSample>>();
-
-            var z = System.Linq.Expressions.Expression.Parameter(typeof(tblRockSample), "z");
-
-            #endregion
-
-            try
-            {
-                switch (groupClause)
-                {
-                    case "Object of investigation":
-                        groups = from x in samples
-                                 group x by x.sampooiName into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Petrography":
-                        groups = from x in samples
-                                 group x by x.sampPetrographicTerm into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Lithostratigraphy":
-                        groups = from x in samples
-                                 group x by x.sampLithostratigraphyName into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Chronostratigraphy":
-                        groups = from x in samples
-                                 group x by x.sampChronStratName into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Facies":
-                        groups = from x in samples
-                                 group x by x.sampFaciesFk into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Architectural element":
-                        groups = from x in samples
-                                 group x by x.sampArchitecturalElement into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Depositional environment":
-                        groups = from x in samples
-                                 group x by x.sampDepositionalEnvironment into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Sample type":
-                        groups = from x in samples
-                                 group x by x.sampType into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    default:
-                        break;
-
-                }
-
-                string[] groupString = new string[] { };
-
-                if (groups.Count() > 0)
-                    groupString = groups.Select(x => x.Key).ToArray();
-
-                if (groupString.Count() < 1)
-                    groupString = new string[] { "All" };
-
-                foreach (var group in groupString)
-                {
-                    try
-                    {
-                        switch (groupClause)
-                        {
-                            case "Object of investigation":
-                                c = samples.Where(samp => samp.sampooiName == group)
-                                                       .Select(samp => samp.sampLabel)
-                                                       .ToList();
-                                break;
-                            case "Petrography":
-                                c = samples.Where(samp => samp.sampPetrographicTerm == group)
-                                                       .Select(samp => samp.sampLabel)
-                                                       .ToList();
-                                break;
-                            case "Lithostratigraphy":
-                                c = samples.Where(samp => samp.sampLithostratigraphyName == group)
-                                                       .Select(samp => samp.sampLabel)
-                                                       .ToList();
-                                break;
-                            case "Chronostratigraphy":
-                                c = samples.Where(samp => samp.sampChronStratName == group)
-                                                       .Select(samp => samp.sampLabel)
-                                                       .ToList();
-                                break;
-                            case "Facies":
-                                c = samples.Where(samp => samp.sampFaciesFk == group)
-                                                       .Select(samp => samp.sampLabel)
-                                                       .ToList();
-                                break;
-                            case "Architectural element":
-                                c = samples.Where(samp => samp.sampArchitecturalElement == group)
-                                                       .Select(samp => samp.sampLabel)
-                                                       .ToList();
-                                break;
-                            case "Depositional environment":
-                                c = samples.Where(samp => samp.sampDepositionalEnvironment == group)
-                                                       .Select(samp => samp.sampLabel)
-                                                       .ToList();
-                                break;
-                            case "Sample type":
-                                c = samples.Where(samp => samp.sampType == group)
-                                               .Select(samp => samp.sampLabel)
-                                               .ToList();
-                                break;
-                            default:
-                                c = samples.Select(samp => samp.sampLabel)
-                                           .ToList();
-                                break;
-
-                        }
-
-                        List<v_PetrophysicsRockSamples> pet = new List<v_PetrophysicsRockSamples>();
-
-                        if (!(bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode)
-                            pet = new ApirsRepository<v_PetrophysicsRockSamples>()
-                                           .GetModelByExpression(pets => c.Contains(pets.labmeSampleName)).ToList();
-                        else
-                            pet = new ApirsRepository<v_PetrophysicsRockSamples>().GetPetrophysicsFromLocalDB(c).ToList();
-
-                        DataTable dat = CollectionHelper.ConvertTo<v_PetrophysicsRockSamples>(pet);
-
-                        CollectionHelper.RemoveNanRowsAndColumns(dat);
-
-                        Petrophysics.Add(new Mesh() { Name = group, Data = dat });
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-            }
-            catch
-            {
-                return null;
-            }
-
-            return Petrophysics;
-        }
-
         public List<Mesh> GetFieldMeasurementPoints(IEnumerable<tblMeasurement> fieldMeasurements,
             tblMeasurement selectedFieldMeasurement,
             IEnumerable<tblObjectOfInvestigation> oois,
@@ -1188,7 +1059,18 @@ namespace GeoReVi
                             fieldMeasurements.Where(labme => labme.measIdPk == t.sgrIdPk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();
 
-                        MeasPoints.Add(new Mesh() { Name = group, Data = CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(values) });
+                        ObservableCollection<LocationTimeValue> vertices = new ObservableCollection<LocationTimeValue>(
+                                                                                    values.Select(x => new LocationTimeValue()
+                                                                                    {
+                                                                                        Value = new List<double>() { x.Item1 },
+                                                                                        X = x.Item2,
+                                                                                        Y = x.Item3,
+                                                                                        Z = x.Item4,
+                                                                                        Date = x.Item5,
+                                                                                        Name = x.Item6
+                                                                                    }));
+
+                        MeasPoints.Add(new Mesh() { Name = group, Vertices = vertices });
                         allValues.Add(values);
 
                     }
@@ -1198,205 +1080,20 @@ namespace GeoReVi
                     }
                 }
 
+                //Naming the loaded property
+                MeasPoints.ForEach(x =>
+                {
+                    x.GetProperties();
+                    x.Properties[0] = new KeyValuePair<int, string>(x.Properties[0].Key, selectedFieldMeasurement.measParameter);
+                });
+
             }
             catch
             {
-                return null;
+                return new List<Mesh>();
             }
 
             return MeasPoints;
-        }
-
-        /// <summary>
-        /// Getting a list of field measurements
-        /// </summary>
-        /// <param name="fieldMeasurements"></param>
-        /// <param name="selectedFieldMeasurement"></param>
-        /// <param name="groupClause"></param>
-        /// <param name="all"></param>
-        /// <returns></returns>
-        public List<Mesh> GetFieldPetrophysics(IEnumerable<tblMeasurement> fieldMeasurements, tblMeasurement selectedFieldMeasurement, string groupClause, bool all = false)
-        {
-            #region Variable declaration
-
-            List<Mesh> Petrophysics = new List<Mesh>();
-
-            fieldMeasurements = new List<tblMeasurement>(fieldMeasurements.ToList());
-
-            List<tblMeasurement> c = new List<tblMeasurement>();
-
-            IEnumerable<IGrouping<string, tblMeasurement>> groups = new List<IGrouping<string, tblMeasurement>>();
-
-            var z = System.Linq.Expressions.Expression.Parameter(typeof(tblMeasurement), "z");
-
-            #endregion
-
-            try
-            {
-                switch (groupClause)
-                {
-                    case "Object of investigation":
-                        groups = from x in fieldMeasurements
-                                 group x by x.measObjectOfInvestigationIdFk into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-
-                    case "Lithostratigraphy":
-                        groups = from x in fieldMeasurements
-                                 group x by x.measLithostratigraphy into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Chronostratigraphy":
-                        groups = from x in fieldMeasurements
-                                 group x by x.measChronostratigraphy into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Facies":
-                        groups = from x in fieldMeasurements
-                                 group x by x.measFacies into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Architectural element":
-                        groups = from x in fieldMeasurements
-                                 group x by x.measArchitecturalElement into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    case "Measuring device":
-                        groups = from x in fieldMeasurements
-                                 group x by x.measDevice into newGroup
-                                 orderby newGroup.Key
-                                 select newGroup;
-                        break;
-                    default:
-                        break;
-
-                }
-
-                string[] groupString = new string[] { };
-
-                if (groups.Count() > 0)
-                    groupString = groups.Select(x => x.Key).ToArray();
-
-                if (groupString.Count() < 1)
-                    groupString = new string[] { "All" };
-
-                foreach (var group in groupString)
-                {
-                    try
-                    {
-                        switch (groupClause)
-                        {
-                            case "Object of investigation":
-                                c = fieldMeasurements.Where(samp => samp.measObjectOfInvestigationIdFk == group)
-                                                       .ToList();
-                                break;
-                            case "Lithostratigraphy":
-                                c = fieldMeasurements.Where(samp => samp.measLithostratigraphy == group)
-                                                       .ToList();
-                                break;
-                            case "Chronostratigraphy":
-                                c = fieldMeasurements.Where(samp => samp.measChronostratigraphy == group)
-                                                       .ToList();
-                                break;
-                            case "Facies":
-                                c = fieldMeasurements.Where(samp => samp.measFacies == group)
-                                                       .ToList();
-                                break;
-                            case "Architectural element":
-                                c = fieldMeasurements.Where(samp => samp.measArchitecturalElement == group)
-                                                       .ToList();
-                                break;
-                            case "Measuring device":
-                                break;
-                            default:
-                                c = fieldMeasurements.ToList();
-                                break;
-
-                        }
-
-
-                        List<double> c_localx = c.Select(x => Convert.ToDouble(x.measLocalCoordinateX)).Distinct().ToList();
-                        List<double> c_localy = c.Select(x => Convert.ToDouble(x.measLocalCoordinateY)).Distinct().ToList();
-                        List<double> c_localz = c.Select(x => Convert.ToDouble(x.measLocalCoordinateZ)).Distinct().ToList();
-                        List<int> c_project = c.Select(x => Convert.ToInt32(x.measprjIdFk)).Distinct().ToList();
-                        string ooi = c.First().measObjectOfInvestigationIdFk.ToString();
-
-                        List<v_PetrophysicsFieldMeasurements> pet = new List<v_PetrophysicsFieldMeasurements>();
-
-                        if (!(bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode)
-                            pet = new ApirsRepository<v_PetrophysicsFieldMeasurements>()
-                                        .GetModelByExpression(pets => c_localx.Contains((double)pets.Local_x)
-                                                                      && c_localy.Contains((double)pets.Local_y)
-                                                                      && c_localz.Contains((double)pets.Local_z)
-                                                                      && c_project.Contains((int)pets.Project_ID)
-                                                                      && pets.Object_of_investigation == ooi).ToList();
-
-                        DataTable dat = CollectionHelper.ConvertTo<v_PetrophysicsFieldMeasurements>(pet);
-
-                        Petrophysics.Add(new Mesh() { Name = group, Data = dat });
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-
-            }
-            catch
-            {
-                return null;
-            }
-
-            return Petrophysics;
-        }
-
-        /// <summary>
-        /// A local query for petrophysical measurements
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public IEnumerable<v_PetrophysicsRockSamples> GetPetrophysicsFromLocalDB(IEnumerable<string> c)
-        {
-            List<tblMeasurement> labs = _apirsLocalLiteDatabase.GetCollection<tblMeasurement>().Find(x => c.Contains(x.measRockSampleIdFk)).ToList();
-
-            return (from rs in _apirsLocalLiteDatabase.GetCollection<tblRockSample>(typeof(tblRockSample).Name).Find(x => c.Contains(x.sampLabel))
-                    select new v_PetrophysicsRockSamples()
-                    {
-                        Local_x = Convert.ToDouble(rs.sampLocalXCoordinates),
-                        Local_y = Convert.ToDouble(rs.sampLocalYCoordinates),
-                        Local_z = Convert.ToDouble(rs.sampLocalZCoordinates),
-                        labmeSampleName = rs.sampLabel,
-                        Sample_type = rs.sampType,
-                        Petrography = rs.sampPetrographicTerm,
-                        Chronostratigraphy = rs.sampChronStratName,
-                        Lithofacies = rs.sampFaciesFk,
-                        Architectural_element = rs.sampArchitecturalElement,
-                        Depositional_environment = rs.sampDepositionalEnvironment,
-                        Lithostratigraphy = rs.sampLithostratigraphyName,
-                        Latitude = rs.sampLatitude,
-                        Longitude = rs.sampLongitude,
-                        Object_of_investigation = rs.sampooiName,
-                        Project_ID = rs.sampprjIdFk,
-                        Apparent_permeability = _apirsLocalLiteDatabase.GetCollection<tblApparentPermeability>(typeof(tblApparentPermeability).Name).Find(x => labs.Where(y => y.measParameter == "Apparent permeability" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.apermIdFk)).Select(x => x.apermValueM2).ToList().DefaultIfEmpty().Average(),
-                        Intrinsic_permeability = _apirsLocalLiteDatabase.GetCollection<tblIntrinsicPermeability>(typeof(tblIntrinsicPermeability).Name).Find(x => labs.Where(y => y.measParameter == "Intrinsic permeability" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.inpeIdFk)).Select(x => x.inpeValuem2).ToList().DefaultIfEmpty().Average(),
-                        Grain_density = _apirsLocalLiteDatabase.GetCollection<tblGrainDensity>(typeof(tblGrainDensity).Name).Find(x => labs.Where(y => y.measParameter == "Grain density" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.gdIdFk)).Select(x => x.gdMeanDensity).ToList().DefaultIfEmpty().Average(),
-                        Bulk_density = _apirsLocalLiteDatabase.GetCollection<tblBulkDensity>(typeof(tblBulkDensity).Name).Find(x => labs.Where(y => y.measParameter == "Bulk density" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.bdIdFk)).Select(x => x.bdValue).ToList().DefaultIfEmpty().Average(),
-                        Porosity = _apirsLocalLiteDatabase.GetCollection<tblEffectivePorosity>(typeof(tblEffectivePorosity).Name).Find(x => labs.Where(y => y.measParameter == "Porosity" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.porIdFk)).Select(x => x.porValuePerc).ToList().DefaultIfEmpty().Average(),
-                        Thermal_conductivity = _apirsLocalLiteDatabase.GetCollection<tblThermalConductivity>(typeof(tblThermalConductivity).Name).Find(x => labs.Where(y => y.measParameter == "Thermal conductivity" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.tcIdFk)).Select(x => x.tcAvValue).ToList().DefaultIfEmpty().Average(),
-                        Thermal_diffusivity = _apirsLocalLiteDatabase.GetCollection<tblThermalDiffusivity>(typeof(tblThermalDiffusivity).Name).Find(x => labs.Where(y => y.measParameter == "Thermal diffusivity" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.tdIdFk)).Select(x => x.tdAvValue).ToList().DefaultIfEmpty().Average(),
-                        SiO2 = _apirsLocalLiteDatabase.GetCollection<tblXRayFluorescenceSpectroscopy>(typeof(tblXRayFluorescenceSpectroscopy).Name).Find(x => labs.Where(y => y.measParameter == "X-Ray Fluorescence" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.xrfIdPk)).Select(x => x.xrfSiO2).ToList().DefaultIfEmpty().Average(),
-                        Al2O3 = _apirsLocalLiteDatabase.GetCollection<tblXRayFluorescenceSpectroscopy>(typeof(tblXRayFluorescenceSpectroscopy).Name).Find(x => labs.Where(y => y.measParameter == "X-Ray Fluorescence" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.xrfIdPk)).Select(x => x.xrfAl2O3).ToList().DefaultIfEmpty().Average(),
-                        K2O = _apirsLocalLiteDatabase.GetCollection<tblXRayFluorescenceSpectroscopy>(typeof(tblXRayFluorescenceSpectroscopy).Name).Find(x => labs.Where(y => y.measParameter == "X-Ray Fluorescence" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.xrfIdPk)).Select(x => x.xrfK2O).ToList().DefaultIfEmpty().Average(),
-                        CaO = _apirsLocalLiteDatabase.GetCollection<tblXRayFluorescenceSpectroscopy>(typeof(tblXRayFluorescenceSpectroscopy).Name).Find(x => labs.Where(y => y.measParameter == "X-Ray Fluorescence" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.xrfIdPk)).Select(x => x.xrfCaO).ToList().DefaultIfEmpty().Average(),
-                        MnO = _apirsLocalLiteDatabase.GetCollection<tblXRayFluorescenceSpectroscopy>(typeof(tblXRayFluorescenceSpectroscopy).Name).Find(x => labs.Where(y => y.measParameter == "X-Ray Fluorescence" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.xrfIdPk)).Select(x => x.xrfMnO).ToList().DefaultIfEmpty().Average(),
-                        Fe2O3 = _apirsLocalLiteDatabase.GetCollection<tblXRayFluorescenceSpectroscopy>(typeof(tblXRayFluorescenceSpectroscopy).Name).Find(x => labs.Where(y => y.measParameter == "X-Ray Fluorescence" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.xrfIdPk)).Select(x => x.xrfFe2O3).ToList().DefaultIfEmpty().Average(),
-                        O16 = _apirsLocalLiteDatabase.GetCollection<tblIsotopes>(typeof(tblIsotopes).Name).Find(x => labs.Where(y => y.measParameter == "Isotope" && y.measRockSampleIdFk == rs.sampLabel).Select(z => z.measIdPk).Contains(x.islabmeIdFk)).Where(x => x.isIsotope == "16O").Select(x => x.isValue).ToList().DefaultIfEmpty().Average()
-                    });
         }
 
         //Getting all lithostratigraphic units in a union query
@@ -1655,7 +1352,7 @@ namespace GeoReVi
         //Returning all projects, the user participates at
         public IEnumerable<tblProject> GetUserProjects(int id)
         {
-            if ((bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode || id==0)
+            if ((bool)((ShellViewModel)IoC.Get<IShell>()).LocalMode || id == 0)
                 return _apirsLocalLiteDatabase.GetCollection<tblProject>(typeof(tblProject).Name).Find(x => x.prjCreatorIdFk == id);
             else
                 return from p in _apirsDatabase.tblProjects
@@ -2341,7 +2038,7 @@ System.Reflection.Assembly.GetExecutingAssembly().Location);
 
                 DataTable table = new DataTable() { TableName = "MyTableName" };
 
-                table = FileHelper.CsvToDataTable(fi.FullName,true);
+                table = FileHelper.CsvToDataTable(fi.FullName, true);
 
                 for (int i = 0; i < table.Rows.Count; i++)
                 {

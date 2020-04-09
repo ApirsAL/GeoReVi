@@ -22,6 +22,7 @@ namespace GeoReVi
                 NotifyOfPropertyChange(() => ZLabel);
             }
         }
+
         #region Constructor
 
         public TernaryChartObject(TernaryChartObject _tco)
@@ -57,7 +58,6 @@ namespace GeoReVi
             IsXLog = _tco.IsXLog;
             IsXGrid = _tco.IsXGrid;
 
-            Direction = _tco.Direction;
             Ds = _tco.Ds;
             FillColor = _tco.FillColor;
 
@@ -65,14 +65,13 @@ namespace GeoReVi
             Maxy = _tco.Maxy;
             Minx = _tco.Minx;
             Miny = _tco.Miny;
-            SpatialPointSeries = _tco.SpatialPointSeries;
             ZLabel = _tco.ZLabel;
 
             BarType = _tco.BarType;
 
             DataCollection = _tco.DataCollection;
         }
-        
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -91,7 +90,6 @@ namespace GeoReVi
             Ymax = 1;
             Ymin = 0;
             Ds.Clear();
-            SpatialPointSeries.Clear();
         }
 
         /// <summary>
@@ -101,7 +99,7 @@ namespace GeoReVi
         {
             LineSeries i = new LineSeries(DataCollection);
 
-            var a = Ds.Count -1 ;
+            var a = Ds.Count - 1;
 
             if (a >= 1)
                 i.Symbols.FillColor = IntToColorConverter.Convert(IntToColorConverter.ConvertBack(Ds[a].Symbols.FillColor) + 1);
@@ -128,27 +126,9 @@ namespace GeoReVi
 
             Initialize();
 
-            foreach (var d in DataSet)
-            {
-                ObservableCollection<LocationTimeValue> tup = new ObservableCollection<LocationTimeValue>();
-
-                tup.AddRange(new List<LocationTimeValue>(d.Data.AsEnumerable()
-                    .Select(x => new LocationTimeValue()
-                    {
-                       X = (x.Field<double>(1) == -9999 || x.Field<double>(1) == -999999) ? 0 : x.Field<double>(1),
-                       Y = (x.Field<double>(2) == -9999 || x.Field<double>(2) == -999999) ? 0 : x.Field<double>(2),
-                       Z = (x.Field<double>(3) == -9999 || x.Field<double>(3) == -999999) ? 0 : x.Field<double>(3)
-                    }).Where(x=> x.X != 0 && x.Y != 0 && x.Z != 0)));
-
-                AddDataSeries();
-
-                Ds[Ds.Count - 1].SeriesName = d.Name;
-                SpatialPointSeries.Add(tup);
-            }
-
-            XLabel.Text = DataSet[0].Data.Columns[1].ColumnName;
-            YLabel.Text = DataSet[0].Data.Columns[2].ColumnName;
-            ZLabel.Text = DataSet[0].Data.Columns[3].ColumnName;
+            XLabel.Text = "X";
+            YLabel.Text = "Y";
+            ZLabel.Text = "Z";
 
             CreateChart();
         }
@@ -164,6 +144,7 @@ namespace GeoReVi
                 if (Updating)
                     return;
 
+                Ds.Clear();
                 DataCollection.Clear();
                 int i = 0;
 
@@ -174,10 +155,96 @@ namespace GeoReVi
                 }
 
                 //Adding values from the 3D chart collection
-                foreach (ObservableCollection<LocationTimeValue> ser in SpatialPointSeries)
+                foreach (Mesh mesh in DataSet)
                 {
-                    Ds[i].LinePoints.Clear();
-                    var a = TernaryHelper.ConvertToTwoDimensionalCoordinates(ser.ToList());
+                    List<LocationTimeValue> locs = new List<LocationTimeValue>();
+                    AddDataSeries();
+
+                    for (int j = 0; j < mesh.Vertices.Count(); j++)
+                    {
+                        await Task.Delay(0);
+
+                        double x = 0;
+                        double y = 0;
+                        double z = 0;
+
+                        //Assigning the property for the x axis
+                        switch (XProperty)
+                        {
+                            case SelectedPropertyEnum.XAxis:
+                                x = (double)mesh.Vertices[j].X;
+                                break;
+                            case SelectedPropertyEnum.YAxis:
+                                x = (double)mesh.Vertices[j].Y;
+                                break;
+                            case SelectedPropertyEnum.ZAxis:
+                                x = (double)mesh.Vertices[j].Z;
+                                break;
+                            default:
+                                try
+                                {
+                                    x = (double)mesh.Vertices[j].Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), XProperty))];
+                                }
+                                catch
+                                {
+                                    throw new Exception("Property not available.");
+                                }
+                                break;
+                        }
+
+                        //Assigning the property for the y axis
+                        switch (YProperty)
+                        {
+                            case SelectedPropertyEnum.XAxis:
+                                y = (double)mesh.Vertices[j].X;
+                                break;
+                            case SelectedPropertyEnum.YAxis:
+                                y = (double)mesh.Vertices[j].Y;
+                                break;
+                            case SelectedPropertyEnum.ZAxis:
+                                y = (double)mesh.Vertices[j].Z;
+                                break;
+                            default:
+                                try
+                                {
+                                    y = (double)mesh.Vertices[j].Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), YProperty))];
+                                }
+                                catch
+                                {
+                                    throw new Exception("Property not available.");
+                                }
+                                break;
+                        }
+
+                        //Assigning the property for the colormap
+                        switch (ZProperty)
+                        {
+                            case SelectedPropertyEnum.XAxis:
+                                z = (double)mesh.Vertices[j].X;
+                                break;
+                            case SelectedPropertyEnum.YAxis:
+                                z = (double)mesh.Vertices[j].Y;
+                                break;
+                            case SelectedPropertyEnum.ZAxis:
+                                z = (double)mesh.Vertices[j].Z;
+                                break;
+                            default:
+                                try
+                                {
+                                    z = (double)mesh.Vertices[j].Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), ZProperty))];
+                                }
+                                catch
+                                {
+                                    throw new Exception("Property not available.");
+                                }
+                                break;
+                        }
+
+                        LocationTimeValue b = new LocationTimeValue(x, y, z, mesh.Vertices[j].Name);
+                        locs.Add(b);
+                    }
+
+                    var a = TernaryHelper.ConvertToTwoDimensionalCoordinates(locs);
 
                     foreach (var loc in a)
                     {
@@ -200,6 +267,8 @@ namespace GeoReVi
                             continue;
                         }
                     }
+
+                    i++;
                 }
 
                 AddGridlines();
@@ -285,7 +354,7 @@ namespace GeoReVi
             try
             {
                 //Adding x label
-                XLabel.X = ChartWidth  - MeasureString(XLabel.Text).Width;
+                XLabel.X = ChartWidth - MeasureString(XLabel.Text).Width;
                 XLabel.Y = ChartHeight + 3.5 * MeasureString(XLabel.Text).Height;
 
                 //Adding y label
@@ -293,7 +362,7 @@ namespace GeoReVi
                 YLabel.Y = ChartHeight + 3.5 * MeasureString(YLabel.Text).Height;
 
                 //Adding z label
-                ZLabel.X = ChartWidth/2 - 0.5 * MeasureString(ZLabel.Text).Width;
+                ZLabel.X = ChartWidth / 2 - 0.5 * MeasureString(ZLabel.Text).Width;
                 ZLabel.Y = 0 - 3.5 * MeasureString(XLabel.Text).Height;
             }
             catch

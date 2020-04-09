@@ -648,8 +648,6 @@ namespace GeoReVi
 
                             DiscretizedLocationValues.Vertices.AddRange(meshToAdd.Vertices);
 
-                            DiscretizedLocationValues.Data.Merge(meshToAdd.Data);
-
                         }
                         break;
                     case SpatialOperationType.Addition:
@@ -672,18 +670,6 @@ namespace GeoReVi
                         }
 
                         DiscretizedLocationValues.Vertices.AddRange(operationMesh.Vertices);
-
-                        DiscretizedLocationValues.Data =
-                CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                    new List<Tuple<double, double, double, double, DateTime, string>>(DiscretizedLocationValues.Vertices.Select(a =>
-                       new Tuple<double, double, double, double, DateTime, string>(
-                           a.Value[0],
-                           a.X,
-                           a.Y,
-                           a.Z,
-                           a.Date,
-                           a.Name
-                           )).ToList()));
 
                         break;
                     case SpatialOperationType.ArithmeticMean:
@@ -724,18 +710,6 @@ namespace GeoReVi
 
 
                         DiscretizedLocationValues.Vertices.AddRange(meanMesh.Vertices);
-
-                        DiscretizedLocationValues.Data =
-                CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                    new List<Tuple<double, double, double, double, DateTime, string>>(DiscretizedLocationValues.Vertices.Select(a =>
-                       new Tuple<double, double, double, double, DateTime, string>(
-                           a.Value[0],
-                           a.X,
-                           a.Y,
-                           a.Z,
-                           a.Date,
-                           a.Name
-                           )).ToList()));
 
                         break;
                 }

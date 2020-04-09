@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-             xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:rh="http://schemas.rollinghours.com/wpf"
              xmlns:local="clr-namespace:GeoReVi"
              mc:Ignorable="d" 
@@ -12,165 +11,21 @@
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:cal="http://www.caliburnproject.org"
              d:DesignHeight="450" d:DesignWidth="400">
-    <UserControl.Resources>
-        <ContextMenu x:Key="ColumnChooserMenu" 
-                     x:Shared="False"
-                     DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
-            <MenuItem Header="Remove column">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Click">
-                        <cal:ActionMessage MethodName="RemoveColumn">
-                        </cal:ActionMessage>
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </MenuItem>
-                
-        </ContextMenu>
-        <Style x:Key="ColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
-            <Setter Property="ContextMenu" Value="{StaticResource ColumnChooserMenu}" />
-        </Style>
-    </UserControl.Resources>
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
             <Grid  x:Name="DataGrid">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <WrapPanel Grid.ColumnSpan="2"
-                           Grid.Row="0">
-                    <DockPanel Margin="10,0">
-                        <fa:ImageAwesome Icon="Braille"
-                                         Width="20"
-                                         Height="20"
-                                         ToolTip="Select from all objects in the list"/>
-                        <CheckBox IsChecked="{Binding Path=All, Mode=TwoWay}"
-                                                                          HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"/>
-                    </DockPanel>
-                    <DockPanel Margin="10,0">
-                        <fa:ImageAwesome Icon="Globe"
-                                         Width="20"
-                                         Height="20"
-                                         ToolTip="Use global reference system"/>
-                        <CheckBox IsChecked="{Binding Path=Global, Mode=TwoWay}"
-                                                                          HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"/>
-                    </DockPanel>
-                    <Rectangle Height="25"
-                                   Width="1"
-                                   Margin="5,0"
-                                   Fill="Black"/>
-                    <Rectangle Height="25"
-                                   Width="1"
-                                   Margin="5,0"
-                                   Fill="Black"/>
-                    <DockPanel Margin="10,0">
-                        <fa:ImageAwesome Icon="Calendar"
-                                         Width="20"
-                                         Height="20"
-                                         ToolTip="Filter by date range"/>
-                        <CheckBox IsChecked="{Binding Path=FilterByDate, Mode=TwoWay}"
-                                                                          HorizontalAlignment="Right"
-                                  VerticalAlignment="Center"/>
-                        <DockPanel Visibility="{Binding Path=FilterByDate, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="From" VerticalAlignment="Center"/>
-                            <DatePicker HorizontalAlignment="Right" 
-                                                    Width="129"
-                                        Height="25"
-                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
-                            <DatePicker.SelectedDate>
-                                <Binding Path="From"
-                                                                 Mode="TwoWay"
-                                                                 NotifyOnValidationError="True"
-                                                                 UpdateSourceTrigger="PropertyChanged"
-                                                                 ValidatesOnExceptions="True">
-                                </Binding>
-                            </DatePicker.SelectedDate>
-                            </DatePicker>
-                            <TextBox Text="{Binding Path=To, StringFormat='{}{0:hh\\:mm\\:ss tt}'}"/>
-                            <TextBlock Text="To" VerticalAlignment="Center"/>
-                            <DatePicker HorizontalAlignment="Right" 
-                                                    Width="129"
-                                        Height="25"
-                                                    Validation.ErrorTemplate="{StaticResource errorTemplateSilverlightStyle}">
-                                <DatePicker.SelectedDate>
-                                    <Binding Path="To"
-                                                                 Mode="TwoWay"
-                                                                 NotifyOnValidationError="True"
-                                                                 UpdateSourceTrigger="PropertyChanged"
-                                                                 ValidatesOnExceptions="True">
-                                    </Binding>
-                                </DatePicker.SelectedDate>
-                            </DatePicker>
-                            <TextBox Text="{Binding Path=From, StringFormat='{}{1:hh\\:mm\\:ss tt}'}"/>
-                        </DockPanel>
-                    </DockPanel>
-                    <Rectangle Height="25"
-                                   Width="1"
-                                   Margin="5,0"
-                                   Fill="Black"/>
-                    <DockPanel Margin="10,0">
-                        <fa:ImageAwesome Icon="ObjectGroup"
-                                         Width="20"
-                                         Height="20"
-                                         ToolTip="Group by"/>
-                        <ComboBox  SelectedIndex="0"
-                                                                                   MinWidth="100"
-                                                                            Text="{Binding Path=GroupBy,
-                                                                                    Mode=TwoWay}">
-                            <ComboBoxItem Content="Nothing"/>
-                            <ComboBoxItem Content="Sample type"/>
-                            <ComboBoxItem Content="Object of investigation"/>
-                            <ComboBoxItem Content="Lithostratigraphy"/>
-                            <ComboBoxItem Content="Chronostratigraphy"/>
-                            <ComboBoxItem Content="Facies"/>
-                            <ComboBoxItem Content="Architectural element"/>
-                            <ComboBoxItem Content="Depositional environment"/>
-                            <ComboBoxItem Content="Petrography"/>
-                        </ComboBox>
-                    </DockPanel>
-                    <Rectangle Height="25"
-                                   Width="1"
-                                   Margin="5,0"
-                                   Fill="Black"/>
-                    <DockPanel>
-                        <local:DropDownButton HorizontalAlignment="Left"
-                                              VerticalAlignment="Center"
-                                              Style="{StaticResource BaseStyle}"
-                                              Background="Transparent"
-                                              BorderThickness="0"
-                                              Margin="5,0">
-                            <local:DropDownButton.Menu>
-                                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
-                                    <MenuItem Header="Remove mesh"
-                                              cal:Message.Attach="[Event Click] = [Action RemoveDataSet]"/>
-                                    <MenuItem Header="Copy mesh"
-                                              cal:Message.Attach="[Event Click] = [Action CopyMesh]"/>
-                                    <MenuItem Header="Import mesh"
-                                              cal:Message.Attach="[Event Click] = [Action ImportMesh]"/>
-                                    <MenuItem Header="Export mesh"
-                                              cal:Message.Attach="[Event Click] = [Action ExportMesh]"/>
-                                    <Separator/>
-                                </ContextMenu>
-                            </local:DropDownButton.Menu>
-                            <TextBlock Style="{StaticResource BaseTextBlockStyle}"
-                                              Text="Mesh action"
-                                              Foreground="{StaticResource WordBlueBrush}"
-                                              FontSize="{StaticResource FontSizeVerySmall}"/>
-                        </local:DropDownButton>
-                       
-                    </DockPanel>
-                </WrapPanel>
                 <TabControl Grid.Row="2"
                             Grid.Column="1">
                     <TabItem Header="Data sets">
-                        <TabControl ItemsSource="{Binding MeasPoints}" 
-
+                        <TabControl ItemsSource="{Binding MeasPoints}"
                             SelectedIndex="0"
                             SelectedItem="{Binding Path=SelectedMeasPoint, Mode=TwoWay}">
                             <TabControl.ItemContainerStyle>
@@ -192,24 +47,29 @@
                             <TabControl.ContentTemplate>
                                 <DataTemplate>
                                     <Grid Background="{StaticResource ForegroundLightBrush}">
-                                        <DataGrid ItemsSource="{Binding Data,
-                                                                Mode=OneWay, 
-                                                                NotifyOnSourceUpdated=True, 
-                                                                UpdateSourceTrigger=PropertyChanged}"
-                                              RowHeaderWidth="20"
+                                        <DataGrid ItemsSource="{Binding Vertices,
+                                                                Mode=TwoWay, 
+                                                                NotifyOnSourceUpdated=True}"
+                                                  Grid.Column="0"
+                                                  MinColumnWidth="40"
                                                   AlternatingRowBackground="Gainsboro" 
                                               HorizontalScrollBarVisibility="Auto"
                                               VerticalScrollBarVisibility="Auto"
                                               EnableColumnVirtualization="True"
                                               EnableRowVirtualization="True"
-                                                  AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
-                                                  AutoGenerateColumns="True"
-                                              ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
                                                   AlternationCount="2"
+                                                  AutoGenerateColumns="False"
                                                   SelectionUnit="CellOrRowHeader"
                                               SelectionMode="Extended"
-                                                  ColumnWidth="Auto"
                                               VirtualizingPanel.IsVirtualizing="True">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value[0]}" />
+                                                <DataGridTextColumn Header="X" Binding="{Binding X}" />
+                                                <DataGridTextColumn Header="Y" Binding="{Binding Y}" />
+                                                <DataGridTextColumn Header="Z" Binding="{Binding Z}" />
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" />
+                                            </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>
                                 </DataTemplate>
@@ -241,7 +101,7 @@
                     <TabItem Header="Univariate Tests">
                         <StackPanel>
                             <Button Style="{StaticResource HyperlinkButton}"
-                                            cal:Message.Attach="CreateBasicUnivariateTestssHelper"
+                                            cal:Message.Attach="CreateBasicUnivariateTestsHelper"
                                             FontSize="{StaticResource FontSizeSmall}"
                                             Content="Compute"
                                     HorizontalAlignment="Left"
@@ -257,6 +117,236 @@
                                                       IsExpanded="False">
                         <TabControl TabStripPlacement="Left"
                                                       Width="400">
+                            <TabItem Header="Data transformations"
+                                     Style="{StaticResource LeftSideTabItem}">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                                      HorizontalScrollBarVisibility="Auto"
+                                                                     Margin="2,2"
+                                                                     VerticalAlignment="Top">
+                                    <StackPanel MinWidth="30">
+                                        <local:DropDownButton HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Style="{StaticResource BaseStyle}"
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Margin="5,0">
+                                            <local:DropDownButton.Menu>
+                                                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Self}, Path=PlacementTarget.DataContext}">
+                                                    <MenuItem Header="Remove mesh"
+                                              cal:Message.Attach="[Event Click] = [Action RemoveDataSet]"/>
+                                                    <MenuItem Header="Copy mesh"
+                                              cal:Message.Attach="[Event Click] = [Action CopyMesh]"/>
+                                                    <MenuItem Header="Import mesh"
+                                              cal:Message.Attach="[Event Click] = [Action ImportMesh]"/>
+                                                    <MenuItem Header="Export mesh"
+                                              cal:Message.Attach="[Event Click] = [Action ExportMesh]"/>
+                                                    <Separator/>
+                                                </ContextMenu>
+                                            </local:DropDownButton.Menu>
+                                            <TextBlock Style="{StaticResource BaseTextBlockStyle}"
+                                              Text="Mesh action"
+                                              Foreground="{StaticResource WordBlueBrush}"
+                                              FontSize="{StaticResource FontSizeSmall}"/>
+                                        </local:DropDownButton>
+                                        <Expander ExpandDirection="Down"
+                                              Header="Display"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                            <StackPanel Margin="6">
+                                                <TextBlock Text="Change selected mesh name"
+                                                                    FontWeight="DemiBold">
+                                                </TextBlock>
+                                                <DockPanel>
+                                                    <Button Content="Save"
+                                                                    Margin="5,0"
+                                                                    Style="{StaticResource HyperlinkButton}"
+                                                                    FontSize="{StaticResource FontSizeVerySmall}">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="Click">
+                                                                <cal:ActionMessage MethodName="UpdateHeader" >
+                                                                    <cal:Parameter Value="{Binding ElementName=KeyTextBox, Path=Text}"/>
+                                                                </cal:ActionMessage>
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </Button>
+                                                    <Grid>
+                                                        <TextBox x:Name="KeyTextBox"
+                                                                         Width="250"  
+                                                                         VerticalAlignment="Top"
+                                                                         HorizontalAlignment="Left" 
+                                                                         Margin="5">
+                                                            <i:Interaction.Triggers>
+                                                                <i:EventTrigger EventName="KeyDown">
+                                                                    <cal:ActionMessage MethodName="UpdateHeader">
+                                                                        <cal:Parameter Value="{Binding ElementName=KeyTextBox, Path=Text}"/>
+                                                                        <cal:Parameter Value="$executionContext"/>
+                                                                    </cal:ActionMessage>
+                                                                </i:EventTrigger>
+                                                            </i:Interaction.Triggers>
+                                                        </TextBox>
+                                                        <TextBlock IsHitTestVisible="False" Text="New name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox}" Value="">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </DockPanel>
+                                                <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Get properties"
+                                cal:Message.Attach="GetProperties"
+                                                cal:Action.TargetWithoutContext="{Binding SelectedMeasPoint}"/>
+                                                <TextBlock Text="Properties"
+                                                                    FontWeight="DemiBold">
+
+                                                </TextBlock>
+                                                <ListView ItemsSource="{Binding Path=SelectedMeasPoint.Properties, Mode=OneWay}"
+                                                  SelectedItem="{Binding Path=SelectedMeasPoint.SelectedProperty}">
+                                                    <ListView.View>
+                                                        <GridView>
+                                                            <GridViewColumn Header="Order"
+                                                                    >
+                                                                <GridViewColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBlock Text="{Binding Key}" />
+                                                                    </DataTemplate>
+                                                                </GridViewColumn.CellTemplate>
+                                                            </GridViewColumn>
+                                                            <GridViewColumn Header="Property"
+                                                                    Width="150">
+                                                                <GridViewColumn.CellTemplate>
+                                                                    <DataTemplate>
+                                                                        <TextBlock Text="{Binding Value}" />
+                                                                    </DataTemplate>
+                                                                </GridViewColumn.CellTemplate>
+                                                            </GridViewColumn>
+                                                        </GridView>
+                                                    </ListView.View>
+                                                </ListView>
+                                                <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Bring to top"
+                                cal:Message.Attach="BringUp"/>
+                                                <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Remove"
+                                cal:Message.Attach="RemoveProperty"/>
+                                                <TextBlock Text="Change selected property name"
+                                                                    FontWeight="DemiBold">
+                                                </TextBlock>
+                                                <DockPanel>
+                                                    <Button Content="Save"
+                                                                    Margin="5,0"
+                                                                    Style="{StaticResource HyperlinkButton}"
+                                                                    FontSize="{StaticResource FontSizeVerySmall}">
+                                                        <i:Interaction.Triggers>
+                                                            <i:EventTrigger EventName="Click">
+                                                                <cal:ActionMessage MethodName="UpdateProperty" >
+                                                                    <cal:Parameter Value="{Binding ElementName=KeyPropertyTextBox, Path=Text}"/>
+                                                                </cal:ActionMessage>
+                                                            </i:EventTrigger>
+                                                        </i:Interaction.Triggers>
+                                                    </Button>
+                                                    <Grid>
+                                                        <TextBox x:Name="KeyPropertyTextBox"
+                                                                         Width="250"  
+                                                                         VerticalAlignment="Top"
+                                                                         HorizontalAlignment="Left" 
+                                                                         Margin="5">
+                                                            <i:Interaction.Triggers>
+                                                                <i:EventTrigger EventName="KeyDown">
+                                                                    <cal:ActionMessage MethodName="UpdateProperty">
+                                                                        <cal:Parameter Value="{Binding ElementName=KeyPropertyTextBox, Path=Text}"/>
+                                                                        <cal:Parameter Value="$executionContext"/>
+                                                                    </cal:ActionMessage>
+                                                                </i:EventTrigger>
+                                                            </i:Interaction.Triggers>
+                                                        </TextBox>
+                                                        <TextBlock IsHitTestVisible="False" Text="New name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="{x:Type TextBlock}">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox}" Value="">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </DockPanel>
+                                            </StackPanel>
+                                        </Expander>
+                                        <Separator>
+
+                                        </Separator>
+                                        <Expander ExpandDirection="Down"
+                                              Header="Data transformations"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                            <StackPanel Margin="6">
+                                                <TextBlock Text="Transformation type"
+                                                                       FontWeight="DemiBold"/>
+                                                <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=TransformationType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=TransformationType, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="Transform"
+                                                                HorizontalAlignment="Left"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Compute transformation"/>
+
+                                            </StackPanel>
+                                        </Expander>
+                                        <Expander ExpandDirection="Down"
+                                              Header="Coordinate transformation"
+                                              FontWeight="Bold"
+                                              Template="{StaticResource StretchyExpanderTemp}"
+                                              IsExpanded="False">
+                                            <StackPanel Margin="6">
+                                                <StackPanel>
+                                                    <TextBlock Text="Source EPSG:" 
+                                   Margin="10, 0"
+                                   VerticalAlignment="Center"/>
+                                                    <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDSource, Mode=TwoWay}"
+                                 VerticalAlignment="Center"/>
+                                                    <TextBlock Text="Target EPSG:" 
+                                   Margin="10, 0"
+                                   VerticalAlignment="Center"/>
+                                                    <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDTarget, Mode=TwoWay}"
+                                 VerticalAlignment="Center"/>
+                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Convert"
+                                cal:Message.Attach="ConvertCoordinates"/>
+                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                FontSize="{StaticResource FontSizeVerySmall}"
+                                Content="Convert"
+                                cal:Message.Attach="ShowCoordinateTable"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </Expander>
+                                        <Separator>
+                                        </Separator>
+                                    </StackPanel>
+
+                                </ScrollViewer>
+                            </TabItem>
                             <TabItem Header="Data operations"
                                      Style="{StaticResource LeftSideTabItem}">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" 
@@ -266,93 +356,6 @@
                                     <Border Background="{StaticResource ForegroundLightBrush}">
                                         <Grid>
                                             <StackPanel MinWidth="30">
-                                                <Expander ExpandDirection="Down"
-                                              Header="Display"
-                                              FontWeight="Bold"
-                                              Template="{StaticResource StretchyExpanderTemp}"
-                                              IsExpanded="False">
-                                                    <StackPanel Margin="6">
-                                                        <TextBlock Text="Change name"
-                                                                    FontWeight="DemiBold">
-                                                        </TextBlock>
-                                                        <DockPanel>
-                                                            <Button Content="Save"
-                                                                    Margin="5,0"
-                                                                    Style="{StaticResource HyperlinkButton}"
-                                                                    FontSize="{StaticResource FontSizeVerySmall}">
-                                                                <i:Interaction.Triggers>
-                                                                    <i:EventTrigger EventName="Click">
-                                                                        <cal:ActionMessage MethodName="UpdateHeader" >
-                                                                            <cal:Parameter Value="{Binding ElementName=KeyTextBox, Path=Text}"/>
-                                                                        </cal:ActionMessage>
-                                                                    </i:EventTrigger>
-                                                                </i:Interaction.Triggers>
-                                                            </Button>
-                                                            <Grid>
-                                                                <TextBox x:Name="KeyTextBox"
-                                                                         Width="250"  
-                                                                         VerticalAlignment="Top"
-                                                                         HorizontalAlignment="Left" 
-                                                                         Margin="5">
-                                                                    <i:Interaction.Triggers>
-                                                                        <i:EventTrigger EventName="KeyDown">
-                                                                            <cal:ActionMessage MethodName="UpdateHeader">
-                                                                                <cal:Parameter Value="{Binding ElementName=KeyTextBox, Path=Text}"/>
-                                                                                <cal:Parameter Value="$executionContext"/>
-                                                                            </cal:ActionMessage>
-                                                                        </i:EventTrigger>
-                                                                    </i:Interaction.Triggers>
-                                                                </TextBox>
-                                                                <TextBlock IsHitTestVisible="False" Text="New name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="DarkGray">
-                                                                    <TextBlock.Style>
-                                                                        <Style TargetType="{x:Type TextBlock}">
-                                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                                            <Style.Triggers>
-                                                                                <DataTrigger Binding="{Binding Text, ElementName=SearchTermTextBox}" Value="">
-                                                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                                                </DataTrigger>
-                                                                            </Style.Triggers>
-                                                                        </Style>
-                                                                    </TextBlock.Style>
-                                                                </TextBlock>
-                                                            </Grid>
-                                                        </DockPanel>
-                                                    </StackPanel>
-                                                </Expander>
-                                                <Separator>
-                                                    
-                                                </Separator>
-                                                <Expander ExpandDirection="Down"
-                                              Header="Coordinate transformation"
-                                              FontWeight="Bold"
-                                              Template="{StaticResource StretchyExpanderTemp}"
-                                              IsExpanded="False">
-                                                    <StackPanel Margin="6">
-                                                        <StackPanel>
-                                                            <TextBlock Text="Source EPSG:" 
-                                   Margin="10, 0"
-                                   VerticalAlignment="Center"/>
-                                                            <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDSource, Mode=TwoWay}"
-                                 VerticalAlignment="Center"/>
-                                                            <TextBlock Text="Target EPSG:" 
-                                   Margin="10, 0"
-                                   VerticalAlignment="Center"/>
-                                                            <TextBox Text="{Binding Path=CoordinateTransformationHelper.SRIDTarget, Mode=TwoWay}"
-                                 VerticalAlignment="Center"/>
-                                                            <Button Style="{StaticResource HyperlinkButton}"
-                                FontSize="{StaticResource FontSizeVerySmall}"
-                                Content="Convert"
-                                cal:Message.Attach="ConvertCoordinates"/>
-                                                            <Button Style="{StaticResource HyperlinkButton}"
-                                FontSize="{StaticResource FontSizeVerySmall}"
-                                Content="Convert"
-                                cal:Message.Attach="ShowCoordinateTable"/>
-                                                        </StackPanel>
-                                                    </StackPanel>
-                                                </Expander>
-                                                <Separator>
-                                                    
-                                                </Separator>
                                                 <StackPanel Margin="6">
                                                     <TextBlock Text="Source data sets"
                                                                            FontWeight="DemiBold"/>
@@ -379,6 +382,25 @@
                                                             </DataTemplate>
                                                         </ListView.ItemTemplate>
                                                     </ListView>
+                                                    <TextBlock Text="Merge type"
+                                                                       FontWeight="DemiBold"/>
+                                                    <ComboBox HorizontalAlignment="Left" 
+                                                              VerticalAlignment="Center" 
+                                                                                              MinWidth="100"
+                                                              ItemsSource="{Binding Path=JoinMethod, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
+                                                              SelectedValuePath="Value"
+                                                              DisplayMemberPath="Description"
+                                                              SelectedValue="{Binding Path=JoinMethod, Mode=TwoWay}"
+                                                                              SelectedIndex="0"/>
+                                                    <TextBlock Text="Merge threshold [m]"
+                                                                       FontWeight="DemiBold"/>
+                                                    <TextBox Text="{Binding Path=Threshold, Mode=TwoWay}"/>
+
+                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                            cal:Message.Attach="MergeMeshes"
+                                                                HorizontalAlignment="Left"
+                                                            FontSize="{StaticResource FontSizeVerySmall}"
+                                            Content="Merge selected meshes"/>
                                                 </StackPanel>
                                                 <Expander ExpandDirection="Down"
                                               Header="Spatial operations"
@@ -408,29 +430,6 @@
                                                                 HorizontalAlignment="Left"
                                                             FontSize="{StaticResource FontSizeVerySmall}"
                                             Content="Compute thickness map"/>
-                                                    </StackPanel>
-                                                </Expander>
-                                                <Expander ExpandDirection="Down"
-                                              Header="Data transformations"
-                                              FontWeight="Bold"
-                                              Template="{StaticResource StretchyExpanderTemp}"
-                                              IsExpanded="False">
-                                                    <StackPanel Margin="6">
-                                                        <TextBlock Text="Transformation type"
-                                                                       FontWeight="DemiBold"/>
-                                                        <ComboBox HorizontalAlignment="Left" 
-                                                              VerticalAlignment="Center" 
-                                                                                              MinWidth="100"
-                                                              ItemsSource="{Binding Path=TransformationType, Converter={local:EnumToCollectionConverter}, Mode=OneTime}"
-                                                              SelectedValuePath="Value"
-                                                              DisplayMemberPath="Description"
-                                                              SelectedValue="{Binding Path=TransformationType, Mode=TwoWay}"
-                                                                              SelectedIndex="0"/>
-                                                        <Button Style="{StaticResource HyperlinkButton}"
-                                            cal:Message.Attach="Transform"
-                                                                HorizontalAlignment="Left"
-                                                            FontSize="{StaticResource FontSizeVerySmall}"
-                                            Content="Compute transformation"/>
                                                     </StackPanel>
                                                 </Expander>
                                                 <Expander ExpandDirection="Down"
@@ -567,7 +566,7 @@
                                               Template="{StaticResource StretchyExpanderTemp}"
                                               IsExpanded="False">
                                                     <StackPanel Margin="6">
-                                                       
+
                                                         <TextBlock Text="Interpolation feature"
                                                                            FontWeight="DemiBold"/>
                                                         <ComboBox HorizontalAlignment="Left" 
@@ -630,7 +629,7 @@
                                                                 <TextBox Text="{Binding Path=SpatialInterpolationHelper.Vh.Plunge, Mode=TwoWay}"/>
                                                                 <TextBlock Text="Maximum count of neighbors"
                                                                        FontWeight="DemiBold"/>
-                                                                
+
                                                                 <TextBox Text="{Binding Path=SpatialInterpolationHelper.MaximumNeighborCount, Mode=TwoWay}"/>
                                                                 <TextBlock Text="Power parameter"
                                                                            Visibility="{Binding Path=SpatialInterpolationHelper.IsIDW, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"
@@ -760,8 +759,8 @@
                                             cal:Message.Attach="RemovePolynomial"
                                                                  cal:Bind.ModelWithoutContext="{Binding Path=SpatialInterpolationHelper}"
                                                             FontSize="{StaticResource FontSizeVerySmall}"
-                                            Content="Remove"/>    
-                                                                    </DockPanel>
+                                            Content="Remove"/>
+                                                                </DockPanel>
                                                                 <ListView Margin="10"
                                                                           Visibility="{Binding Path=SpatialInterpolationHelper.DriftType, ConverterParameter=SpatialFunction}"
                                                                           ItemsSource="{Binding Path=SpatialInterpolationHelper.SpatialFunction}"
@@ -815,7 +814,7 @@
                                                                                     </ListView.ItemTemplate>
                                                                                 </ListView>
                                                                             </DockPanel>
-                                                                           
+
                                                                         </DataTemplate>
                                                                     </ListView.ItemTemplate>
                                                                 </ListView>
@@ -845,9 +844,9 @@
                                                                             </DataTemplate>
                                                                         </ListView.ItemTemplate>
                                                                     </ListView>
-                                                                  
+
                                                                 </StackPanel>
-                                                                    <Button Style="{StaticResource HyperlinkButton}"
+                                                                <Button Style="{StaticResource HyperlinkButton}"
                                             cal:Message.Attach="ComputeResiduals"
                                                             FontSize="{StaticResource FontSizeVerySmall}"
                                             Content="Calculate residuals"/>
@@ -880,6 +879,8 @@
                                                             <CheckBox IsChecked="{Binding Path=SpatialInterpolationHelper.ExportResiduals, Mode=TwoWay}"
                                                                               HorizontalAlignment="Right"
                                       VerticalAlignment="Center"/>
+                                                        </DockPanel>
+                                                        <DockPanel>
                                                             <TextBlock Text="Export component"
                                                                            FontWeight="DemiBold"/>
                                                             <ComboBox HorizontalAlignment="Left" 
@@ -924,7 +925,7 @@
                                                                               SelectedIndex="0"/>
                                                             </StackPanel>
                                                         </Expander>
-                                                <Button Style="{StaticResource HyperlinkButton}"
+                                                        <Button Style="{StaticResource HyperlinkButton}"
                                                     cal:Message.Attach="ComputeCategorization"
                                                                     FontSize="{StaticResource FontSizeVerySmall}"
                                                     Content="Compute categorization"/>
@@ -1068,7 +1069,7 @@
                                                                 </StackPanel>
                                                             </Expander>
                                                         </StackPanel>
-                                                        
+
                                                         <Button Style="{StaticResource HyperlinkButton}"
                                                         cal:Message.Attach="ComputeNumericalSolution"
                                                                         FontSize="{StaticResource FontSizeVerySmall}"
@@ -1095,7 +1096,7 @@
                       Opacity="0.4"
                       Visibility="{Binding Path=NumericalSolverHelper.IsComputing, Converter={StaticResource BooleanToVisibilityConverter}, NotifyOnSourceUpdated=True}"/>
                                         </Grid>
-                                      
+
                                     </Border>
                                 </ScrollViewer>
                             </TabItem>

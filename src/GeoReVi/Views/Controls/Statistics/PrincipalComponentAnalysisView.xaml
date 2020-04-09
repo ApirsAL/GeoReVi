@@ -142,59 +142,6 @@
                         </Grid>
                     </TabItem>
                     <TabItem Style="{StaticResource IconTabItem}" 
-                                         FontFamily="{StaticResource FontAwesome}"
-                                         Header="{StaticResource FontAwesomeTable}" 
-                                         Height="30"
-                                         HorizontalAlignment="Stretch">
-                        <TabControl ItemsSource="{Binding DataSet}"
-                                    Grid.Row="1">
-                            <TabControl.ItemContainerStyle>
-                                <Style TargetType="TabItem" BasedOn="{StaticResource LeftSideTabItem}">
-                                </Style>
-                            </TabControl.ItemContainerStyle>
-                            <TabControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border>
-                                        <TextBlock Text="{Binding Name}">
-                                        </TextBlock>
-                                    </Border>
-                                </DataTemplate>
-                            </TabControl.ItemTemplate>
-
-                            <!-- Change ContentTemplate to control main content -->
-                            <TabControl.ContentTemplate>
-                                <DataTemplate>
-                                    <Grid VerticalAlignment="Stretch"
-                                              Background="{StaticResource ForegroundLightBrush}">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Text="Original data table"
-                                                       Grid.Row="0"
-                                                       Style="{StaticResource GridViewColumnTextStyle}"/>
-                                        <DataGrid ItemsSource="{Binding Data,
-                                                                    Mode=OneWay, 
-                                                                    NotifyOnSourceUpdated=True, 
-                                                                    UpdateSourceTrigger=PropertyChanged}"
-                                                      AlternatingRowBackground="Gainsboro"  
-                                                      AutoGenerateColumns="True"
-                                                      AlternationCount="2"
-                                                      HorizontalScrollBarVisibility="Auto"
-                                                              VerticalScrollBarVisibility="Auto"
-                                                              EnableColumnVirtualization="True"
-                                                      RowHeaderWidth="20"
-                                                              EnableRowVirtualization="True"
-                                                      SelectionUnit="Cell"
-                                                      ColumnWidth="Auto"
-                                                      Grid.Row="1">
-                                        </DataGrid>
-                                    </Grid>
-                                </DataTemplate>
-                            </TabControl.ContentTemplate>
-                        </TabControl>
-                    </TabItem>
-                    <TabItem Style="{StaticResource IconTabItem}" 
                              FontFamily="{StaticResource FontAwesome}"
                              Header="{StaticResource FontAwesomeCalculator}" 
                              Height="30"
@@ -251,7 +198,6 @@
                                                 <TabItem Header="Bi-plots">
                                                     <DockPanel>
                                                         <ContentControl Grid.Column="1" cal:View.Model="{Binding PC12BiPlot}"/>
-                                                        <ContentControl Grid.Column="2" cal:View.Model="{Binding PC13BiPlot}"/>
                                                     </DockPanel>
                                                 </TabItem>
                                             </TabControl>
@@ -285,7 +231,6 @@
                                                     <ColumnDefinition Width="*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <ContentControl Grid.Column="0" cal:View.Model="{Binding PC12}"/>
-                                                <ContentControl Grid.Column="1" cal:View.Model="{Binding PC13}"/>
                                             </Grid>
                                         </TabItem>
                                     </TabControl>

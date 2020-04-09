@@ -444,15 +444,7 @@ namespace GeoReVi
             {
                 try
                 {
-                    OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(d.Data.AsEnumerable()
-                        .Select(x => new LocationTimeValue()
-                        {
-                            Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)), 0 },
-                            X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>(1)))) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                            Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                            Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3)),
-                            Name = d.Name
-                        }).ToList()));
+                    OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(d.Vertices.ToList()));
                 }
                 catch
                 {
@@ -464,13 +456,13 @@ namespace GeoReVi
             try
             {
                 if (SelectedInterpolationMeasPoints[0].Vertices.Count() == 0)
-                    DiscretizedLocationValues.Vertices.AddRange(new BindableCollection<LocationTimeValue>(SelectedInterpolationMeasPoints[0].Data.AsEnumerable()
+                    DiscretizedLocationValues.Vertices.AddRange(new BindableCollection<LocationTimeValue>(SelectedInterpolationMeasPoints[0].Vertices
                         .Select(x => new LocationTimeValue()
                         {
                             Value = new List<double> { 0, 0 },
-                            X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                            Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                            Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                            X = x.X,
+                            Y = x.Y,
+                            Z = x.Z
                         }).ToList()));
                 else
                 {
@@ -566,7 +558,10 @@ namespace GeoReVi
             {
                 if(Component == Component.Variance)
                 {
-                    for(int i = 0; i<DiscretizedLocationValues.Vertices.Count(); i++)
+                    DiscretizedLocationValues.Properties.Add(new KeyValuePair<int, string>(0, "Interpolated variance"));
+                    DiscretizedLocationValues.Properties.Add(new KeyValuePair<int, string>(1, "Interpolated values"));
+
+                    for (int i = 0; i<DiscretizedLocationValues.Vertices.Count(); i++)
                     {
                         try
                         {
@@ -581,22 +576,14 @@ namespace GeoReVi
                     }
                     
                 }
+                else
+                {
+                    DiscretizedLocationValues.Properties.Add(new KeyValuePair<int, string>(0, "Interpolated values"));
+                    DiscretizedLocationValues.Properties.Add(new KeyValuePair<int, string>(1, "Interpolated variance"));
+                }
 
                 //Adding interpolated values and variances to the original data set
                 DiscretizedLocationValues.Name = "Interpolated mesh";
-                DiscretizedLocationValues.Data =
-                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                        new List<Tuple<double, double, double, double, DateTime, string>>(DiscretizedLocationValues.Vertices.Select(a =>
-                           new Tuple<double, double, double, double, DateTime, string>(
-                               a.Value[0],
-                               a.X,
-                               a.Y,
-                               a.Z,
-                               a.Date,
-                               a.Name
-                               )).ToList()));
-
-                DiscretizedLocationValues.Data.TableName = "Interpolated mesh";
 
                 //Creating the mesh cells
                 if (SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Hexahedral || SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Tetrahedal)
@@ -609,17 +596,6 @@ namespace GeoReVi
 
                 //Adding interpolated values and variances to the original data set
                 Residuals.Name = "Residuals";
-                Residuals.Data =
-                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                        new List<Tuple<double, double, double, double, DateTime, string>>(Residuals.Vertices.Select(a =>
-                           new Tuple<double, double, double, double, DateTime, string>(
-                               a.Value[0],
-                               a.X,
-                               a.Y,
-                               a.Z,
-                               a.Date,
-                               a.Name
-                               )).ToList()));
 
                 return DiscretizedLocationValues;
             }
@@ -642,15 +618,7 @@ namespace GeoReVi
             {
                 try
                 {
-                    OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(d.Data.AsEnumerable()
-                        .Select(x => new LocationTimeValue()
-                        {
-                            Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)), 0 },
-                            X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>(1)))) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                            Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                            Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3)),
-                            Name = d.Name
-                        }).ToList()));
+                    OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(d.Vertices.ToList()));
                 }
                 catch
                 {
@@ -720,17 +688,6 @@ namespace GeoReVi
             {
                 //Adding interpolated values and variances to the original data set
                 Residuals.Name = "Residuals";
-                Residuals.Data =
-                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                        new List<Tuple<double, double, double, double, DateTime, string>>(Residuals.Vertices.Select(a =>
-                           new Tuple<double, double, double, double, DateTime, string>(
-                               a.Value[0],
-                               a.X,
-                               a.Y,
-                               a.Z,
-                               a.Date,
-                               a.Name
-                               )).ToList()));
             }
             catch
             {
@@ -773,17 +730,7 @@ namespace GeoReVi
                 {
                     try
                     {
-                        if (d.Vertices.Count() == 0)
-                            OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(d.Data.AsEnumerable()
-                                .Select(x => new LocationTimeValue()
-                                {
-                                    Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(0)), 0 },
-                                    X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                                    Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                                    Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
-                                }).ToList()));
-                        else
-                            OriginalLocationValues.AddRange(d.Vertices);
+                        OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(d.Vertices.ToList()));
                     }
                     catch
                     {
@@ -810,19 +757,6 @@ namespace GeoReVi
 
             //Adding interpolated values and variances to the original data set
             DiscretizedLocationValues.Name = "Discretized mesh";
-            DiscretizedLocationValues.Data =
-                CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                    new List<Tuple<double, double, double, double, DateTime, string>>(DiscretizedLocationValues.Vertices.Select(a =>
-                       new Tuple<double, double, double, double, DateTime, string>(
-                           a.Value[0],
-                           a.X,
-                           a.Y,
-                           a.Z,
-                           a.Date,
-                           a.Name
-                           )).ToList()));
-
-            DiscretizedLocationValues.Data.TableName = "DiscretizedMesh";
 
             return DiscretizedLocationValues;
         }
@@ -845,13 +779,13 @@ namespace GeoReVi
                 try
                 {
                     if (SelectedInterpolationMeasPoints[0].Vertices.Count() == 0)
-                        DiscretizedLocationValues.Vertices.AddRange(new BindableCollection<LocationTimeValue>(SelectedInterpolationMeasPoints[0].Data.AsEnumerable()
+                        DiscretizedLocationValues.Vertices.AddRange(new BindableCollection<LocationTimeValue>(SelectedInterpolationMeasPoints[0].Vertices
                             .Select(x => new LocationTimeValue()
                             {
                                 Value = new List<double> { 0, 0 },
-                                X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                                Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                                Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                                X = x.X,
+                                Y = x.Y,
+                                Z = x.Z
                             }).ToList()));
                     else
                     {
@@ -893,13 +827,13 @@ namespace GeoReVi
             {
                 try
                 {
-                    OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(SelectedMeasPoints[i].Data.AsEnumerable()
+                    OriginalLocationValues.AddRange(new BindableCollection<LocationTimeValue>(SelectedMeasPoints[i].Vertices
                         .Select(x => new LocationTimeValue()
                         {
-                            Value = new List<double>() { (x.Field<double?>(0) == -9999 || x.Field<double?>(0) == -999999 || x.Field<double?>(0) == 9999999) ? 0 : CategorizationMethod != CategorizationMethod.IndicatorKriging ? Convert.ToDouble(x.Field<double?>(0)) : Convert.ToDouble(i), 0 },
-                            X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>(1)))) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                            Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                            Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3)),
+                            Value = new List<double>() { x.Value[0] == 0 ? 0 : CategorizationMethod != CategorizationMethod.IndicatorKriging ? Convert.ToDouble(x.Value[0]) : Convert.ToDouble(i), 0 },
+                            X = x.X,
+                            Y = x.Y,
+                            Z = x.Z,
                             Name = SelectedMeasPoints[i].Name
                         }).ToList()));
                 }
@@ -955,18 +889,6 @@ namespace GeoReVi
 
                             break;
                     }
-
-                    SelectedInterpolationMeasPoints[0].Data =
-                CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                    new List<Tuple<double, double, double, double, DateTime, string>>(SelectedInterpolationMeasPoints[0].Vertices.Select(a =>
-                       new Tuple<double, double, double, double, DateTime, string>(
-                           a.Value[0],
-                           a.X,
-                           a.Y,
-                           a.Z,
-                           a.Date,
-                           a.Name
-                           )).ToList()));
                 }
                 catch
                 {
@@ -2345,13 +2267,13 @@ namespace GeoReVi
                 try
                 {
                     if (SelectedInterpolationMeasPoints[0].Vertices.Count() == 0)
-                        DiscretizedLocationValues.Vertices.AddRange(new BindableCollection<LocationTimeValue>(d.Data.AsEnumerable()
+                        DiscretizedLocationValues.Vertices.AddRange(new BindableCollection<LocationTimeValue>(d.Vertices
                             .Select(x => new LocationTimeValue()
                             {
                                 Value = new List<double> { 0, 0 },
-                                X = (x.Field<double?>(1) == -9999 || x.Field<double?>(1) == -999999 || x.Field<double?>(1) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(1)),
-                                Y = (x.Field<double?>(2) == -9999 || x.Field<double?>(2) == -999999 || x.Field<double?>(2) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(2)),
-                                Z = (x.Field<double?>(3) == -9999 || x.Field<double?>(3) == -999999 || x.Field<double?>(3) == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>(3))
+                                X = x.X,
+                                Y = x.Y,
+                                Z = x.Z
                             }).ToList()));
                     else
                     {
@@ -2411,17 +2333,6 @@ namespace GeoReVi
             {
                 //Adding interpolated values and variances to the original data set
                 DiscretizedLocationValues.Name = "Residuals";
-                DiscretizedLocationValues.Data =
-                    CollectionHelper.ConvertTo<Tuple<double, double, double, double, DateTime, string>>(
-                        new List<Tuple<double, double, double, double, DateTime, string>>(DiscretizedLocationValues.Vertices.Select(a =>
-                           new Tuple<double, double, double, double, DateTime, string>(
-                               a.Value[0],
-                               a.X,
-                               a.Y,
-                               a.Z,
-                               a.Date,
-                               a.Name
-                               )).ToList()));
 
                 DiscretizedLocationValues.MeshCellType = MeshCellType.Hexahedral;
 

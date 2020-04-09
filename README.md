@@ -72,6 +72,10 @@ To get started with GeoReVi you have to download the packed file [GeoReVi.zip](h
 * Cluster Analysis
 * Self-organizing Maps
 
+### Exploring the uncertainty space
+<img src="docs/Samples/Meshes/SGS_Uncertainty_Space.gif" width="60%">
+
+
 ## Contributing
 Individual view-models and views can be developed and integrated into GeoReVi.
 
@@ -85,11 +89,6 @@ If bugs or any other issues are identified we would be grateful for reporting th
 
 * Thanks go to all the people that contributed to the test data sets of GeoReVi!
 
-## Other Samples
-
 ### Reservoir-scale temperature distribution
 <img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="60%">
-
-### Meter-scale permeability distribution
-<img src="docs/Samples/Interpolations/RockSlabInterpolation.png" width="35%">
 
