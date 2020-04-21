@@ -75,6 +75,8 @@ To get started with GeoReVi you have to download the executable file [GeoReViv1.
 ### Exploring the uncertainty space
 <img src="docs/Samples/Meshes/SGS_Uncertainty_Space.gif" width="60%">
 
+### Mapping geological features in 3-D
+<img src="docs/Samples/Mapping/MappingPointsExtract.gif" width="60%">
 
 ## Contributing
 Individual view-models and views can be developed and integrated into GeoReVi.
