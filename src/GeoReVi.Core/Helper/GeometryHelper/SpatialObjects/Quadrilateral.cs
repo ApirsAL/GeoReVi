@@ -44,7 +44,6 @@ namespace GeoReVi
         /// <returns>A model representing the tetrahedron</returns>
         public override Model3D CreateModel(Material material, double radius)
         {
-            // Create a mesh builder and add a box to it
             HelixToolkit.Wpf.MeshBuilder meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
 
             if(ArePointsCoplanar())

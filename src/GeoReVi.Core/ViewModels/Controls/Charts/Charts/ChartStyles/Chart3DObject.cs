@@ -646,7 +646,7 @@ namespace GeoReVi
 
                                 var mesh = meshBuilder.ToMesh(true);
 
-                                var material = MaterialHelper.CreateMaterial(Colors.Black);
+                                var material = MaterialHelper.CreateMaterial(SelectedSeries.Symbols.FillColor);
 
                                 Model.Dispatcher.Invoke(() => Model.Children.Add(new GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
                             }
