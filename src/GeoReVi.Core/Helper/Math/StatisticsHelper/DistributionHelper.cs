@@ -411,13 +411,18 @@ namespace GeoReVi
         /// <param name="mean">Mean</param>
         /// <param name="stdDev">Standard deviation</param>
         /// <returns></returns>
-        public static double SampleFromGaussian(double mean, double stdDev)
+        public static double SampleFromGaussian(double mean, double stdDev, double min = double.MinValue, double max = double.MaxValue)
         {
             double ret = 0;
 
             try
             {
                 ret = mean + (SampleFromGaussian() * stdDev);
+
+                if(ret < min || ret > max)
+                {
+                    ret = SampleFromGaussian(mean, stdDev, min, max);
+                }
             }
             catch
             {

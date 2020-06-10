@@ -27,6 +27,7 @@ namespace GeoReVi
         public BoxWhiskerChartViewModel()
         {
             Bco = new BoxPlotChartObject();
+            Bco.CreateChart();
         }
 
         #endregion

@@ -258,7 +258,7 @@ namespace GeoReVi
                 prioQueue.Remove(node);
 
                 //Getting the neighbors of the node
-                var neighbors = TemporalMesh.GetNeighbors(node).OrderBy(x => GeographyHelper.EuclideanDistance(x, node)).ToList();
+                var neighbors = TemporalMesh.GetNeighbors(node).Result.OrderBy(x => GeographyHelper.EuclideanDistance(x, node)).ToList();
 
                 //Iterating over the neighbors and detect which one has the lowest distance to the node
                 for (int i = 0; i < neighbors.Count(); i++)
@@ -321,7 +321,7 @@ namespace GeoReVi
                 prioQueue.Remove(node);
 
                 //Getting the neighbors of the node
-                var neighbors = TemporalMesh.GetNeighbors(node).OrderBy(x => GeographyHelper.EuclideanDistance(x, node)).ToList();
+                var neighbors = TemporalMesh.GetNeighbors(node).Result.OrderBy(x => GeographyHelper.EuclideanDistance(x, node)).ToList();
 
                 //Iterating over the neighbors and detect which one has the lowest distance to the node
                 for (int i = 0; i < neighbors.Count(); i++)

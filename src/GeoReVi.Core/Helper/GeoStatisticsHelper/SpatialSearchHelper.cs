@@ -30,7 +30,8 @@ namespace GeoReVi
             double azimuth = 0, 
             double dip = 0, 
             double plunge = 0,
-            int maximumNumber = 9999)
+            int maximumNumber = 9999,
+            InterpolationFeature interpolationFeature = InterpolationFeature.Value)
         {
             if (pointSet.Count() == 0)
                 return new int[0];
@@ -45,6 +46,7 @@ namespace GeoReVi
                 ret = new int[pointSet.Count()];
             }
 
+            //Initializing the transformation matrices
             double[,] transZ = GetTransformationMatrixZ(azimuth);
             double[,] transY = GetTransformationMatrixY(plunge);
             double[,] transX = GetTransformationMatrixX(dip);
@@ -58,11 +60,26 @@ namespace GeoReVi
                     //Calculating the relative position of the point with regard to its rotation center
                     double[] vec = new double[3] { Math.Abs(location.X - locs[i].X), Math.Abs(location.Y - locs[i].Y), Math.Abs(location.Z - locs[i].Z) };
 
+                    //Dependent on the feature which should be interpolated, the respective distance is set to 0
+                    switch(interpolationFeature)
+                    {
+                        case InterpolationFeature.Elevation:
+                            vec[2] = 0;
+                            break;
+                        case InterpolationFeature.Latitude:
+                            vec[1] = 0;
+                            break;
+                        case InterpolationFeature.Longitude:
+                            vec[0] = 0;
+                            break;
+                    }
+
                     //Calculating the new position of the point after rotation
                     vec = vec.Dot(transZ);
                     vec = vec.Dot(transX);
                     vec = vec.Dot(transY);
 
+                    //Searching if the point is located in the defined search ellipsoid whose center is the target point
                     if(!IsInsideEllipse(vec, distanceX, distanceY, distanceZ) || (vec[0] == 0 && vec[1] == 0 && vec[2]== 0))
                     {
                         ret[i] = -1;
@@ -94,7 +111,7 @@ namespace GeoReVi
                 }
             }
 
-
+            //returning the points
             return ret.Where(x => x != -1).ToArray();
         }
 

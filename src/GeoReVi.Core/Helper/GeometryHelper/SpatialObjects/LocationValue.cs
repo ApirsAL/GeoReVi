@@ -281,7 +281,6 @@ namespace GeoReVi
                 other.Geographic == this.Geographic &&
                 other.Name == this.Name &&
                 other.Value == this.Value &&
-                other.Brush == this.Brush &&
                 other.IsExterior == this.IsExterior &&
                 other.Neighbors == this.Neighbors;
         }
@@ -322,7 +321,7 @@ namespace GeoReVi
         /// Gets the euclidean distance
         /// </summary>
         /// <returns></returns>
-        public double GetEuclideanDistance(LocationTimeValue loc)
+        public double GetEuclideanDistance(LocationTimeValue loc, InterpolationFeature interpolationFeature = InterpolationFeature.Value)
         {
             try
             {

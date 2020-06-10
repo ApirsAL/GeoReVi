@@ -18,16 +18,6 @@ namespace GeoReVi
         #region Private members
 
         /// <summary>
-        /// Point coordinates
-        /// </summary>
-        private Matrix<double> coordinates;
-
-        /// <summary>
-        /// Point coordinates
-        /// </summary>
-        private Matrix<double> connectivity;
-
-        /// <summary>
         /// Global load vector
         /// </summary>
         private Vector<double> globalLoadVector;

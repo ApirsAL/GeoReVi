@@ -31,9 +31,13 @@ namespace GeoReVi
 
         #region Constructor
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public BarChartViewModel()
         {
             Barco = new BarChartObject();
+            Barco.CreateHistogram();
         }
 
         #endregion

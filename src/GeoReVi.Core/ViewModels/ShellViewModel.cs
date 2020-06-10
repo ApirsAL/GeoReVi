@@ -382,9 +382,6 @@ namespace GeoReVi
                 case "AboutView":
                     ActivateItem(new AboutViewModel());
                     break;
-                case "TestView":
-                    //new ApirsRepository<tblAffiliation>().MergeLabMeasurements();
-                    break;
                 default:
                     ActivateItem(new LoginViewModel(_events));
                     break;

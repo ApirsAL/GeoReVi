@@ -22,7 +22,7 @@
     </UserControl.Triggers>
     <!--Acutal grid of this page-->
     <Grid>
-        <!---Control to provide scrolling funcitonality-->
+        <!---Control to provide scrolling functionality-->
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center" 
                             VerticalAlignment="Center"
@@ -113,7 +113,7 @@
                                                    FontSize="{StaticResource FontSizeSmall}"
                                                    Foreground="{StaticResource ApirsMediumGrayBrush}">
                                                 <TextBlock.Inlines>
-                                                    <Run Text="Prof. Matthias Hinderer&#x0a;Dr. Jens Hornung&#x0a;Dr. Kristian Bär&#x0a;Sebastian Weinert&#x0a;Meike Hintze" />
+                                                    <Run Text="Prof. Matthias Hinderer&#x0a;Dr. Jens Hornung&#x0a;Dr. Kristian Bär" />
                                                 </TextBlock.Inlines>
                                             </TextBlock>
                                         </StackPanel>

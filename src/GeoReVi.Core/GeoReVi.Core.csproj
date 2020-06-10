@@ -341,7 +341,6 @@
     <Compile Include="Helper\MapHelper\MapHelper.cs" />
     <Compile Include="Helper\MapHelper\Map\LayerModel.cs" />
     <Compile Include="Helper\MapHelper\Map\LocalTileSource.cs" />
-    <Compile Include="Helper\MapHelper\PaintManager.cs" />
     <Compile Include="Helper\Math\ArrayHelper.cs" />
     <Compile Include="Helper\Math\Interfaces\IGeometry.cs" />
     <Compile Include="Helper\Math\StatisticsHelper\CompositionalHelper.cs" />

@@ -354,7 +354,7 @@ namespace GeoReVi
         /// <summary>
         /// Meshing the point cloud
         /// </summary>
-        public void CellsFromPointCloud()
+        public async Task CellsFromPointCloud()
         {
             try
             {
@@ -376,7 +376,7 @@ namespace GeoReVi
                     zMinIndex = Vertices.Min(x => x.MeshIndex[2]);
                     zMaxIndex = Vertices.Max(x => x.MeshIndex[2]);
 
-                    CreateVerticeArray();
+                    await CreateVerticeArray();
 
                     for (int i = xMinIndex; i < xMaxIndex; i++)
                     {
@@ -498,7 +498,7 @@ namespace GeoReVi
 
             try
             {
-                LocationTimeValue[] locs = GetNeighbors(loc);
+                LocationTimeValue[] locs = GetNeighbors(loc).Result;
 
                 for (int i = 0; i < locs.Length; i++)
                 {
@@ -526,7 +526,7 @@ namespace GeoReVi
 
             try
             {
-                LocationTimeValue[] locs = GetNeighbors(loc);
+                LocationTimeValue[] locs = GetNeighbors(loc).Result;
 
                 for (int i = 0; i < locs.Length; i++)
                 {
@@ -548,12 +548,12 @@ namespace GeoReVi
         /// </summary>
         /// <param name="loc"></param>
         /// <returns></returns>
-        public LocationTimeValue[] GetNeighbors(LocationTimeValue loc)
+        public async Task<LocationTimeValue[]> GetNeighbors(LocationTimeValue loc)
         {
             List<LocationTimeValue> retLocs = new List<LocationTimeValue>();
 
             if (locs.Length == 0)
-                CreateVerticeArray();
+                await CreateVerticeArray();
 
             try
             {

@@ -442,9 +442,9 @@ namespace GeoReVi
                                             + " And " + longitudeName + " < " + longitudeEnd.ToString()
                                             + " And " + longitudeName + " > " + longitudeBegin.ToString());
             }
-            catch (Exception e)
+            catch
             {
-                return Enumerable.Empty<T>();
+                throw new Exception("Filtering not possible.");
             }
         }
 
@@ -466,7 +466,7 @@ namespace GeoReVi
                 else
                     return models.Where(x => !properties.Any(p => (p.GetValue(x) != null && p.GetValue(x).ToString().ToLower().Contains(parameter.ToLower()))));
             }
-            catch (Exception e)
+            catch
             {
                 return Enumerable.Empty<T>();
             }
@@ -506,7 +506,7 @@ namespace GeoReVi
                         return disp;
                     }
                 }
-                catch (Exception e)
+                catch
                 {
                     return pd.Name;
                 }
@@ -558,7 +558,7 @@ namespace GeoReVi
                         return disp;
                     }
                 }
-                catch (Exception e)
+                catch
                 {
                     return parameter;
                 }
@@ -592,7 +592,7 @@ namespace GeoReVi
                         return disp;
                     }
                 }
-                catch (Exception e)
+                catch
                 {
                     return null;
                 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GeoReVi
 {
@@ -263,7 +264,7 @@ namespace GeoReVi
         /// <summary>
         /// The location values used for drift
         /// </summary>
-        private Mesh driftLocationValues;
+        private Mesh driftLocationValues = new Mesh();
         public Mesh DriftLocationValues
         {
             get => this.driftLocationValues;
@@ -597,7 +598,7 @@ namespace GeoReVi
         /// <summary>
         /// Computes a spatial operation
         /// </summary>
-        public void ComputeOperation()
+        public async Task ComputeOperation()
         {
             try
             {
@@ -620,8 +621,6 @@ namespace GeoReVi
                 {
                     case SpatialOperationType.Join:
                         //Adding all vertices, cells and faces from one mesh to a base mesh
-                        int xMaxIndex = 0;
-                        int yMaxIndex = 0;
                         int zMaxIndex = 0;
 
                         for (int i = 0; i < SelectedMeasPoints.Count(); i++)
@@ -716,7 +715,7 @@ namespace GeoReVi
 
                 //Producing mesh
                 if (SelectedMeasPoints[0].Dimensionality == Dimensionality.ThreeD)
-                    DiscretizedLocationValues.CellsFromPointCloud();
+                    await DiscretizedLocationValues.CellsFromPointCloud();
                 else if (SelectedMeasPoints[0].Dimensionality == Dimensionality.TwoD)
                     DiscretizedLocationValues.FacesFromPointCloud();
 

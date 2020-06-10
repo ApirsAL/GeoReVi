@@ -30,6 +30,8 @@ namespace GeoReVi
         /// <returns></returns>
         public static async Task<BindableCollection<v_PictureStore>> LoadImagesAsync(int id, string type)
         {
+            await Task.Delay(0);
+
             using (var db = new ApirsRepository<v_PictureStore>())
             {
                 try
@@ -64,6 +66,8 @@ namespace GeoReVi
         /// <returns></returns>
         public static async Task<BindableCollection<v_FileStore>> LoadFilesAsync(int id, string type)
         {
+            await Task.Delay(0);
+
             using (var db = new ApirsRepository<v_PictureStore>())
             {
                 try
@@ -227,10 +231,9 @@ namespace GeoReVi
                         }
                     }
                 }
-                catch (Exception e)
+                catch
                 {
-                    ((ShellViewModel)IoC.Get<IShell>()).ShowError(UserMessageValueConverter.ConvertBack(1));
-                    return new Guid();
+                    throw new Exception("An unexpected error has occured");
                 }
 
             }
@@ -338,10 +341,9 @@ namespace GeoReVi
                 }
 
             }
-            catch (Exception e)
+            catch
             {
-                ((ShellViewModel)IoC.Get<IShell>()).ShowError(UserMessageValueConverter.ConvertBack(1));
-                return null;
+                throw new Exception("An unexpected error has occured.");
             }
 
             return ds;

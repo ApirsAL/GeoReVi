@@ -813,12 +813,34 @@ namespace GeoReVi
         {
             try
             {
-                var a = await SpatialInterpolationHelper.ComputeInterpolation();
-                MeasPoints.Add(a);
+                List<Task<Mesh>> tasks = new List<Task<Mesh>>();
+
+                List<SpatialInterpolationHelper> sps = new List<SpatialInterpolationHelper>();
+
+               for(int i = 0; i< (SpatialInterpolationHelper.InterpolationMethod == GeostatisticalInterpolationMethod.SequentialGaussianSimulation ? SpatialInterpolationHelper.NumberOfRealizations : 1); i++)
+               {
+                    if(i!=0)
+                    {
+                        SpatialInterpolationHelper sp = new SpatialInterpolationHelper(SpatialInterpolationHelper);
+                        sps.Add(sp);
+                        tasks.Add(sp.ComputeInterpolation());
+                    }
+                    else
+                    {
+                        tasks.Add(SpatialInterpolationHelper.ComputeInterpolation());
+                    }
+               }
+
+               MeasPoints.AddRange(await Task.WhenAll(tasks));
+
                 if(SpatialInterpolationHelper.ExportResiduals)
                      MeasPoints.Add(new Mesh(SpatialInterpolationHelper.Residuals));
             }
             catch
+            {
+
+            }
+            finally
             {
 
             }

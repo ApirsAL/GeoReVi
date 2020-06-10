@@ -160,9 +160,9 @@ namespace GeoReVi
                                     //Exporting data to a csv
                                     ExportDataTableToCsv(joinPlug, path, false);
                                 }
-                                catch (Exception e)
+                                catch
                                 {
-                                    ((ShellViewModel)IoC.Get<IShell>()).ShowError("An unexpected error occured.");
+                                    throw new Exception("An unexpected error occured.");
                                 }
                             });
                             break;
@@ -318,9 +318,9 @@ namespace GeoReVi
                                     //Exporting data to a csv
                                     ExportHelper.ExportDataTableToCsv(petrophysicsTable, path, false);
                                 }
-                                catch (Exception e)
+                                catch
                                 {
-                                    ((ShellViewModel)IoC.Get<IShell>()).ShowError("An unexpected error occured.");
+                                    throw new Exception("An unexpected error occured.");
                                 }
                             });
                             break;

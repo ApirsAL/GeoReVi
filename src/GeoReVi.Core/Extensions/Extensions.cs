@@ -62,6 +62,7 @@ namespace GeoReVi
         {
             try
             {
+                await Task.Delay(0);
                 var i = default(T);
                 dataCollection.Add(i);
                 dataCollection.Remove(i);

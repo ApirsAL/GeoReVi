@@ -31,6 +31,7 @@ namespace GeoReVi
         public LineAndScatterChartViewModel()
         {
             Lco = new LineChartObject();
+            Lco.CreateLineChart();
         }
 
         #endregion

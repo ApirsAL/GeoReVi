@@ -10,7 +10,7 @@ namespace GeoReVi
     /// <summary>
     /// A class to describe the server interaction
     /// </summary>
-    public static class ServerInteractionHelper
+    internal static class ServerInteractionHelper
     {
 
         /// <summary>

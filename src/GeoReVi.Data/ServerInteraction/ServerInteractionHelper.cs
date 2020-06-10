@@ -10,7 +10,7 @@ namespace GeoReVi
     /// <summary>
     /// A class to describe the server interaction
     /// </summary>
-    public static class ServerInteractionHelper
+    internal static class ServerInteractionHelper
     {
 
         /// <summary>
@@ -62,11 +62,7 @@ namespace GeoReVi
                     {
                         SqlExtensions.QuickOpen(connection, 1000);
                     }
-                    catch (SqlException ex)
-                    {
-                        return false;
-                    }
-                    catch (Exception e)
+                    catch
                     {
                         return false;
                     }

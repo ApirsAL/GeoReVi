@@ -239,22 +239,22 @@ namespace GeoReVi
         /// <returns></returns>
         public override async Task<ICell[]> Subdivide()
         {
+            Hexahedron[] ret = new Hexahedron[8];
+
             try
             {
+                await Task.Delay(0);
 
+                LocationTimeValue loc12 = new LocationTimeValue();
+
+                Hexahedron hex1 = new Hexahedron();
+                hex1.CellType = CellType.Hexahedron;
             }
             catch
             {
 
             }
-            Hexahedron[] ret = new Hexahedron[8];
 
-            await Task.Delay(0);
-
-            LocationTimeValue loc12 = new LocationTimeValue();
-
-            Hexahedron hex1 = new Hexahedron();
-            hex1.CellType = CellType.Hexahedron;
 
             return ret;
         }

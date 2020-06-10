@@ -367,9 +367,6 @@ namespace GeoReVi
             List<Tuple<double, double, double, double, DateTime, string>> values = new List<Tuple<double, double, double, double, DateTime, string>>();
             List<List<Tuple<double, double, double, double, DateTime, string>>> allValues = new List<List<Tuple<double, double, double, double, DateTime, string>>>();
 
-            double minX = 999999999999999999;
-            double minY = 999999999999999999;
-
             #endregion
 
             try
@@ -826,9 +823,6 @@ namespace GeoReVi
 
             List<Tuple<double, double, double, double, DateTime, string>> values = new List<Tuple<double, double, double, double, DateTime, string>>();
             List<List<Tuple<double, double, double, double, DateTime, string>>> allValues = new List<List<Tuple<double, double, double, double, DateTime, string>>>();
-
-            double minX = 999999999999999999;
-            double minY = 999999999999999999;
 
             #endregion
 
@@ -2009,6 +2003,8 @@ namespace GeoReVi
         {
             try
             {
+                await Task.Delay(1000);
+
                 string dir = System.IO.Path.GetDirectoryName(
 System.Reflection.Assembly.GetExecutingAssembly().Location);
 
@@ -2380,7 +2376,7 @@ System.Reflection.Assembly.GetExecutingAssembly().Location);
                     _apirsLocalLiteDatabase.GetCollection<tblObjectOfInvestigation>().Delete(locOb.ooiIdPk);
 
                 }
-                catch (Exception e)
+                catch
                 {
                     continue;
                 }
@@ -2418,7 +2414,7 @@ System.Reflection.Assembly.GetExecutingAssembly().Location);
                                 {
                                     _apirsLocalLiteDatabase.GetCollection<tblEonothem>().Insert(new tblEonothem { eonIdPk = e.eonIdPk, eonchronIdFk = e.eonchronIdFk, eonName = e.eonName, eonNumericalAgeLowerBoundary = e.eonNumericalAgeLowerBoundary, eonPlusMinus = e.eonPlusMinus });
                                 }
-                                catch (Exception exc)
+                                catch
                                 {
                                     continue;
                                 }
@@ -2486,7 +2482,7 @@ System.Reflection.Assembly.GetExecutingAssembly().Location);
                         if (_apirsLocalLiteDatabase.GetCollection<tblUnionChronostratigraphy>().Count() == 0)
                             foreach (var e in chron) { try { _apirsLocalLiteDatabase.GetCollection<tblUnionChronostratigraphy>().Insert(new tblUnionChronostratigraphy() { eonName = e.eonName }); } catch { continue; } };
                     }
-                    catch (Exception ex)
+                    catch 
                     {
 
                     }
@@ -2516,7 +2512,7 @@ System.Reflection.Assembly.GetExecutingAssembly().Location);
                             {
                                 _apirsLocalLiteDatabase.GetCollection<tblUnionPetrography>().Insert(new tblUnionPetrography() { Petrography = e.Petrography });
                             }
-                            catch (Exception ex)
+                            catch
                             {
                                 continue;
                             }
@@ -2570,7 +2566,7 @@ System.Reflection.Assembly.GetExecutingAssembly().Location);
                     }
                 }
             }
-            catch (Exception e)
+            catch
             {
 
             }

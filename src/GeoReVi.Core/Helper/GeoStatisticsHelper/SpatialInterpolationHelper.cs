@@ -187,6 +187,28 @@ namespace GeoReVi
         }
 
         /// <summary>
+        /// The number of realizations for a simulation
+        /// </summary>
+        private int numberOfRealizations = 1;
+        public int NumberOfRealizations
+        {
+            get => this.numberOfRealizations;
+            set
+            {
+                if(value > 0)
+                {
+                    this.numberOfRealizations = value;
+                }
+                else
+                {
+                    this.numberOfRealizations = 1;
+                }
+
+                NotifyOfPropertyChange(() => NumberOfRealizations);
+            }
+        }
+
+        /// <summary>
         /// The power parameter needed in the IDW interpolation
         /// </summary>
         private double power = 2;
@@ -415,6 +437,43 @@ namespace GeoReVi
             DiscretizationMethod = _discretizationMethod;
 
             Vh = _vh;
+        }
+
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="_interpolationHelper"></param>
+        public SpatialInterpolationHelper(SpatialInterpolationHelper _interpolationHelper) : base()
+        {
+            this.NumberOfRealizations = _interpolationHelper.NumberOfRealizations;
+            this.DiscretizationMethod = _interpolationHelper.DiscretizationMethod;
+            this.DiscretizedLocationValues = new Mesh(_interpolationHelper.DiscretizedLocationValues);
+            this.OriginalLocationValues = new BindableCollection<LocationTimeValue>(_interpolationHelper.OriginalLocationValues);
+            this.NumberOfSwaps = _interpolationHelper.NumberOfSwaps;
+            this.Power = _interpolationHelper.power;
+            this.Refinement = _interpolationHelper.Refinement;
+            this.MaximumNeighborCount = _interpolationHelper.MaximumNeighborCount;
+            this.MaximumDegreeOfParallelism = _interpolationHelper.MaximumDegreeOfParallelism;
+            this.InterpolationMethod = _interpolationHelper.InterpolationMethod;
+            this.InterpolationFeature = _interpolationHelper.InterpolationFeature;
+            this.IncludeLocalVariance = _interpolationHelper.IncludeLocalVariance;
+            this.SelectedGlobalVariance = new BindableCollection<Mesh>(_interpolationHelper.SelectedGlobalVariance);
+            this.SelectedMeasPoints = new BindableCollection<Mesh>(_interpolationHelper.SelectedMeasPoints);
+            this.SelectedPolynomial = _interpolationHelper.SelectedPolynomial;
+            this.ShouldTargetVertexFitSourceGridName = _interpolationHelper.ShouldTargetVertexFitSourceGridName;
+            this.SelectedInterpolationMeasPoints = new BindableCollection<Mesh>(_interpolationHelper.SelectedInterpolationMeasPoints);
+            this.SpatialFunction = _interpolationHelper.SpatialFunction;
+            this.TransformToOriginalDistribution = _interpolationHelper.TransformToOriginalDistribution;
+            this.Vh = _interpolationHelper.Vh;
+            this.IsCancelled = _interpolationHelper.IsCancelled;
+            this.IncludeErrorVariance = _interpolationHelper.IncludeErrorVariance;
+            this.ExportResiduals = _interpolationHelper.ExportResiduals;
+            this.EstimationVariance = _interpolationHelper.EstimationVariance;
+            this.ErrorVariance = _interpolationHelper.ErrorVariance;
+            this.DriftLocationValues = new Mesh(_interpolationHelper.DriftLocationValues);
+            this.DistanceType = _interpolationHelper.distanceType;
+            this.CrossValidationRemovePointCount = _interpolationHelper.CrossValidationRemovePointCount;
+            this.Component = _interpolationHelper.Component;
         }
 
         /// <summary>
@@ -946,7 +1005,7 @@ namespace GeoReVi
                     case InterpolationFeature.Longitude:
                         globalMean = OriginalLocationValues.ToArray().Average(x => x.X);
                         break;
-                    case InterpolationFeature.Latitutde:
+                    case InterpolationFeature.Latitude:
                         globalMean = OriginalLocationValues.ToArray().Average(x => x.Y);
                         break;
                     case InterpolationFeature.Elevation:
@@ -968,8 +1027,9 @@ namespace GeoReVi
                         double value = 0;
                         double weightSum = 0;
 
+                        //Getting the neighbors
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                        int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                        int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                         includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -1002,7 +1062,7 @@ namespace GeoReVi
                                     case InterpolationFeature.Longitude:
                                         value += Convert.ToDouble(includedPoints[j].X) / Math.Pow(dist, Power);
                                         break;
-                                    case InterpolationFeature.Latitutde:
+                                    case InterpolationFeature.Latitude:
                                         value += Convert.ToDouble(includedPoints[j].Y) / Math.Pow(dist, Power);
                                         break;
                                     case InterpolationFeature.Elevation:
@@ -1024,7 +1084,7 @@ namespace GeoReVi
                                     case InterpolationFeature.Longitude:
                                         value = includedPoints[j].X;
                                         break;
-                                    case InterpolationFeature.Latitutde:
+                                    case InterpolationFeature.Latitude:
                                         value = includedPoints[j].Y;
                                         break;
                                     case InterpolationFeature.Elevation:
@@ -1041,6 +1101,7 @@ namespace GeoReVi
                             weightSum = 1;
                         }
 
+                        //Assigning the value
                         lock (sync)
                         {
                             switch (InterpolationFeature)
@@ -1052,7 +1113,7 @@ namespace GeoReVi
                                 case InterpolationFeature.Longitude:
                                     DiscretizedLocationValues.Vertices[i].X = value / weightSum;
                                     break;
-                                case InterpolationFeature.Latitutde:
+                                case InterpolationFeature.Latitude:
                                     DiscretizedLocationValues.Vertices[i].Y = value / weightSum;
                                     break;
                                 case InterpolationFeature.Elevation:
@@ -1110,8 +1171,9 @@ namespace GeoReVi
                     double weightSum = 0;
                     double value = 0;
 
+                    //Getting the neighbors
                     List<LocationTimeValue> validationPoints = new List<LocationTimeValue>();
-                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[i], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                     validationPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -1152,7 +1214,7 @@ namespace GeoReVi
                                 case InterpolationFeature.Longitude:
                                     value += Convert.ToDouble(validationPoints[j].X) / Math.Pow(dist, Power);
                                     break;
-                                case InterpolationFeature.Latitutde:
+                                case InterpolationFeature.Latitude:
                                     value += Convert.ToDouble(validationPoints[j].Y) / Math.Pow(dist, Power);
                                     break;
                                 case InterpolationFeature.Elevation:
@@ -1206,7 +1268,7 @@ namespace GeoReVi
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
-                        case InterpolationFeature.Latitutde:
+                        case InterpolationFeature.Latitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
@@ -1248,9 +1310,9 @@ namespace GeoReVi
 
                     DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
-
+                    //Getting the neighbors
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                     includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -1314,7 +1376,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 DiscretizedLocationValues.Vertices[j].Value[0] += weights[i] * includedPoints[i].X;
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 DiscretizedLocationValues.Vertices[j].Value[0] += weights[i] * includedPoints[i].Y;
                                 break;
                             case InterpolationFeature.Elevation:
@@ -1384,9 +1446,9 @@ namespace GeoReVi
                 for (int k = 0; k < OriginalLocationValues.Count(); k++)
                 {
 
-
+                    //Getting the neighbors
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                     includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -1470,7 +1532,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 value += weights[i] * validationPoints[i].X;
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 value += weights[i] * validationPoints[i].Y;
                                 break;
                             case InterpolationFeature.Elevation:
@@ -1514,7 +1576,7 @@ namespace GeoReVi
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
-                        case InterpolationFeature.Latitutde:
+                        case InterpolationFeature.Latitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
@@ -1557,7 +1619,7 @@ namespace GeoReVi
                         case InterpolationFeature.Longitude:
                             globalMean = OriginalLocationValues.ToArray().Average(x => x.X);
                             break;
-                        case InterpolationFeature.Latitutde:
+                        case InterpolationFeature.Latitude:
                             globalMean = OriginalLocationValues.ToArray().Average(x => x.Y);
                             break;
                         case InterpolationFeature.Elevation:
@@ -1577,6 +1639,7 @@ namespace GeoReVi
 
                         DiscretizedLocationValues.Vertices[j].Value[0] = 0;
 
+                        //Getting the neighbors
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
                         int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
 
@@ -1631,7 +1694,7 @@ namespace GeoReVi
                                 case InterpolationFeature.Longitude:
                                     DiscretizedLocationValues.Vertices[j].X += weights[i] * (includedPoints[i].X - mean);
                                     break;
-                                case InterpolationFeature.Latitutde:
+                                case InterpolationFeature.Latitude:
                                     DiscretizedLocationValues.Vertices[j].Y += weights[i] * (includedPoints[i].Y - mean);
                                     break;
                                 case InterpolationFeature.Elevation:
@@ -1653,7 +1716,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 DiscretizedLocationValues.Vertices[j].X += mean;
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 DiscretizedLocationValues.Vertices[j].Y += mean;
                                 break;
                             case InterpolationFeature.Elevation:
@@ -1719,7 +1782,7 @@ namespace GeoReVi
                     case InterpolationFeature.Longitude:
                         globalMean = OriginalLocationValues.ToArray().Average(x => x.X);
                         break;
-                    case InterpolationFeature.Latitutde:
+                    case InterpolationFeature.Latitude:
                         globalMean = OriginalLocationValues.ToArray().Average(x => x.Y);
                         break;
                     case InterpolationFeature.Elevation:
@@ -1733,9 +1796,9 @@ namespace GeoReVi
                 {
                     await Task.Delay(0);
 
-
+                    //Getting the neighbors
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                     includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -1806,7 +1869,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 value += weights[i] * (validationPoints[i].X - globalMean);
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 value += weights[i] * (validationPoints[i].Y - globalMean);
                                 break;
                             case InterpolationFeature.Elevation:
@@ -1853,7 +1916,7 @@ namespace GeoReVi
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
-                        case InterpolationFeature.Latitutde:
+                        case InterpolationFeature.Latitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
@@ -1897,7 +1960,7 @@ namespace GeoReVi
 
                     //Buffer of the original data values where the number of points defined for validation will be removed before kriging
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[j], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                     includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -2001,7 +2064,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 DiscretizedLocationValues.Vertices[j].X += weights[i] * includedPoints[i].X;
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 DiscretizedLocationValues.Vertices[j].Y += weights[i] * includedPoints[i].Y;
                                 break;
                             case InterpolationFeature.Elevation:
@@ -2047,7 +2110,7 @@ namespace GeoReVi
                     await Task.Delay(0);
 
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                     includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -2171,7 +2234,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 value += weights[i] * validationPoints[i].X;
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 value += weights[i] * validationPoints[i].Y;
                                 break;
                             case InterpolationFeature.Elevation:
@@ -2214,7 +2277,7 @@ namespace GeoReVi
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
-                        case InterpolationFeature.Latitutde:
+                        case InterpolationFeature.Latitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
@@ -2366,6 +2429,7 @@ namespace GeoReVi
 
                 double G = 0;
 
+
                 //Performing the kriging calculation for each point
                 //Parallel.For(0, NumberOfSwaps, j =>
                 for (int j = 0; j < NumberOfSwaps; j++)
@@ -2393,7 +2457,7 @@ namespace GeoReVi
 
                     //Buffer of the original data values where the number of points defined for validation will be removed before kriging
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[rnd1], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge);
+                    int[] neighbors = await SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[rnd1], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature);
 
                     includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
@@ -2467,6 +2531,8 @@ namespace GeoReVi
                 try
                 {
                     double globalMean = 0;
+                    double globalMax = OriginalLocationValues.Select(x => x.Value[0]).Max();
+                    double globalMin = OriginalLocationValues.Select(x => x.Value[0]).Min();
 
                     //Calculating global mean for error treatment
                     switch (InterpolationFeature)
@@ -2477,7 +2543,7 @@ namespace GeoReVi
                         case InterpolationFeature.Longitude:
                             globalMean = OriginalLocationValues.ToArray().Average(x => x.X);
                             break;
-                        case InterpolationFeature.Latitutde:
+                        case InterpolationFeature.Latitude:
                             globalMean = OriginalLocationValues.ToArray().Average(x => x.Y);
                             break;
                         case InterpolationFeature.Elevation:
@@ -2497,6 +2563,7 @@ namespace GeoReVi
                     Parallel.For(0, DiscretizedLocationValues.Vertices.Count(), opt, (j, loopState) =>
                     //for (int j = 0; j < DiscretizedLocationValues.Vertices.Count(); j++)
                     {
+                        //Updating the progress bar
                         if (j != 0 && j % 100 == 0)
                             Status = (Convert.ToDouble(simulatedValues.Count()) / Convert.ToDouble(DiscretizedLocationValues.Vertices.Count())) * 100;
                         else if (IsCancelled == true)
@@ -2506,14 +2573,15 @@ namespace GeoReVi
 
                         //Defining the neighborhood
                         List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
-                        int[] neighbors = SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge,MaximumNeighborCount).Result;
+                        int[] neighbors = SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature).Result;
 
                         includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
                         if(simulatedValues.Count > 0)
                         {
+                            //Searching the neighbors
                             int[] neighborsSimulation = SpatialNeighborhoodHelper.SearchByDistance(simulatedValues.ToList(), 
-                                DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount).Result;
+                                DiscretizedLocationValues.Vertices[randomPath[j]], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature).Result;
 
                                 for (int i = 0; i < neighborsSimulation.Length; i++)
                                     includedPoints.Add(simulatedValues.ElementAt(neighborsSimulation[i]));
@@ -2570,7 +2638,7 @@ namespace GeoReVi
                                 case InterpolationFeature.Longitude:
                                     DiscretizedLocationValues.Vertices[randomPath[j]].X += weights[i] * (includedPoints[i].X - mean);
                                     break;
-                                case InterpolationFeature.Latitutde:
+                                case InterpolationFeature.Latitude:
                                     DiscretizedLocationValues.Vertices[randomPath[j]].Y += weights[i] * (includedPoints[i].Y - mean);
                                     break;
                                 case InterpolationFeature.Elevation:
@@ -2592,7 +2660,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 DiscretizedLocationValues.Vertices[randomPath[j]].X += mean;
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 DiscretizedLocationValues.Vertices[randomPath[j]].Y += mean;
                                 break;
                             case InterpolationFeature.Elevation:
@@ -2607,7 +2675,10 @@ namespace GeoReVi
                         double stdDev = Math.Sqrt((!IncludeLocalVariance ? DiscretizedLocationValues.Vertices[randomPath[j]].Value[1] : SelectedGlobalVariance[0].Vertices[randomPath[j]].Value[0]));
 
                         //Using the Box-Muller algorithm to produce Gaussian random number
-                        DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = DistributionHelper.SampleFromGaussian(krigingMean, stdDev);
+                        if(!TransformToOriginalDistribution)
+                            DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = DistributionHelper.SampleFromGaussian(krigingMean, stdDev);
+                        else
+                            DiscretizedLocationValues.Vertices[randomPath[j]].Value[0] = DistributionHelper.SampleFromGaussian(krigingMean, stdDev, globalMin, globalMax);
 
                         simulatedValues.Add(DiscretizedLocationValues.Vertices[randomPath[j]]);
                     //}
@@ -2647,7 +2718,7 @@ namespace GeoReVi
                     case InterpolationFeature.Longitude:
                         globalMean = OriginalLocationValues.ToArray().Average(x => x.X);
                         break;
-                    case InterpolationFeature.Latitutde:
+                    case InterpolationFeature.Latitude:
                         globalMean = OriginalLocationValues.ToArray().Average(x => x.Y);
                         break;
                     case InterpolationFeature.Elevation:
@@ -2664,13 +2735,15 @@ namespace GeoReVi
                     //Buffer of the original data values where the number of points defined for validation will be removed before kriging
                     List<LocationTimeValue> includedPoints = new List<LocationTimeValue>();
 
-                    int[] neighbors = SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge).Result;
+                    //Gettingthe neighbors
+                    int[] neighbors = SpatialNeighborhoodHelper.SearchByDistance(OriginalLocationValues, OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature).Result;
 
                     includedPoints.AddRange(OriginalLocationValues.Where(x => neighbors.Contains(OriginalLocationValues.IndexOf(x))).ToList());
 
                     if (simulatedValues.Count > 0)
                     {
-                        int[] neighborsSimulation = SpatialNeighborhoodHelper.SearchByDistance(simulatedValues.ToList(), OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge).Result;
+                        //Getting the neighbors
+                        int[] neighborsSimulation = SpatialNeighborhoodHelper.SearchByDistance(simulatedValues.ToList(), OriginalLocationValues[k], Vh.RangeX, Vh.RangeY, Vh.RangeZ, Vh.Azimuth, Vh.Dip, Vh.Plunge, MaximumNeighborCount, InterpolationFeature).Result;
 
                         for (int i = 0; i < neighborsSimulation.Length; i++)
                             includedPoints.Add(simulatedValues.ElementAt(neighborsSimulation[i]));
@@ -2742,7 +2815,7 @@ namespace GeoReVi
                             case InterpolationFeature.Longitude:
                                 value += weights[i] * (validationPoints[i].X - globalMean);
                                 break;
-                            case InterpolationFeature.Latitutde:
+                            case InterpolationFeature.Latitude:
                                 value += weights[i] * (validationPoints[i].Y - globalMean);
                                 break;
                             case InterpolationFeature.Elevation:
@@ -2801,7 +2874,7 @@ namespace GeoReVi
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;
-                        case InterpolationFeature.Latitutde:
+                        case InterpolationFeature.Latitude:
                             mae += Math.Abs(pointPairs[i][0] - pointPairs[i][1]);
                             rmseSum += Math.Abs(Math.Pow(pointPairs[i][0] - pointPairs[i][1], 2));
                             break;

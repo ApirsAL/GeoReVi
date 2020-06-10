@@ -55,7 +55,7 @@ namespace GeoReVi
                 source.Database.Connection.ConnectionString
                     = sqlCnxStringBuilder.ConnectionString;
             }
-            catch (Exception ex)
+            catch
             {
                 // set log item if required
             }
