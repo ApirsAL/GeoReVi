@@ -933,7 +933,7 @@ namespace GeoReVi
                         fillColor = (SolidColorBrush)ls3D.Symbols.FillColor;
                     }
 
-                    lock((SolidColorBrush)ls3D.Symbols.BorderColor)
+                    lock ((SolidColorBrush)ls3D.Symbols.BorderColor)
                     {
                         wireFrameColor = (SolidColorBrush)ls3D.Symbols.BorderColor;
                     }
@@ -1187,9 +1187,6 @@ namespace GeoReVi
 
                                             bool isFiltered = false;
 
-                                            if (face.Vertices.Any(x => !x.IsExterior))
-                                                continue;
-
                                             //Filter values
                                             if (Plane3D.IsActive == true)
                                             {
@@ -1231,6 +1228,9 @@ namespace GeoReVi
 
                                             for (int j = 0; j < faces.Count(); j++)
                                             {
+
+                                                if (faces[j].Vertices.Count(x => x.IsExterior) < face.Vertices.Count())
+                                                    continue;
 
                                                 double average = faces[j].Vertices.Select(x => x.Value[0]).Average();
 
@@ -1312,8 +1312,8 @@ namespace GeoReVi
                                             faceMaterials.Add(new Tuple<Face, SolidColorBrush>(face, m));
 
 
-                                                if (materials.Where(x => x.Color == m.Color).Count() == 0)
-                                                   materials.Add(m);
+                                            if (materials.Where(x => x.Color == m.Color).Count() == 0)
+                                                materials.Add(m);
                                         }
                                     }
 
@@ -1370,83 +1370,81 @@ namespace GeoReVi
 
                         }
 
-                            materials = materials.DistinctBy(x => x.Color).ToList();
+                        materials = materials.DistinctBy(x => x.Color).ToList();
 
-                            foreach (SolidColorBrush s in materials)
+                        foreach (SolidColorBrush s in materials)
+                        {
+
+                            Material mat = MaterialHelper.CreateMaterial(s.Color, (double)ls3D.Symbols.Opacity);
+
+                            // Create a mesh builder and add a box to it
+                            meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
+
+                            mesh = new System.Windows.Media.Media3D.MeshGeometry3D();
+
+                            List<Tuple<LocationTimeValue, SolidColorBrush>> a = pointMaterials.Where(x => x.Item2 == s).ToList();
+                            List<Tuple<Face, SolidColorBrush>> b = faceMaterials.Where(x => x.Item2 == s).ToList();
+
+                            for (int i = 0; i < a.Count(); i++)
                             {
+                                await Task.Delay(0);
 
-                                Material mat = MaterialHelper.CreateMaterial(s);
+                                switch (ls3D.Symbols.SymbolType)
+                                {
+                                    case SymbolTypeEnum.Box:
+                                        meshBuilder.AddBox(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, HelixToolkit.Wpf.BoxFaces.All);
+                                        break;
+                                    case SymbolTypeEnum.Dot:
+                                        meshBuilder.AddSphere(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, 10, 5);
+                                        break;
+                                }
+                            }
 
+                            for (int i = 0; i < b.Count(); i++)
+                            {
+                                await Task.Delay(0);
+
+                                switch (b[i].Item1.FaceType)
+                                {
+                                    case FaceType.Triangular:
+                                        meshBuilder.AddTriangle(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D());
+                                        break;
+                                    case FaceType.Quadrilateral:
+                                        ((Quadrilateral)b[i].Item1).SortVertices();
+                                        meshBuilder.AddQuad(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D(), b[i].Item1.Vertices[3].ToPoint3D());
+                                        break;
+                                }
+                            }
+
+                            mesh = meshBuilder.ToMesh(true);
+
+                            ///Adding the mesh to the model group
+                            if (ls3D.MeshDisplayType == MeshDisplayType.Faces || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
+                            {
+                                material = mat;
+                                ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
+                            }
+                            if (ls3D.MeshDisplayType == MeshDisplayType.WireFrame || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
+                            {
+                                ///Adding a wireframe
+                                ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(CreateWireframe(mesh, wireFrameColor, ls3D.WireframeThickness)));
+                            }
+                            if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Line)
+                            {
                                 // Create a mesh builder and add a box to it
                                 meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
 
-                                mesh = new System.Windows.Media.Media3D.MeshGeometry3D();
-
-                                List<Tuple<LocationTimeValue, SolidColorBrush>> a = pointMaterials.Where(x => x.Item2 == s).ToList();
-                                List<Tuple<Face, SolidColorBrush>> b = faceMaterials.Where(x => x.Item2 == s).ToList();
-
-                                for (int i = 0; i < a.Count(); i++)
-                                {
-                                    await Task.Delay(0);
-
-                                    switch (ls3D.Symbols.SymbolType)
-                                    {
-                                        case SymbolTypeEnum.Box:
-                                            meshBuilder.AddBox(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, ls3D.Symbols.SymbolSize, HelixToolkit.Wpf.BoxFaces.All);
-                                            break;
-                                        case SymbolTypeEnum.Dot:
-                                            meshBuilder.AddSphere(a[i].Item1.ToPoint3D(), ls3D.Symbols.SymbolSize, 10, 5);
-                                            break;
-                                    }
-                                }
-
-                                for (int i = 0; i < b.Count(); i++)
-                                {
-                                    await Task.Delay(0);
-
-                                    switch (b[i].Item1.FaceType)
-                                    {
-                                        case FaceType.Triangular:
-                                            meshBuilder.AddTriangle(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D());
-                                            break;
-                                        case FaceType.Quadrilateral:
-                                            ((Quadrilateral)b[i].Item1).SortVertices();
-                                            meshBuilder.AddQuad(b[i].Item1.Vertices[0].ToPoint3D(), b[i].Item1.Vertices[1].ToPoint3D(), b[i].Item1.Vertices[2].ToPoint3D(), b[i].Item1.Vertices[3].ToPoint3D());
-                                            break;
-                                    }
-                                }
+                                for (int i = 0; i < pointMaterials.Count() - 1; i++)
+                                    meshBuilder.AddCylinder(pointMaterials[i].Item1.ToPoint3D(), pointMaterials[i + 1].Item1.ToPoint3D(), ls3D.WireframeThickness, 5, false, false);
 
                                 mesh = meshBuilder.ToMesh(true);
 
-                                ///Adding the mesh to the model group
-                                if (ls3D.MeshDisplayType == MeshDisplayType.Faces || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
-                                {
-                                    material = mat;
-                                    ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material, BackMaterial = material }));
-                                }
-                                if (ls3D.MeshDisplayType == MeshDisplayType.WireFrame || ls3D.MeshDisplayType == MeshDisplayType.WireFrameAndFaces)
-                                {
-                                    ///Adding a wireframe
-                                    ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(CreateWireframe(mesh, wireFrameColor, ls3D.WireframeThickness)));
-                                }
-                                if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Line)
-                                {
-                                    pointMaterials.OrderBy(x => x.Item1.X).OrderBy(x => x.Item1.Y).OrderBy(x => x.Item1.Z);
+                                material = MaterialHelper.CreateMaterial(ls3D.LineColor);
 
-                                    // Create a mesh builder and add a box to it
-                                    meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
-
-                                    for (int i = 0; i < pointMaterials.Count() - 1; i++)
-                                        meshBuilder.AddCylinder(pointMaterials[i].Item1.ToPoint3D(), pointMaterials[i + 1].Item1.ToPoint3D(), ls3D.WireframeThickness, 5, false, false);
-
-                                    mesh = meshBuilder.ToMesh(true);
-
-                                    material = MaterialHelper.CreateMaterial(ls3D.LineColor);
-
-                                    ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material }));
-                                }
-
+                                ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material }));
                             }
+
+                        }
 
                         //Applying a transformation on the dataset
                         try
