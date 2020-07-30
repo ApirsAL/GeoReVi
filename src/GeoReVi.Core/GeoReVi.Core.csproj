@@ -402,6 +402,7 @@
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\EditorBaseClass.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\Image.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\LineChartTypeEnum.cs" />
+    <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\SunLight.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\SymbolType.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\HelperClasses\ThreeDEditor.cs" />
     <Compile Include="ViewModels\Controls\Charts\Charts\Viewmodels\MVVM\BarChartViewModel.cs" />

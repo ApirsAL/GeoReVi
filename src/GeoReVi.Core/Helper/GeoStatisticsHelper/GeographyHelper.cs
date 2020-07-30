@@ -13,7 +13,9 @@ namespace GeoReVi
         //Calculating the distance matrix of a set of points
         public static async Task<Tuple<alglib.sparsematrix, alglib.sparsematrix>> DistanceMatrix(Mesh Points, VariogramHelper vh, int maximumNumberOfPointPairsPerPoint = 50)
         {
-            Points.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(Points.Vertices.PickRandom(maximumNumberOfPointPairsPerPoint).ToList());
+
+            if(maximumNumberOfPointPairsPerPoint < Points.Vertices.Count())
+                Points.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(Points.Vertices.PickRandom(maximumNumberOfPointPairsPerPoint).ToList());
 
             alglib.sparsematrix distanceMatrix;
             alglib.sparsematrix diffMatrix;
@@ -34,9 +36,11 @@ namespace GeoReVi
                         if (neighborhood[j] == i)
                             continue;
 
+                        // Retrieving the values' difference
                         double diff = Points.Vertices[neighborhood[j]].Value[0] - Points.Vertices[i].Value[0];
 
-                        double dist = EuclideanDistance(Points.Vertices[neighborhood[j]].X - Points.Vertices[i].X, Points.Vertices[neighborhood[j]].Y - Points.Vertices[i].Y, Points.Vertices[neighborhood[j]].Z - Points.Vertices[i].Z);
+                        // Retrieving the distance
+                        double dist = Points.Vertices[i].GetEuclideanDistance(Points.Vertices[neighborhood[j]]);
 
                         alglib.sparseset(diffMatrix, i, neighborhood[j], diff);
                         alglib.sparseset(distanceMatrix, i, neighborhood[j], dist); 

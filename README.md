@@ -34,6 +34,9 @@ OS: Microsoft Windows
 ## Getting started
 To get started with GeoReVi you have to download the executable file [GeoReViv1.0.1.exe](https://github.com/ApirsAL/GeoReVi/blob/master/binaries/GeoReViv1.0.1.exe) in the **binaries** folder and run the installation. Tutorials can be found in the user manual. Exemplary datasets and samples are provided in the **docs** folders and in the zip archive. To setup a multi-user-environment you have to change the section including the connection string in your GeoReVi.exe.config file in the installation folder to the according database. However, then a properly structured database with many stored procedures is needed. Contact us under contact@georevi.com for more information.
 
+### Creating facies models
+<img src="docs/Samples/Interpolations/FaciesModel.png" width="60%">
+
 
 ## The Scope
 * Multi-tiered, extendable software application that aims to support geoscientists in common workflows during subsurface characterization

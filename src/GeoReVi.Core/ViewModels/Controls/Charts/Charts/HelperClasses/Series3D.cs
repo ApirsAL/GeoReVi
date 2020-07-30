@@ -332,6 +332,20 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// Checks whether values should be rounded to integers
+        /// </summary>
+        private bool roundToIntegers = false;
+        public bool RoundToIntegers 
+        { 
+            get => this.roundToIntegers; 
+            set
+            {
+                this.roundToIntegers = value;
+                NotifyOfPropertyChange(() => RoundToIntegers);
+            }
+        }
+
         #endregion
 
         #region Constructor

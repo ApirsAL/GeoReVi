@@ -337,6 +337,29 @@ namespace GeoReVi
                                     }
                                 }
                             }
+                            else if (xMinIndex == 0 && xMaxIndex == 0)
+                            {
+                                //3D collection of vertices
+                                LocationTimeValue[,] locs = new LocationTimeValue[(yMaxIndex - yMinIndex) + 1, (zMaxIndex - zMinIndex) + 1];
+
+                                //Adding vertices to the collection based on the count
+                                for (int i = 0; i < Vertices.Count(); i++)
+                                    locs[Vertices[i].MeshIndex[1], Vertices[i].MeshIndex[2]] = Vertices[i];
+
+                                for (int i = yMinIndex; i < yMaxIndex; i++)
+                                {
+                                    for (int j = zMinIndex; j < zMaxIndex; j++)
+                                    {
+                                        Quadrilateral quad = new Quadrilateral();
+
+                                        quad.Vertices = new LocationTimeValue[4] { locs[i, j], locs[i, j + 1], locs[i + 1, j + 1], locs[i + 1, j] };
+
+                                        quad.SortVertices();
+
+                                        Faces.Add(quad);
+                                    }
+                                }
+                            }
                             break;
                         case MeshCellType.Triangular:
                             TriangulateSurface();

@@ -351,11 +351,77 @@
                                     </Border>
                                 </ScrollViewer>
                             </TabItem>
-                                    <TabItem Header="Axes"
+                            <TabItem Header="Sunlights"
+                                     Style="{StaticResource LeftSideTabItem}">
+                                <ScrollViewer>
+                                    <Border>
+                                        <StackPanel>
+                                                <Label Content="Sunlight 1:"
+                                               Style="{StaticResource inputLabel}"/>
+                                            <DockPanel>
+                                                <Label Content="Altitude"
+                                               Style="{StaticResource inputLabel}"/>
+                                                <TextBox Text="{Binding Path=Ch3d.SunLight1.Altitude, Mode=TwoWay}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+                                                
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Azimuth"
+                                               Style="{StaticResource inputLabel}"/>
+                                                <TextBox Text="{Binding Path=Ch3d.SunLight1.Azimuth, Mode=TwoWay}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Brightness"
+                                               Style="{StaticResource inputLabel}"/>
+                                                <TextBox Text="{Binding Path=Ch3d.SunLight1.Brightness, Mode=TwoWay}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+
+                                            </DockPanel>
+                                            <Label Content="Sunlight 2:"
+                                               Style="{StaticResource inputLabel}"/>
+                                            <DockPanel>
+                                                <Label Content="Altitude"
+                                               Style="{StaticResource inputLabel}"/>
+                                                <TextBox Text="{Binding Path=Ch3d.SunLight2.Altitude, Mode=TwoWay}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Azimuth"
+                                               Style="{StaticResource inputLabel}"/>
+                                                <TextBox Text="{Binding Path=Ch3d.SunLight2.Azimuth, Mode=TwoWay}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Brightness"
+                                               Style="{StaticResource inputLabel}"/>
+                                                <TextBox Text="{Binding Path=Ch3d.SunLight2.Brightness, Mode=TwoWay}"
+                                                     Style="{StaticResource inputTextBox}"
+                                                     Width="50"
+                                                     Margin="0"/>
+
+                                            </DockPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </ScrollViewer>
+                            </TabItem>
+                            <TabItem Header="Axes"
                                                              Style="{StaticResource LeftSideTabItem}">
                                         <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Auto"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                             <Border Background="{StaticResource ForegroundLightBrush}">
@@ -472,7 +538,6 @@
                                                              Style="{StaticResource LeftSideTabItem}">
                                         <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Hidden"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                             <Border Background="{StaticResource ForegroundLightBrush}">
@@ -522,7 +587,6 @@
                                                              Style="{StaticResource LeftSideTabItem}">
                                         <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Hidden"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                             <Border Background="{StaticResource ForegroundLightBrush}">
@@ -599,7 +663,6 @@
                                                              Style="{StaticResource LeftSideTabItem}">
                                         <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Hidden"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                             <Border Background="{StaticResource ForegroundLightBrush}">
@@ -713,7 +776,6 @@
                                                                           Background="{StaticResource ForegroundLightBrush}">
                                                     <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Disabled"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                                         <StackPanel>
@@ -742,7 +804,11 @@
                                                                            FontWeight="DemiBold"/>
                                                                     <CheckBox IsChecked="{Binding Path=IsColorMap, Mode=TwoWay}"
                                                                   HorizontalAlignment="Right"/>
-                                                                    <TextBlock Text="Mesh visualization"
+                                                            <TextBlock Text="Round to integers"
+                                                                           FontWeight="DemiBold"/>
+                                                            <CheckBox IsChecked="{Binding Path=RoundToIntegers, Mode=TwoWay}"
+                                                                  HorizontalAlignment="Right"/>
+                                                            <TextBlock Text="Mesh visualization"
                                                                        FontWeight="DemiBold"/>
                                                                     <ComboBox HorizontalAlignment="Left" 
                                                               VerticalAlignment="Center" 
@@ -990,7 +1056,6 @@
                                      Style="{StaticResource LeftSideTabItem}">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Auto"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                     <Border Background="{StaticResource ForegroundLightBrush}">
@@ -1041,7 +1106,6 @@
                                      Style="{StaticResource LeftSideTabItem}">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto" 
                                                                       HorizontalScrollBarVisibility="Auto"
-                                                                      MaxHeight="400"
                                                                      Margin="2,2"
                                                                      VerticalAlignment="Top">
                                     <Border Background="{StaticResource ForegroundLightBrush}">
@@ -1248,16 +1312,12 @@
                                                     Target="{Binding Path=Ch3d.ThreeDEditor.CursorOnElementPosition, Mode=OneWayToSource}"/>
                         </local:DataPipeCollection>
                     </local:DataPiping.DataPipes>
-                    <HelixToolkit:SunLight Altitude="90"
-                                                   Brightness="0.1"/>
-                    <HelixToolkit:SunLight Altitude="-90"
-                                                   Brightness="0.1"/>
-                    <HelixToolkit:SunLight Altitude="45"
-                                           Azimuth="0"
-                                           Brightness="0.1"/>
-                    <HelixToolkit:SunLight Altitude="-45"
-                                           Azimuth="0"
-                                           Brightness="0.1"/>
+                    <HelixToolkit:SunLight Altitude="{Binding Path=Ch3d.Sunlight1.Altitude, Mode=TwoWay}"
+                                           Azimuth="{Binding Path=Ch3d.Sunlight1.Azimuth, Mode=TwoWay}"
+                                           Brightness="{Binding Path=Ch3d.Sunlight1.Brightness, Mode=TwoWay}"/>
+                    <HelixToolkit:SunLight Altitude="{Binding Path=Ch3d.Sunlight2.Altitude, Mode=TwoWay}"
+                                           Azimuth="{Binding Path=Ch3d.Sunlight2.Azimuth, Mode=TwoWay}"
+                                           Brightness="{Binding Path=Ch3d.Sunlight2.Brightness,Mode=TwoWay}"/>
                     <HelixToolkit:SortingVisual3D CheckForOpaqueVisuals="True"/>
                     <!--The content of this visual is defined in MainViewModel.cs-->
                     <ModelVisual3D Content="{Binding Path=Ch3d.Model}"/>

@@ -16,6 +16,7 @@ using TranslateTransform3D = System.Windows.Media.Media3D.TranslateTransform3D;
 using System.Windows.Media.Imaging;
 using System.Xml.Serialization;
 using System.Diagnostics;
+using Accord.Statistics.Testing;
 
 namespace GeoReVi
 {
@@ -493,6 +494,34 @@ namespace GeoReVi
             }
         }
 
+        /// <summary>
+        /// Sunlight one
+        /// </summary>
+        private SunLight sunLight1 = new SunLight(90, 0, 0.01);
+        public SunLight SunLight1
+        {
+            get => this.sunLight1;
+            set
+            {
+                this.sunLight1 = value;
+                NotifyOfPropertyChange(() => SunLight1);
+            }
+        }
+
+        /// <summary>
+        /// Sunlight two
+        /// </summary>
+        private SunLight sunLight2 = new SunLight(-90, 0, 0.01);
+        public SunLight SunLight2
+        {
+            get => this.sunLight2;
+            set
+            {
+                this.sunLight2 = value;
+                NotifyOfPropertyChange(() => SunLight2);
+            }
+        }
+
         #endregion
 
         #endregion
@@ -945,7 +974,7 @@ namespace GeoReVi
                             ls3D.Model = new Model3DGroup();
 
                         //Adding point cloud of the series
-                        if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Scatter)
+                        if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Scatter || ls3D.Chart3DDisplayType == Chart3DDisplayType.Line)
                         {
                             //Adding all points to the model group
                             foreach (var point in ls3D.Mesh.Vertices)
@@ -981,7 +1010,7 @@ namespace GeoReVi
                                         }
                                     }
 
-                                    SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(point.Value[0], ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
+                                    SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(ls3D.RoundToIntegers ? point.Value[0] : Math.Round(point.Value[0],0), ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
 
                                     pointMaterials.Add(new Tuple<LocationTimeValue, SolidColorBrush>(point, m));
 
@@ -1074,8 +1103,9 @@ namespace GeoReVi
                         }
                         else if (ls3D.Chart3DDisplayType == Chart3DDisplayType.Surface)
                         {
-
-                            ls3D.Mesh.FacesFromPointCloud();
+                            // Create faces if they don't exist yet
+                            if(ls3D.Mesh.Faces.Count() == 0)
+                                ls3D.Mesh.FacesFromPointCloud();
 
                             List<Face> faces = ls3D.Mesh.Faces.ToList();
 
@@ -1133,7 +1163,12 @@ namespace GeoReVi
                                     {
                                         try
                                         {
+                                            // Calculating the average of a face based on its nodes' values
                                             double average = newFaces[j].Vertices.Select(x => x.Value[0]).Average();
+
+                                            // Rounding if only integers should be displayed
+                                            if (ls3D.RoundToIntegers)
+                                                average = Math.Round(average, 0);
 
                                             //Filtering values based on minimum and maximum visibility
                                             if (ColorMapFilterActive)
@@ -1232,7 +1267,12 @@ namespace GeoReVi
                                                 if (faces[j].Vertices.Count(x => x.IsExterior) < face.Vertices.Count())
                                                     continue;
 
+                                                // Calculating the average of a face
                                                 double average = faces[j].Vertices.Select(x => x.Value[0]).Average();
+
+                                                // Rounding if only integers should be displayed
+                                                if (ls3D.RoundToIntegers)
+                                                    average = Math.Round(average, 0);
 
                                                 //Filtering values based on minimum and maximum visibility
                                                 if (ColorMapFilterActive)
@@ -1301,6 +1341,10 @@ namespace GeoReVi
                                         foreach (var face in faces)
                                         {
                                             double average = face.Vertices.Select(x => x.Value[0]).Average();
+
+                                            // Rounding if only integers should be displayed
+                                            if (ls3D.RoundToIntegers)
+                                                average = Math.Round(average, 0);
 
                                             //Filtering values based on minimum and maximum visibility
                                             if (ColorMapFilterActive)
@@ -1372,6 +1416,7 @@ namespace GeoReVi
 
                         materials = materials.DistinctBy(x => x.Color).ToList();
 
+                        // Adding all elements from each material class to the mesh
                         foreach (SolidColorBrush s in materials)
                         {
 
@@ -1435,11 +1480,18 @@ namespace GeoReVi
                                 meshBuilder = new HelixToolkit.Wpf.MeshBuilder(false, false);
 
                                 for (int i = 0; i < pointMaterials.Count() - 1; i++)
-                                    meshBuilder.AddCylinder(pointMaterials[i].Item1.ToPoint3D(), pointMaterials[i + 1].Item1.ToPoint3D(), ls3D.WireframeThickness, 5, false, false);
+                                {
+                                    try
+                                    {
+                                        meshBuilder.AddCylinder(pointMaterials[i].Item1.ToPoint3D(), pointMaterials[i + 1].Item1.ToPoint3D(), ls3D.WireframeThickness, 10, false, false);
+                                    }
+                                    catch
+                                    {
+                                        continue;
+                                    }
+                                }
 
                                 mesh = meshBuilder.ToMesh(true);
-
-                                material = MaterialHelper.CreateMaterial(ls3D.LineColor);
 
                                 ls3D.Model.Dispatcher.Invoke(() => ls3D.Model.Children.Add(new System.Windows.Media.Media3D.GeometryModel3D { Geometry = mesh, Material = material }));
                             }
