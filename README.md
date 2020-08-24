@@ -57,8 +57,18 @@ To get started with GeoReVi you have to download the executable file [GeoReViv1.
 ### Three-dimensional outcrop model
 <img src="docs/Samples/Meshes/OutcropModeling.png" width="60%">
 
+### Three-dimensional property model of the aluminum-oxide content of a rock cube
+<div class="sketchfab-embed-wrapper">
+    <iframe title="A 3D model" width="640" height="480" src="https://sketchfab.com/models/1a256da34de445ab8c28d7fe38415ffd/embed?autostart=1&amp;ui_controls=1&amp;ui_infos=1&amp;ui_inspector=1&amp;ui_stop=1&amp;ui_watermark=1&amp;ui_watermark_link=1" frameborder="0" allow="autoplay; fullscreen; vr" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+    <p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;">
+        <a href="https://sketchfab.com/3d-models/aluminum-oxide-composition-of-a-small-rock-cube-1a256da34de445ab8c28d7fe38415ffd?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">Aluminum-oxide composition of a small rock cube</a>
+        by <a href="https://sketchfab.com/GeoReVi?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">GeoReVi</a>
+        on <a href="https://sketchfab.com?utm_medium=embed&utm_source=website&utm_campaign=share-popup" target="_blank" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a>
+    </p>
+</div>
+
 ### Sequential simulation of the porosity
-<img src="docs/Samples/Meshes/SGS.gif" width="60%">
+<img src="docs/Samples/Meshes/SGS.gif" width="60%" style="align-self:center;">
 
 ## Algorithms
 * Semivariogram
