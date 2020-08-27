@@ -729,12 +729,6 @@
                                           IsChecked="{Binding Path=SelectedFieldMeasurement.measConfidential, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" 
                                           />
                                         </DockPanel>
-                                        <DockPanel>
-                                            <Label Content="Date:" 
-                                        Style="{StaticResource inputLabel}" 
-                                       Margin="3,3,0,3"/>
-                                            <DatePicker Text="{Binding Path=SelectedFieldMeasurement.measDate, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}"/>
-                                        </DockPanel>
                                     </StackPanel>
                                 </GroupBox>
                             </TabItem>

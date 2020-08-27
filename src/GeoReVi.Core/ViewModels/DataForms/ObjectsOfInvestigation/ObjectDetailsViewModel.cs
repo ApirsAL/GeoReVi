@@ -82,10 +82,40 @@ namespace GeoReVi
         /// <summary>
         /// Bool if the object is a drilling or not
         /// </summary>
-        public bool IsDrilling { get { try { return SelectedObject.ooiType == "Drilling"; } catch { return false; }; } set { NotifyOfPropertyChange(() => IsDrilling); } }
+        public bool IsDrilling 
+        { 
+            get 
+            { 
+                try 
+                {
+                    if (SelectedObject == null)
+                        return false;
+                    else
+                        return SelectedObject.ooiType == "Drilling"; 
+                } 
+                catch 
+                { 
+                    return false; 
+                }; 
+            } 
+            set 
+            { 
+                NotifyOfPropertyChange(() => IsDrilling); 
+            }
+        }
 
         //Object Type
-        public string Type { get => this.type; set { this.type = value; if (value != null) LoadData(value); NotifyOfPropertyChange(() => Type); } }
+        public string Type 
+        { 
+            get => this.type; 
+            set 
+            { 
+                this.type = value; 
+                if (value != null) 
+                    LoadData(value); 
+                NotifyOfPropertyChange(() => Type); 
+            } 
+        }
 
         /// <summary>
         /// The selected Object

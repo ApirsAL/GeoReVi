@@ -328,7 +328,7 @@
                             <Button Style="{StaticResource IconButton}"
                                                 Content="{StaticResource FontAwesomePlus}"
                                                 HorizontalAlignment="Right"
-                                                Tag="New facies type" >
+                                                Tag="New object" >
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="Click">
                                         <cal:ActionMessage MethodName="Add">
