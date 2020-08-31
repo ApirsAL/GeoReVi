@@ -35,7 +35,7 @@ OS: Microsoft Windows
 To get started with GeoReVi you have to download the executable file [GeoReViv1.0.1.exe](https://github.com/ApirsAL/GeoReVi/blob/master/binaries/GeoReViv1.0.1.exe) in the **binaries** folder and run the installation. Tutorials can be found in the user manual. Exemplary datasets and samples are provided in the **docs** folders and in the zip archive. To setup a multi-user-environment you have to change the section including the connection string in your GeoReVi.exe.config file in the installation folder to the according database. However, then a properly structured database with many stored procedures is needed. Contact us under contact@georevi.com for more information.
 
 ### Creating facies models
-<img src="docs/Samples/Interpolations/FaciesModel.png" width="60%">
+<img src="docs/Samples/Interpolations/FaciesModel.png" width="100%">
 
 
 ## The Scope
@@ -43,7 +43,7 @@ To get started with GeoReVi you have to download the executable file [GeoReViv1.
 * Geoscientific data management and analysis including petrophysical, geochemical, hydraulic, granulometric, magnetic, mechanical, sedimentary, elastic and radiogenic properties eased by a graphical user interface
 * Providing a rich selection of data mining algorithms and visualization techniques specifically aimed to characterize subsurface regions
 
-<img src="docs/Samples/Interpolations/CubeMeasurements.gif" width="60%">
+<img src="docs/Samples/Interpolations/CubeMeasurements.gif" width="100%">
 
 ## Types of charts
 * scatter charts
@@ -76,10 +76,10 @@ To get started with GeoReVi you have to download the executable file [GeoReViv1.
 * Self-organizing Maps
 
 ### Exploring the uncertainty space
-<img src="docs/Samples/Meshes/SGS_Uncertainty_Space.gif" width="60%">
+<img src="docs/Samples/Meshes/SGS_Uncertainty_Space.gif" width="100%">
 
 ### Mapping geological features in 3-D
-<img src="docs/Samples/Mapping/MappingPointsExtract.gif" width="60%">
+<img src="docs/Samples/Mapping/MappingPointsExtract.gif" width="100%">
 
 ## Contributing
 Individual view-models and views can be developed and integrated into GeoReVi.
@@ -95,5 +95,5 @@ If bugs or any other issues are identified we would be grateful for reporting th
 * Thanks go to all the people who contributed to the test data sets of GeoReVi!
 
 ### Reservoir-scale temperature distribution
-<img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="60%">
+<img src="docs/Samples/FrontCover/GitHubFrontCover.png" width="100%">
 
