@@ -55,10 +55,10 @@ To get started with GeoReVi you have to download the executable file [GeoReViv1.
 * 3D charts
 
 ### Three-dimensional outcrop model
-<img src="docs/Samples/Meshes/OutcropModeling.png" width="60%">
+<img src="docs/Samples/Meshes/OutcropModeling.png" width="100%">
 
 ### Sequential simulation of the porosity
-<img src="docs/Samples/Meshes/SGS.gif" width="60%" style="align-self:center;">
+<img src="docs/Samples/Meshes/SGS.gif" width="100%" style="align-self:center;">
 
 ## Algorithms
 * Semivariogram
