@@ -8,7 +8,7 @@ namespace GeoReVi
 {
     public class Hexahedron : Cell
     {
-        #region Public properties
+        #region Public methods
 
         /// <summary>
         /// Helper function to get the position of the i-th vertex.
@@ -155,10 +155,6 @@ namespace GeoReVi
 
             return ret;
         }
-
-        #endregion
-
-        #region Public methods
 
         /// <summary>
         /// Getting the element stiffness matrix necessary for finite element simulations

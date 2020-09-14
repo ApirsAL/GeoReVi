@@ -371,7 +371,7 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                    <Border Grid.Column="1"
+                    <!--<Border Grid.Column="1"
                             BorderThickness="1"
                     Background="{StaticResource BackgroundVeryLightBrush}">
                         <Grid HorizontalAlignment="Stretch" 
@@ -445,10 +445,10 @@
                             </ScrollViewer>
                         </StackPanel>
                     </Grid>
-                </Border>
+                </Border>-->
             </Grid>
             <!---List of participants-->
-                <Border Grid.Column="0"
+                <!--<Border Grid.Column="0"
                     Grid.Row="2"
                     Background="{StaticResource BackgroundVeryLightBrush}">
                     <Grid HorizontalAlignment="Stretch" 
@@ -540,7 +540,7 @@
                         </ScrollViewer>
                     </StackPanel>
                 </Grid>
-            </Border>
+            </Border>-->
         </Grid>
     </Border>
     </ScrollViewer>

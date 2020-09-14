@@ -392,7 +392,7 @@
                                                  Foreground="{StaticResource ForegroundLightBrush}"
                                                  />
                                                             </MenuItem.Header>
-                                                            <MenuItem Header="My Account"
+                                                            <!--<MenuItem Header="My Account"
                                   x:Name="MyAccount"
                                   HorizontalAlignment="Left">
                                                                 <MenuItem.Icon>
@@ -409,8 +409,8 @@
                                                                         </cal:ActionMessage>
                                                                     </i:EventTrigger>
                                                                 </i:Interaction.Triggers>
-                                                            </MenuItem>
-                                                            <MenuItem Header="Logout"
+                                                            </MenuItem>-->
+                                                            <!--<MenuItem Header="Logout"
                               x:Name="LogoutMenuItem">
                                                                 <MenuItem.Icon>
                                                                     <fa:ImageAwesome Icon="SignOut" 
@@ -425,7 +425,7 @@
                                                                         </cal:ActionMessage>
                                                                     </i:EventTrigger>
                                                                 </i:Interaction.Triggers>
-                                                            </MenuItem>
+                                                            </MenuItem>-->
                                                             <MenuItem Header="Exit"
                               x:Name="ShutDownMenuItem">
                                                                 <MenuItem.Icon>

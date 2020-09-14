@@ -297,13 +297,14 @@ namespace GeoReVi
             SideMenuViewModel = new SideMenuViewModel();
 
             ChangeUser(0, "Logged out");
-            LoadView("LoginView");
+            //LoadView("LoginView");
 
 
             LocalMode = false;
             IsLoading = false;
             IsBooting = false;
 
+            UseLocalMode();
         }
 
         #endregion

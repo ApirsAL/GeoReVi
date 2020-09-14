@@ -285,7 +285,7 @@
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Helper\GeometryBuilder.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Helper\TriangulationCellHelper.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Hexahedron.cs" />
-    <Compile Include="Helper\GeometryHelper\SpatialObjects\LocationValue.cs" />
+    <Compile Include="Helper\GeometryHelper\SpatialObjects\LocationTimeValue.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\Mesh.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\MeshCellType.cs" />
     <Compile Include="Helper\GeometryHelper\SpatialObjects\MeshDisplayType.cs" />
