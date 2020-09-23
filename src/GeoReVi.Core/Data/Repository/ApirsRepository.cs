@@ -963,9 +963,9 @@ namespace GeoReVi
                                 .Where(x => (filter != "" ? (string)x.GetType().GetProperty(filterProperty).GetValue(x, null) == filter : 0 == 0))
                                 .Select(t => new Tuple<double, double, double, double, DateTime, string>(
                             Convert.ToDouble(t.GetType().GetProperty(property).GetValue(t, null)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).Select(lambdaX.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).First().measLocalCoordinateX)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).Select(lambdaY.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).First().measLocalCoordinateY)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).Select(lambdaZ.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).First().measLocalCoordinateZ)),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).Select(lambdaX.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).Select(lambdaY.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.tgrfimeIdPk).Select(lambdaZ.Compile()).First()),
                             Convert.ToDateTime(fieldMeasurements.Where(labme => labme.measIdPk == t.tgrfimeIdPk).Select(labme => labme.measDate).FirstOrDefault()),
                             fieldMeasurements.Where(labme => labme.measIdPk == t.tgrfimeIdPk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();
@@ -977,9 +977,9 @@ namespace GeoReVi
                                 .Where(x => (filter != "" ? (string)x.GetType().GetProperty(filterProperty).GetValue(x, null) == filter : 0 == 0))
                                 .Select(t => new Tuple<double, double, double, double, DateTime, string>(
                             Convert.ToDouble(t.GetType().GetProperty(property).GetValue(t, null)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).Select(lambdaX.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).First().measLocalCoordinateX)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).Select(lambdaY.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).First().measLocalCoordinateY)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).Select(lambdaZ.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).First().measLocalCoordinateZ)),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).Select(lambdaX.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).Select(lambdaY.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.susfimeIdPk).Select(lambdaZ.Compile()).First()),
                             Convert.ToDateTime(fieldMeasurements.Where(labme => labme.measIdPk == t.susfimeIdPk).Select(labme => labme.measDate).FirstOrDefault()),
                             fieldMeasurements.Where(labme => labme.measIdPk == t.susfimeIdPk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();
@@ -991,9 +991,9 @@ namespace GeoReVi
                                 .Where(x => (filter != "" ? (string)x.GetType().GetProperty(filterProperty).GetValue(x, null) == filter : 0 == 0))
                                 .Select(t => new Tuple<double, double, double, double, DateTime, string>(
                             Convert.ToDouble(t.GetType().GetProperty(property).GetValue(t, null)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).Select(lambdaX.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).First().measLocalCoordinateX)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).Select(lambdaY.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).First().measLocalCoordinateY)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).Select(lambdaZ.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).First().measLocalCoordinateZ)),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).Select(lambdaX.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).Select(lambdaY.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.slfimeIdFk).Select(lambdaZ.Compile()).First()),
                             Convert.ToDateTime(fieldMeasurements.Where(labme => labme.measIdPk == t.slfimeIdFk).Select(labme => labme.measDate).FirstOrDefault()),
                             fieldMeasurements.Where(labme => labme.measIdPk == t.slfimeIdFk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();
@@ -1005,9 +1005,9 @@ namespace GeoReVi
                                 .Where(x => (filter != "" ? (string)x.GetType().GetProperty(filterProperty).GetValue(x, null) == filter : 0 == 0))
                                 .Select(t => new Tuple<double, double, double, double, DateTime, string>(
                             Convert.ToDouble(t.GetType().GetProperty(property).GetValue(t, null)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).Select(lambdaX.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).First().measLocalCoordinateX)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).Select(lambdaY.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).First().measLocalCoordinateY)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).Select(lambdaZ.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).First().measLocalCoordinateZ)),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).Select(lambdaX.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).Select(lambdaY.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.hhmeasIdFk).Select(lambdaZ.Compile()).First()),
                             Convert.ToDateTime(fieldMeasurements.Where(labme => labme.measIdPk == t.hhmeasIdFk).Select(labme => labme.measDate).FirstOrDefault()),
                             fieldMeasurements.Where(labme => labme.measIdPk == t.hhmeasIdFk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();
@@ -1019,9 +1019,9 @@ namespace GeoReVi
                                 .Where(x => (filter != "" ? (string)x.GetType().GetProperty(filterProperty).GetValue(x, null) == filter : 0 == 0))
                                 .Select(t => new Tuple<double, double, double, double, DateTime, string>(
                             Convert.ToDouble(t.GetType().GetProperty(property).GetValue(t, null)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).Select(lambdaX.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).First().measLocalCoordinateX)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).Select(lambdaY.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).First().measLocalCoordinateY)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).Select(lambdaZ.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).First().measLocalCoordinateZ)),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).Select(lambdaX.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).Select(lambdaY.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.rqdfimeIdFk).Select(lambdaZ.Compile()).First()),
                             Convert.ToDateTime(fieldMeasurements.Where(labme => labme.measIdPk == t.rqdfimeIdFk).Select(labme => labme.measDate).FirstOrDefault()),
                             fieldMeasurements.Where(labme => labme.measIdPk == t.rqdfimeIdFk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();
@@ -1033,9 +1033,9 @@ namespace GeoReVi
                                 .Where(x => (filter != "" ? (string)x.GetType().GetProperty(filterProperty).GetValue(x, null) == filter : 0 == 0))
                                 .Select(t => new Tuple<double, double, double, double, DateTime, string>(
                             Convert.ToDouble(t.GetType().GetProperty(property).GetValue(t, null)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).Select(lambdaX.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).First().measLocalCoordinateX)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).Select(lambdaY.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).First().measLocalCoordinateY)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).Select(lambdaZ.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).First().measLocalCoordinateZ)),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).Select(lambdaX.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).Select(lambdaY.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.btfimeIdFk).Select(lambdaZ.Compile()).First()),
                             Convert.ToDateTime(fieldMeasurements.Where(labme => labme.measIdPk == t.btfimeIdFk).Select(labme => labme.measDate).FirstOrDefault()),
                             fieldMeasurements.Where(labme => labme.measIdPk == t.btfimeIdFk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();
@@ -1046,9 +1046,9 @@ namespace GeoReVi
                                 .Where(x => (filter != "" ? (string)x.GetType().GetProperty(filterProperty).GetValue(x, null) == filter : 0 == 0))
                                 .Select(t => new Tuple<double, double, double, double, DateTime, string>(
                             Convert.ToDouble(t.GetType().GetProperty(property).GetValue(t, null)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).Select(lambdaX.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).First().measLocalCoordinateX)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).Select(lambdaY.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).First().measLocalCoordinateY)),
-                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).Select(lambdaZ.Compile()).First() + (global ? 0 : fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).First().measLocalCoordinateZ)),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).Select(lambdaX.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).Select(lambdaY.Compile()).First()),
+                            Convert.ToDouble(fieldMeasurements.Where(meas => meas.measIdPk == t.sgrIdPk).Select(lambdaZ.Compile()).First()),
                             Convert.ToDateTime(fieldMeasurements.Where(labme => labme.measIdPk == t.sgrIdPk).Select(labme => labme.measDate).FirstOrDefault()),
                             fieldMeasurements.Where(labme => labme.measIdPk == t.sgrIdPk).Select(labme => labme.measIdPk.ToString()).FirstOrDefault()
                         )).Where(x => x.Item1 != 0).ToList();

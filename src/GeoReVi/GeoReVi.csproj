@@ -571,9 +571,6 @@
     <Content Include="Media\Data\Petrography.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Media\Documents\User manual.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Media\Data\Alias.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -597,9 +594,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Media\Images\Login_Background.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Media\Icons\Navigation\RectangleSelection.png" />
     <Resource Include="Media\Icons\Navigation\Globe.png" />
     <Resource Include="Media\Icons\Navigation\ZoomToExtend.png" />
@@ -611,9 +605,6 @@
     <Resource Include="Media\Icons\NewRecord.png" />
     <Resource Include="Media\Icons\Powder.png" />
     <Resource Include="Media\Icons\ThinSection.png" />
-    <Content Include="Media\Images\Login.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\Controls\Chart\Views\MVVM\BarChartView.xaml">

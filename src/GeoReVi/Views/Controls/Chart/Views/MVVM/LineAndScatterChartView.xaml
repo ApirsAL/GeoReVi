@@ -473,7 +473,7 @@ AncestorType={x:Type UserControl}}, Path=DataContext.Lco.TickColor}"
                                 </ItemsControl>
                                 <ItemsControl ItemsSource="{Binding Path=Lco.ColorMap.ColormapBrushes}"
                                           VirtualizingPanel.IsVirtualizing="True"
-                                              Visibility="{Binding Path=Lco.IsColorMap, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                              Visibility="{Binding Path=Lco.IsColorMap, NotifyOnSourceUpdated=True, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <Canvas>
