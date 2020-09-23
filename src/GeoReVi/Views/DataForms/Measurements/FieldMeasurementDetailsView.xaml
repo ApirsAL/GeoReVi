@@ -655,6 +655,28 @@
                                      Text="{Binding Path=SelectedObject.ooiName, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
                                         </DockPanel>
                                         <DockPanel>
+                                            <Label Content="Mathematical type:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Grid.Column="0" 
+                                   Grid.Row="19" Margin="3,4,0,4"/>
+                                            <TextBox IsEnabled="False"
+                                     HorizontalAlignment="Right"
+                                                     IsReadOnly="True"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedFieldMeasurement.measResultType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                        </DockPanel>
+                                        <DockPanel>
+                                            <Label Content="Type:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Grid.Column="0" 
+                                   Grid.Row="19" Margin="3,4,0,4"/>
+                                            <TextBox IsEnabled="False"
+                                     HorizontalAlignment="Right"
+                                                     IsReadOnly="True"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedFieldMeasurement.measType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                        </DockPanel>
+                                        <DockPanel>
                                             <Label Content="Project:"
                                 Style="{StaticResource inputLabel}"
                                  Margin="3,4,0,4"/>
@@ -669,7 +691,7 @@
 
                                         </DockPanel>
                                         <DockPanel>
-                                            <Label Content="Type:"
+                                            <Label Content="Parameter:"
                                         Style="{StaticResource inputLabel}"
                                         Margin="3,5,0,5"/>
                                             <ComboBox x:Name="sampTypeTextBox" 

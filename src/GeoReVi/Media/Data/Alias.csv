@@ -485,3 +485,27 @@ hhMeasurementTime,Measurement time [s],tblHydraulicHead,Hydraulic head,1,Numeric
 sampElevation,Elevation [m a.s.l.],tblRockSample,Rock sample,1,Numerical
 tgrTotalCount,Total counts [-],tblTotalGammaRay,Total Gamma Ray,1,Numerical
 tgrValueAPI,API,tblTotalGammaRay,Total Gamma Ray,1,Numerical
+measUploader,Uploader,tblMeasurement,Measurements,0,Categorical
+measProject,Project,tblMeasurement,Measurements,0,Categorical
+measprjIdFk,ProjectId,tblMeasurement,Measurements,0,Numerical
+measUploaderId,UploaderId,tblMeasurement,Measurements,0,numerical
+tblStructureOrientation,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblSpectralGammaRay,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblSusceptibility,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblTotalGammaRay,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblSonicLog,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblRockQualityDesignationIndex,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblBoreholeTemperature,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblApparentPermeability,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblAxialCompression,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblBulkDensity,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblGrainDensity,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblGrainSize,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblHydraulicHead,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblIntrinsicPermeability,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblIsotopes,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblResistivity,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblSonicWave,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblThermalConductivity,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblThermalDiffusivity,StructureOrientation,tblMeasurement,Measurements,0,Categorical
+tblXRayFluorescenceSpectroscopy,StructureOrientation,tblMeasurement,Measurements,0,Categorical

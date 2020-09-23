@@ -709,6 +709,28 @@
 
                                             </DockPanel>
                                             <DockPanel>
+                                                <Label Content="Mathematical type:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Grid.Column="0" 
+                                   Grid.Row="19" Margin="3,4,0,4"/>
+                                                <TextBox IsEnabled="False"
+                                     HorizontalAlignment="Right"
+                                                     IsReadOnly="True"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedLaboratoryMeasurement.measResultType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                            </DockPanel>
+                                            <DockPanel>
+                                                <Label Content="Type:" 
+                                   Style="{StaticResource inputLabel}"
+                                   Grid.Column="0" 
+                                   Grid.Row="19" Margin="3,4,0,4"/>
+                                                <TextBox IsEnabled="False"
+                                     HorizontalAlignment="Right"
+                                                     IsReadOnly="True"
+                                     Style="{StaticResource inputTextBox}"
+                                     Text="{Binding Path=SelectedLaboratoryMeasurement.measType, Mode=TwoWay, NotifyOnValidationError=true, ValidatesOnExceptions=true}" Margin="0,3,3,3"/>
+                                            </DockPanel>
+                                            <DockPanel>
                                                 <Label Content="Type:"
                                         Style="{StaticResource inputLabel}"
                                         Margin="3,5,0,5"/>
