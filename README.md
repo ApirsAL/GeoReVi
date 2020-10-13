@@ -94,7 +94,9 @@ To get started with GeoReVi you have to download the executable file [GeoReViv1.
 </p>
 
 ## Contributing
-Individual view-models and views can be developed and integrated into GeoReVi.
+Individual view-models and views can be developed and integrated into GeoReVi. If you wish to contribute you can [fork the project](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo), make your changes, commit to your repository, and then [create a pull request](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork). The development team can then review your contribution and commit it upstream as appropriate.
+
+If you commit a new feature, add [FEATURE] to your commit message AND give a clear description of the new feature.
 
 If bugs or any other issues are identified we would be grateful for reporting those in the [Issues](https://github.com/ApirsAL/GeoReVi/issues) or via [email](contact@georevi.com).
 
