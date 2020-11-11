@@ -404,6 +404,7 @@ namespace GeoReVi
                         tableCloned.ConvertColumnType("Z", typeof(double));
                         tableCloned.ConvertColumnType("DateTime", typeof(DateTime));
                         tableCloned.Columns["DateTime"].DefaultValue = DateTime.Now;
+                        tableCloned.ConvertColumnType("Name", typeof(string));
 
                         table.Locale = System.Globalization.CultureInfo.GetCultureInfo("en-US");
                         tableCloned.Locale = System.Globalization.CultureInfo.GetCultureInfo("en-US");
