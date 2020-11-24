@@ -1221,6 +1221,27 @@ namespace GeoReVi
 
             try
             {
+                //Updating the selected drill cores
+                if (DrillCores.Count != 0)
+
+                    using (var db1 = new ApirsRepository<tblDrillCore>())
+                        foreach (tblDrillCore dc in DrillCores)
+                        {
+                            try
+                            {
+                                tblDrillCore result2 = db1.GetModelByExpression(a => a.dcIdPk == dc.dcIdPk).First();
+
+                                if (result2 != null)
+                                    db1.UpdateModel(dc, dc.dcIdPk);
+
+                                db1.Save();
+                            }
+                            catch (Exception exc)
+                            {
+                                continue;
+                            }
+                        }
+
                 using (var db = new ApirsRepository<tblDrillCore>())
                 {
                     db.InsertModel(new tblDrillCore() { dcdrillNameFk = SelectedObject.ooiName });
