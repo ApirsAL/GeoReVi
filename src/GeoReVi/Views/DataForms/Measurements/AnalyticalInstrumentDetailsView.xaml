@@ -35,7 +35,6 @@
         </local:InputBindingTrigger>
     </i:Interaction.Triggers>
     <!---Updating rock sample informations-->
-    <!---Updating rock sample informations-->
     <Border x:Name="MainBorder" 
             CornerRadius="8"
             Background="Transparent">
