@@ -412,7 +412,7 @@ namespace GeoReVi
             }
             catch
             {
-
+                throw new Exception("Couldn't swap properties.");
             }
 
             return ret;
