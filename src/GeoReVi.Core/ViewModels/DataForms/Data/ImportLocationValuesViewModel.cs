@@ -126,11 +126,6 @@ namespace GeoReVi
                 },
                 new tblAlia()
                 {
-                    alColumnName = "Value6",
-                    alAlias = "Value6"
-                },
-                new tblAlia()
-                {
                     alColumnName = "Value7",
                     alAlias = "Value7"
                 },
@@ -310,7 +305,7 @@ namespace GeoReVi
                 }
                 catch (Exception e)
                 {
-
+                    throw e;
                 }
         }
 
@@ -331,7 +326,7 @@ namespace GeoReVi
                 }
                 catch (Exception e)
                 {
-
+                    throw e;
                 }
         }
 
@@ -342,7 +337,8 @@ namespace GeoReVi
         {
             IsCancelled = true;
 
-            ImportOneEntities.Clear();
+            if(ImportOneEntities != null)
+                ImportOneEntities.Clear();
 
             if (!Loading)
                 ((AdditionalShellViewModel)this.Parent).TryClose();
@@ -359,8 +355,6 @@ namespace GeoReVi
         //Next step
         public async void Next()
         {
-            CommandHelper ch = new CommandHelper();
-
             try
             {
                 if (IsStep1)
@@ -373,18 +367,22 @@ namespace GeoReVi
 
                     int numberOfColumns = ImportedTable.Columns.Count;
 
+                    // Iterating over each column of the imported table and assigning the associated GeoReVi header
                     for (int i = 0; i < numberOfColumns; i++)
                     {
                         try
                         {
                             string name = ImportedTable.Columns[i].ColumnName;
-                            string columnDb = allAlias.Where(x => x.alAlias == Mapping.Where(y => y.String1 == name).Select(y => y.String2).First()).Select(x => x.alColumnName).First();
+                            string columnDb = allAlias.Where(x => x.alAlias == Mapping.Where(y => y.String1 == name).Select(y => y.String2).FirstOrDefault()).Select(x => x.alColumnName).FirstOrDefault();
+
+                            if (String.IsNullOrEmpty(columnDb))
+                                continue;
 
                             ImportedTable.Columns[name].ColumnName = columnDb;
                         }
                         catch
                         {
-
+                            throw new Exception("Data import failed.");
                         }
                     }
 
@@ -445,14 +443,14 @@ namespace GeoReVi
                     }
                     catch
                     {
-
+                        throw new Exception("Data import failed.");
                     }
                 }
 
             }
             catch
             {
-
+                throw new Exception("Data import failed.");
             }
 
             if (!Loading)

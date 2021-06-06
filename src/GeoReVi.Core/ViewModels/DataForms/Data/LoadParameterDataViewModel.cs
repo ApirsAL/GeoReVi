@@ -157,7 +157,7 @@ namespace GeoReVi
         /// <summary>
         /// The type of join that should be applied
         /// </summary>
-        private JoinMethod joinMethod= JoinMethod.Exact;
+        private JoinMethod joinMethod = JoinMethod.Exact;
         public JoinMethod JoinMethod
         {
             get => this.joinMethod;
@@ -284,7 +284,7 @@ namespace GeoReVi
             }
             catch
             {
-
+                throw new Exception("Couldn't switch property position");
             }
         }
 
@@ -377,7 +377,7 @@ namespace GeoReVi
                             Date = x.Field<DateTime?>("DateTime").HasValue ? x.Field<DateTime>("DateTime") : DateTime.Now
                         }).ToList());
 
-                        MeasPoints.Add(new Mesh() { Name = "New data set", Vertices = vertices});
+                        MeasPoints.Add(new Mesh() { Name = "New data set", Vertices = vertices });
                     }
                     else if (fi.Extension == ".CSV" || fi.Extension == ".csv")
                     {
@@ -438,13 +438,22 @@ namespace GeoReVi
                                 Convert.ToDouble(x.Field<double?>("Value10")),
                             },
                             X = (x.Field<double?>("X") == -9999 || x.Field<double?>("X") == -999999 || x.Field<double?>("X") == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>("X")))) ? 0 : Convert.ToDouble(x.Field<double?>("X")),
-                            Y = (x.Field<double?>("Y") == -9999 || x.Field<double?>("Y") == -999999 || x.Field<double?>("Y") == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>("Y")),
-                            Z = (x.Field<double?>("Z") == -9999 || x.Field<double?>("Z") == -999999 || x.Field<double?>("Z") == 9999999) ? 0 : Convert.ToDouble(x.Field<double?>("Z")),
+                            Y = (x.Field<double?>("Y") == -9999 || x.Field<double?>("Y") == -999999 || x.Field<double?>("Y") == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>("Y")))) ? 0 : Convert.ToDouble(x.Field<double?>("Y")),
+                            Z = (x.Field<double?>("Z") == -9999 || x.Field<double?>("Z") == -999999 || x.Field<double?>("Z") == 9999999 || Double.IsNaN(Convert.ToDouble(x.Field<double?>("Z")))) ? 0 : Convert.ToDouble(x.Field<double?>("Z")),
                             Name = x.Field<string>("Name"),
                             Date = x.Field<DateTime?>("DateTime").HasValue ? x.Field<DateTime>("DateTime") : DateTime.Now
                         }).ToList());
 
-                        Mesh importMesh = new Mesh() { Name = "New data set", Vertices = vertices, Dimensionality = Dimensionality.ThreeD };
+                        Mesh importMesh = new Mesh()
+                        {
+                            Name = "New data set",
+                            Vertices = vertices,
+                            Dimensionality = Dimensionality.ThreeD,
+                            Properties = new BindableCollection<KeyValuePair<int, string>>()
+                        };
+
+
+
                         importMesh.GetProperties();
 
                         MeasPoints.Add(importMesh);
@@ -455,18 +464,36 @@ namespace GeoReVi
                         {
                             Mesh importMesh = (Mesh)fi.FullName.FromXml<Mesh>();
 
-                            for (int i = 0; i < importMesh.Vertices.Count(); i++)
-                                if (importMesh.Vertices[i].Value.Count() > 1)
+                            int numberOfValues = 0;
+                            int numberOfProperties = 0;
+
+                            if (importMesh.Properties != null && importMesh.Properties.Count != 0)
+                                numberOfProperties = importMesh.Properties.Count;
+
+                            if (importMesh.Vertices != null && importMesh.Vertices.Count >= 0)
+                                numberOfValues = importMesh.Vertices[0].Value.Count();
+
+                            // There is a bug in the XML serialization routing of Microsoft,
+                            // so we must iterate over each vertice to check whether the
+                            // values were imported correctly and at the correct index
+                            if (numberOfValues != numberOfProperties && numberOfValues > 1)
+                            {
+                                for (int j = 0; j < numberOfValues; j++)
                                 {
-                                    for (int j = 0; j < importMesh.Vertices[i].Value.Count(); j++)
+                                    List<double> values = importMesh.Vertices.Select(x => x.Value[j]).ToList();
+                                    if (values.Any(x => x != 0))
+                                        continue;
+                                    else
                                     {
-                                        if (j == 0)
-                                            continue;
-                                        else
-                                            if (importMesh.Vertices[i].Value[j] > importMesh.Vertices[i].Value[0])
-                                            importMesh.Vertices[i].Value[0] = importMesh.Vertices[i].Value[j];
+                                        for (int i = 0; i < importMesh.Vertices.Count(); i++)
+                                            importMesh.Vertices[i].Value.RemoveAt(j);
+
+                                        numberOfValues = importMesh.Vertices[0].Value.Count();
+
+                                        j--;
                                     }
                                 }
+                            }
 
                             importMesh.GetProperties();
                             importMesh.Cells.Clear();
@@ -569,7 +596,7 @@ namespace GeoReVi
             {
                 var a = new Mesh(SelectedMeasPoint);
 
-                switch(TransformationType)
+                switch (TransformationType)
                 {
                     case TransformationType.ZScore:
                         DistributionHelper.ZScoreTransformation(ref a);
@@ -623,7 +650,7 @@ namespace GeoReVi
             {
                 List<Mesh> groupedMeshes = new List<Mesh>();
 
-                List<string> names =  SelectedMeasPoint.Vertices.Select(x => x.Name).Distinct().ToList();
+                List<string> names = SelectedMeasPoint.Vertices.Select(x => x.Name).Distinct().ToList();
 
                 names.ForEach(x =>
                 {
@@ -742,7 +769,7 @@ namespace GeoReVi
                     dList.AddRange(await GetElevationsFromHTTP(url));
                 }
 
-                for ( int i = 0; i<SelectedMeasPoint.Vertices.Count(); i++)
+                for (int i = 0; i < SelectedMeasPoint.Vertices.Count(); i++)
                 {
                     LocationTimeValue loc = SelectedMeasPoint.Vertices[i];
 
@@ -818,9 +845,9 @@ namespace GeoReVi
 
                 List<SpatialInterpolationHelper> sps = new List<SpatialInterpolationHelper>();
 
-               for(int i = 0; i< (SpatialInterpolationHelper.InterpolationMethod == GeostatisticalInterpolationMethod.SequentialGaussianSimulation ? SpatialInterpolationHelper.NumberOfRealizations : 1); i++)
-               {
-                    if(i!=0)
+                for (int i = 0; i < (SpatialInterpolationHelper.InterpolationMethod == GeostatisticalInterpolationMethod.SequentialGaussianSimulation ? SpatialInterpolationHelper.NumberOfRealizations : 1); i++)
+                {
+                    if (i != 0)
                     {
                         SpatialInterpolationHelper sp = new SpatialInterpolationHelper(SpatialInterpolationHelper);
                         sps.Add(sp);
@@ -830,12 +857,12 @@ namespace GeoReVi
                     {
                         tasks.Add(SpatialInterpolationHelper.ComputeInterpolation());
                     }
-               }
+                }
 
-               MeasPoints.AddRange(await Task.WhenAll(tasks));
+                MeasPoints.AddRange(await Task.WhenAll(tasks));
 
-                if(SpatialInterpolationHelper.ExportResiduals)
-                     MeasPoints.Add(new Mesh(SpatialInterpolationHelper.Residuals));
+                if (SpatialInterpolationHelper.ExportResiduals)
+                    MeasPoints.Add(new Mesh(SpatialInterpolationHelper.Residuals));
             }
             catch
             {
@@ -971,7 +998,7 @@ namespace GeoReVi
                 }
                 locString += locList[ndx].Y.ToString() + "," + locList[ndx].X.ToString();
             }
-            retVal = string.Format(BASE_URI_STRING, locString,GetBingKey());
+            retVal = string.Format(BASE_URI_STRING, locString, GetBingKey());
             return retVal;
         }
 

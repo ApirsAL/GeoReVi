@@ -77,26 +77,22 @@
                                     <Grid Background="{StaticResource ForegroundLightBrush}">
                                         <DataGrid ItemsSource="{Binding Vertices,
                                                                 Mode=TwoWay, 
-                                                                NotifyOnSourceUpdated=True}"
+                                                                NotifyOnSourceUpdated=True,
+                                                                NotifyOnTargetUpdated=True}"
                                                   Grid.Column="0"
                                                   MinColumnWidth="40"
                                                   AlternatingRowBackground="Gainsboro" 
-                                              HorizontalScrollBarVisibility="Auto"
-                                              VerticalScrollBarVisibility="Auto"
-                                              EnableColumnVirtualization="True"
-                                              EnableRowVirtualization="True"
+                                                  HorizontalScrollBarVisibility="Auto"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  EnableColumnVirtualization="True"
+                                                  EnableRowVirtualization="True"
                                                   AlternationCount="2"
                                                   AutoGenerateColumns="False"
                                                   SelectionUnit="CellOrRowHeader"
-                                              SelectionMode="Extended"
-                                              VirtualizingPanel.IsVirtualizing="True">
+                                                  SelectionMode="Extended"
+                                                  VirtualizingPanel.IsVirtualizing="True">
                                             <DataGrid.Columns>
                                                 <DataGridTextColumn Header="Value 1" Binding="{Binding Value[0]}" />
-                                                <DataGridTextColumn Header="X" Binding="{Binding X}" />
-                                                <DataGridTextColumn Header="Y" Binding="{Binding Y}" />
-                                                <DataGridTextColumn Header="Z" Binding="{Binding Z}" />
-                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" />
                                                 <DataGridTextColumn Header="Value 2" Binding="{Binding Value[1]}" />
                                                 <DataGridTextColumn Header="Value 3" Binding="{Binding Value[2]}" />
                                                 <DataGridTextColumn Header="Value 4" Binding="{Binding Value[3]}" />
@@ -105,6 +101,11 @@
                                                 <DataGridTextColumn Header="Value 7" Binding="{Binding Value[6]}" />
                                                 <DataGridTextColumn Header="Value 8" Binding="{Binding Value[7]}" />
                                                 <DataGridTextColumn Header="Value 9" Binding="{Binding Value[8]}" />
+                                                <DataGridTextColumn Header="X" Binding="{Binding X}" />
+                                                <DataGridTextColumn Header="Y" Binding="{Binding Y}" />
+                                                <DataGridTextColumn Header="Z" Binding="{Binding Z}" />
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
+                                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" />
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Grid>
