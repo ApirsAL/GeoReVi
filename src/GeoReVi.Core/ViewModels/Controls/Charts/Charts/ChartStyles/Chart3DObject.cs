@@ -1010,7 +1010,7 @@ namespace GeoReVi
                                         }
                                     }
 
-                                    SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(ls3D.RoundToIntegers ? point.Value[0] : Math.Round(point.Value[0],0), ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
+                                    SolidColorBrush m = ls3D.IsColorMap ? ColorMapHelper.GetBrush(ls3D.RoundToIntegers ? Math.Round(point.Value[0], 0) : point.Value[0], ColorMap.Ymin, ColorMap.Ymax, ColorMap) : fillColor;
 
                                     pointMaterials.Add(new Tuple<LocationTimeValue, SolidColorBrush>(point, m));
 

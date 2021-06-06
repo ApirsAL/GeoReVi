@@ -544,9 +544,6 @@ namespace GeoReVi
                     }).ToList());
 
                 }
-
-
-
             }
             catch
             {
@@ -644,14 +641,15 @@ namespace GeoReVi
                 //Adding interpolated values and variances to the original data set
                 DiscretizedLocationValues.Name = "Interpolated mesh";
 
-                //Creating the mesh cells
-                if (SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Hexahedral || SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Tetrahedal)
-                    DiscretizedLocationValues.CellsFromPointCloud();
-
                 //Defining mesh cell type
                 DiscretizedLocationValues.MeshCellType = SelectedInterpolationMeasPoints[0].MeshCellType;
                 DiscretizedLocationValues.Dimensionality = SelectedInterpolationMeasPoints[0].Dimensionality;
-                DiscretizedLocationValues.Faces = SelectedInterpolationMeasPoints[0].Faces;
+
+                //Creating the mesh cells
+                if (SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Hexahedral || SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Tetrahedal)
+                    DiscretizedLocationValues.CellsFromPointCloud();
+                if (SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Rectangular || SelectedInterpolationMeasPoints[0].MeshCellType == MeshCellType.Triangular)
+                    DiscretizedLocationValues.FacesFromPointCloud();
 
                 //Adding interpolated values and variances to the original data set
                 Residuals.Name = "Residuals";

@@ -167,6 +167,7 @@ namespace GeoReVi
             set
             {
                 this.vertices = value;
+                NotifyOfPropertyChange(() => Vertices);
             }
         }
 
@@ -174,6 +175,7 @@ namespace GeoReVi
         /// Faces of the mesh
         /// </summary>
         private ObservableCollection<Face> faces = new ObservableCollection<Face>();
+        [XmlIgnore]
         public ObservableCollection<Face> Faces
         {
             get => this.faces;
@@ -216,7 +218,7 @@ namespace GeoReVi
             Dimensionality = _mesh.Dimensionality;
             Name = _mesh.Name.ToString();
             MeshCellType = _mesh.MeshCellType;
-            Properties = _mesh.Properties;
+            Properties = new BindableCollection<KeyValuePair<int, string>>(_mesh.Properties);
             Vertices = new ObservableCollection<LocationTimeValue>(_mesh.Vertices.Select( x => new LocationTimeValue(x)).ToList());
         }
 
@@ -370,7 +372,7 @@ namespace GeoReVi
             }
             catch
             {
-
+                throw new Exception("Couldn't create mesh.");
             }
         }
 
@@ -560,7 +562,7 @@ namespace GeoReVi
             }
             catch
             {
-
+                throw new Exception("Couldn't calculate gradient 2D.");
             }
 
             return grad;
@@ -827,7 +829,7 @@ namespace GeoReVi
             }
             catch
             {
-
+                throw new Exception("Couldn't exctract section.");
             }
 
             return mesh;
@@ -920,33 +922,35 @@ namespace GeoReVi
         }
 
         /// <summary>
-        /// 
+        /// Brings the selected property to the first position
         /// </summary>
         /// <returns></returns>
         public async Task BringToFront()
         {
             try
             {
+                int s = SelectedProperty.Key;
+                
+                // Swapping the values hold by the vertices
                 for (int i = 0; i < Vertices.Count(); i++)
                 {
                     await Task.Delay(0);
-
-                    int s = SelectedProperty.Key;
 
                     Vertices[i].SwapProperties(0, s);
                 }
 
                 KeyValuePair<int, string> prop1 = Properties[0];
 
+                // Swapping the properties
                 Properties.Swap(0, SelectedProperty.Key);
 
                 GetProperties();
 
-                NotifyOfPropertyChange(()=>Vertices);
+                Vertices = new ObservableCollection<LocationTimeValue>(Vertices);
             }
             catch
             {
-
+                throw new Exception("Couldn't bring property to front.");
             }
         }
 
