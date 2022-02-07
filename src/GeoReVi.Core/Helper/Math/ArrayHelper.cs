@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace GeoReVi
@@ -37,6 +38,20 @@ namespace GeoReVi
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Gauss summation ( 1 + 2 + 3 + n)
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static int CalculateGaussSumation(int count)
+        {
+            if (count <= 0)
+                return 0;
+
+            // https://de.wikipedia.org/wiki/Gau%C3%9Fsche_Summenformel
+            return (count * count + count) / 2;
         }
 
         /// <summary>
@@ -155,6 +170,42 @@ namespace GeoReVi
 
             Buffer.BlockCopy(array, row * cols * size, result, 0, cols * size);
 
+            return result;
+        }
+
+        public static T[] GetColumn<T>(this T[,] matrix, int columnNumber)
+        {
+            if (!typeof(T).IsPrimitive)
+                throw new InvalidOperationException("Not supported for managed types.");
+
+            if (matrix == null)
+                throw new ArgumentNullException("array");
+
+            return Enumerable.Range(0, matrix.GetLength(0))
+                    .Select(x => matrix[x, columnNumber])
+                    .ToArray();
+        }
+
+        /// <summary>
+        /// Copies a subset of an array
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="array"></param>
+        /// <param name="fromX"></param>
+        /// <param name="fromY"></param>
+        /// <param name="lengthX"></param>
+        /// <param name="lengthY"></param>
+        /// <returns></returns>
+        public static T[,] CopyArray<T>(this T[,] array, int fromX, int fromY, int lengthX, int lengthY)
+        {
+            T[,] result = new T[lengthX, lengthY];
+            for (int x = 0; x < result.GetLength(0); x++)
+            {
+                for (int y = 0; y < result.GetLength(1); y++)
+                {
+                    result[x, y] = array[x + fromX, y + fromY];
+                }
+            }
             return result;
         }
 

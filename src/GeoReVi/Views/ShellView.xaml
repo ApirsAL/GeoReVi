@@ -10,8 +10,6 @@
         Title="GeoReVi"
         Icon="/GeoReVi;component\Media\Icons\GeoReVi.ico"
         Height="700" Width="1000"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         WindowStartupLocation="CenterScreen" 
         WindowState="Normal" 
         TextOptions.TextFormattingMode="Display"
@@ -40,55 +38,6 @@
             </ColorAnimation>
         </Storyboard>
     </Window.Resources>
-    <!--<Window.Triggers>
-        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-            <BeginStoryboard Storyboard="{StaticResource RadialStoryBoard}"/>
-        </EventTrigger>
-    </Window.Triggers>-->
-    <!---Shortcut triggers which will be forwarded to other view models-->
-    <i:Interaction.Triggers>
-        <local:InputBindingTrigger>
-            <local:InputBindingTrigger.InputBinding>
-                <KeyBinding Modifiers="Ctrl" Key="S"/>
-            </local:InputBindingTrigger.InputBinding>
-            <cal:ActionMessage MethodName="ForwardShortCut">
-                <cal:Parameter Value="S"/>
-            </cal:ActionMessage>
-        </local:InputBindingTrigger>
-        <local:InputBindingTrigger>
-            <local:InputBindingTrigger.InputBinding>
-                <KeyBinding Modifiers="Ctrl" Key="N"/>
-            </local:InputBindingTrigger.InputBinding>
-            <cal:ActionMessage MethodName="ForwardShortCut">
-                <cal:Parameter Value="N"/>
-            </cal:ActionMessage>
-        </local:InputBindingTrigger>
-        <local:InputBindingTrigger>
-            <local:InputBindingTrigger.InputBinding>
-                <KeyBinding Modifiers="Ctrl" Key="D"/>
-            </local:InputBindingTrigger.InputBinding>
-            <cal:ActionMessage MethodName="ForwardShortCut">
-                <cal:Parameter Value="D"/>
-            </cal:ActionMessage>
-        </local:InputBindingTrigger>
-        <local:InputBindingTrigger>
-            <local:InputBindingTrigger.InputBinding>
-                <KeyBinding Modifiers="Ctrl" Key="Right"/>
-            </local:InputBindingTrigger.InputBinding>
-            <cal:ActionMessage MethodName="ForwardShortCut">
-                <cal:Parameter Value="Right"/>
-            </cal:ActionMessage>
-        </local:InputBindingTrigger>
-        <local:InputBindingTrigger>
-            <local:InputBindingTrigger.InputBinding>
-                <KeyBinding Modifiers="Ctrl" Key="Left"/>
-            </local:InputBindingTrigger.InputBinding>
-            <cal:ActionMessage MethodName="ForwardShortCut">
-                <cal:Parameter Value="Left"/>
-            </cal:ActionMessage>
-        </local:InputBindingTrigger>
-    </i:Interaction.Triggers>
-
     <DockPanel>
         <StatusBar Height="25"
                    DockPanel.Dock="Bottom" 
@@ -149,7 +98,7 @@
                     <GradientStop x:Name="GradientStop3" Color="White" Offset="1" />
                 </LinearGradientBrush>
             </Border.Background>
-            <xcad:DockingManager BorderBrush="Black"
+            <!--<xcad:DockingManager BorderBrush="Black"
                              BorderThickness="1">
                 <xcad:DockingManager.DocumentHeaderTemplate>
                     <DataTemplate>
@@ -165,8 +114,8 @@
                 <xcad:LayoutRoot x:Name="_layoutRoot">
                     <xcad:LayoutPanel Orientation="Horizontal">
                         <xcad:LayoutDocumentPaneGroup >
-                            <xcad:LayoutDocumentPane>
-                                <xcad:LayoutDocument ContentId="document1" 
+                            <xcad:LayoutDocumentPane>-->
+            <!--<xcad:LayoutDocument ContentId="document1" 
                                                  Title="Data management"
                                                  CanClose="False">
                                     <Grid>
@@ -392,7 +341,8 @@
                                                  Foreground="{StaticResource ForegroundLightBrush}"
                                                  />
                                                             </MenuItem.Header>
-                                                            <!--<MenuItem Header="My Account"
+                                                            -->
+            <!--<MenuItem Header="My Account"
                                   x:Name="MyAccount"
                                   HorizontalAlignment="Left">
                                                                 <MenuItem.Icon>
@@ -410,7 +360,7 @@
                                                                     </i:EventTrigger>
                                                                 </i:Interaction.Triggers>
                                                             </MenuItem>-->
-                                                            <!--<MenuItem Header="Logout"
+            <!--<MenuItem Header="Logout"
                               x:Name="LogoutMenuItem">
                                                                 <MenuItem.Icon>
                                                                     <fa:ImageAwesome Icon="SignOut" 
@@ -426,6 +376,7 @@
                                                                     </i:EventTrigger>
                                                                 </i:Interaction.Triggers>
                                                             </MenuItem>-->
+            <!--
                                                             <MenuItem Header="Exit"
                               x:Name="ShutDownMenuItem">
                                                                 <MenuItem.Icon>
@@ -460,19 +411,6 @@
                            Height="0.5"/>
                                             </StackPanel>
                                         </Border>
-                                        <Expander Grid.Column="0"
-                                                  Grid.Row="1"
-                          Template="{StaticResource HorizontalExpanderTemp}"
-                          ExpandDirection="Right"
-                          DataContext="{Binding SideMenuViewModel}"
-                          Background="DarkGray"
-                          >
-                                            <local:SideMenuView Width="300"
-                                        Background="{StaticResource BackgroundVeryLightBrush}"
-                                        Visibility="{Binding IsLoggedInOrLocalMode, Converter={StaticResource BooleanToVisibilityConverter}}">
-
-                                            </local:SideMenuView>
-                                        </Expander>
                                         <Border Grid.Column="1"
                                                 Grid.Row="1"
                         HorizontalAlignment="Left"
@@ -504,25 +442,40 @@
                                 Grid.Column="1"
                                                         Grid.Row="1"></ContentControl>
                                     </Grid>
-                                </xcad:LayoutDocument>
-                                <xcad:LayoutDocument ContentId="_dataAnalysis" 
+                                </xcad:LayoutDocument>-->
+            <!--<xcad:LayoutDocument ContentId="_dataAnalysis" 
                                                  Title="Meshes, modeling and data analysis"
-                                                 CanClose="False">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <ContentControl VerticalAlignment="Top"
+                                                 CanClose="False">-->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Expander Grid.Column="0"
+                          Template="{StaticResource HorizontalExpanderTemp}"
+                          ExpandDirection="Right"
+                          DataContext="{Binding SideMenuViewModel}"
+                          Background="DarkGray"
+                          >
+                    <local:SideMenuView Width="300"
+                                        Background="{StaticResource BackgroundVeryLightBrush}"
+                                        Visibility="{Binding IsLoggedInOrLocalMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                    </local:SideMenuView>
+                </Expander>
+                <ContentControl VerticalAlignment="Top" Grid.Column="1"
                     cal:View.Model="{Binding DatasetManagementAndVisualizationViewModel}">
-                                        </ContentControl>
-                                    </Grid>
-                                </xcad:LayoutDocument>
+                </ContentControl>
+            </Grid>
+            <!--</xcad:LayoutDocument>
                             </xcad:LayoutDocumentPane>
                         </xcad:LayoutDocumentPaneGroup >
                     </xcad:LayoutPanel>
                 </xcad:LayoutRoot>
-            </xcad:DockingManager>
+            </xcad:DockingManager>-->
         </Border>
-
     </DockPanel>
 </Window>

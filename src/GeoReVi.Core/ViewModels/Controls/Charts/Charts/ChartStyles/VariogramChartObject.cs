@@ -78,6 +78,7 @@ namespace GeoReVi
             DataCollection = _vco.DataCollection;
             Vh = new VariogramHelper(DataSet);
             Initialize();
+            CreateChart();
         }
 
         /// <summary>
@@ -88,6 +89,7 @@ namespace GeoReVi
             DataCollection = new BindableCollection<LineSeries>();
             Vh = new VariogramHelper(DataSet);
             Initialize();
+            CreateChart();
         }
 
         #endregion
@@ -298,6 +300,28 @@ namespace GeoReVi
 
             DataCollection = Ds;
 
+        }
+
+        /// <summary>
+        /// Subdivides the axes based on the min an max values of the data set
+        /// </summary>
+        public override void SubdivideAxes()
+        {
+            try
+            {
+
+                Xmax = Vh.Variogram.SelectMany(x => x.Select(y => y.X)).Max();
+                Ymax = Vh.Variogram.SelectMany(x => x.Select(y => y.Y)).Max();
+
+                CreateChart();
+
+            }
+            catch
+            {
+                Xmax = 10;
+                Ymax = 10;
+                throw new Exception("Axes couldn't be scaled.");
+            }
         }
     }
 }

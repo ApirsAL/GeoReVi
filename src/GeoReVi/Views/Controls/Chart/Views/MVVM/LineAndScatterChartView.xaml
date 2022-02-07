@@ -123,7 +123,8 @@
                                     cal:Bind.ModelWithoutContext="{Binding Lco}"
                                     cal:Message.Attach="CreateChart"/>
                     <Grid DockPanel.Dock="Top"
-                              Name="ChartGrid">
+                              Name="ChartGrid"
+                          Margin="0,40,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -138,7 +139,9 @@
                                   Grid.Row="0"
                                   HorizontalAlignment="Stretch">
                             <TextBlock Text="{Binding Path=Lco.Title}"
-                                   Canvas.Top="-15">
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                   Canvas.Top="-25">
                             </TextBlock>
 
                         </Canvas>

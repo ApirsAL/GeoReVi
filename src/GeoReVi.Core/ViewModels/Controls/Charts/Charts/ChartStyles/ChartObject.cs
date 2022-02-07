@@ -924,7 +924,7 @@ namespace GeoReVi
                             foreach (Label l in YLabels)
                                 l.X = -1 * maxWidth;
 
-                            YLabel.X = -1 * maxWidth;
+                            YLabel.X = -0.5 * maxWidth;
                         }
 
                         Label tb = new Label()
@@ -957,7 +957,6 @@ namespace GeoReVi
                         if (a == 0)
                             break;
 
-                        //pt = NormalizePoint(new Point(Xmin, dy));
                         LocationTimeValue pt = NormalizePoint(new LocationTimeValue(Xmin, dy));
                         tick = new Gridline();
 
@@ -983,7 +982,7 @@ namespace GeoReVi
                         Label tb = new Label()
                         {
                             Text = dy.ToString(),
-                            X = - 3*maxWidth,
+                            X = - 2*maxWidth,
                             Y = pt.Y - MeasureString(dy.ToString()).Height
                         };
 
@@ -997,8 +996,6 @@ namespace GeoReVi
 
                     }
                 }
-
-
 
                 i = 0;
 

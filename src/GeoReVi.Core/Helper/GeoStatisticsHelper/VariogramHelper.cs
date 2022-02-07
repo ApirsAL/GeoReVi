@@ -310,11 +310,14 @@ namespace GeoReVi
                 for (int a = 0; a < NumberBins + 1; a++)
                     variogramValues.Add(new XY());
 
-                // Retrieving a distance and difference matrix from each point to another which is located in a certain neighborhood
-                Tuple<alglib.sparsematrix, alglib.sparsematrix> valuesDistance = await GeographyHelper.DistanceMatrix(new Mesh(DataSets[k]), this, NumberOfIterations);
+                // Getting the difference matrix
+                var differenceMatrix = await GeographyHelper.GetDifferenceDistanceMatrix(new Mesh(DataSets[k]), this);
+
+                var values = differenceMatrix.GetColumn<double>(0);
+                var distances = differenceMatrix.GetColumn<double>(1);
 
                 // Subdividing into bins
-                double[] bins = DistributionHelper.Subdivide(valuesDistance.Item1.innerobj.vals, NumberBins);
+                double[] bins = DistributionHelper.Subdivide(distances, NumberBins);
 
                 double range = bins[1] - bins[0];
 
@@ -324,7 +327,7 @@ namespace GeoReVi
                     variogramValues[i].X = bins[i];
 
                     //Selecting the indices of all values-pairs which are located in a particular bin range
-                    int[] valuesInRange = valuesDistance.Item1.innerobj.vals.Select((value, index) => new { index, Value = value })
+                    int[] valuesInRange = distances.Select((value, index) => new { index, Value = value })
                         .Where(x => x.Value >= 0 && x.Value >= bins[i] && x.Value <= bins[i] + range)
                         .Select(x => x.index)
                         .ToArray();
@@ -337,16 +340,8 @@ namespace GeoReVi
                     {
                         try
                         {
-                            if (valuesInRange[j] <= valuesDistance.Item2.innerobj.vals.Count())
-                                if (valuesDistance.Item2.innerobj.vals[valuesInRange[j]] == 0)
-                                {
-                                    n -= 1;
-                                    continue;
-                                }
-                                else
-                                {
-                                    val += Math.Pow(valuesDistance.Item2.innerobj.vals[valuesInRange[j]], 2);
-                                }
+                            if (valuesInRange[j] <= values.Count())
+                                    val += Math.Pow(values[valuesInRange[j]], 2);
                             else
                             {
                                 n -= 1;

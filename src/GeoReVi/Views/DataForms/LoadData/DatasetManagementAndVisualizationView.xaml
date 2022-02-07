@@ -3,132 +3,152 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              xmlns:rh="http://schemas.rollinghours.com/wpf"
              xmlns:local="clr-namespace:GeoReVi"
              mc:Ignorable="d" 
              x:Name="LoadParameterDataViewControl"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
              xmlns:cal="http://www.caliburnproject.org"
              d:DesignHeight="450" d:DesignWidth="400">
-    <UserControl.Template>
-        <ControlTemplate TargetType="UserControl">
-            <!---Displaying related charts-->
-            <Grid x:Name="ChartStackPan"
-                  Margin="6"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch">
-                <TabControl HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch">
-                    <TabItem Header="Data">
-                        <Grid>
-                            <Grid.ContextMenu>
-                                <ContextMenu>
+    <!---Displaying related charts-->
+    <xcad:DockingManager BorderBrush="Black"
+                             BorderThickness="1"
+                                         Grid.Row="0">
+        <xcad:LayoutRoot x:Name="_layoutRoot">
+            <xcad:LayoutPanel Orientation="Horizontal">
+                <xcad:LayoutDocumentPaneGroup >
+                    <xcad:LayoutDocumentPane>
+                        <xcad:LayoutDocument ContentId="_data" 
+                                                 Title="Data"
+                                                 CanClose="False">
+                            <Grid>
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
 
-                                    <MenuItem Header="Add to line chart"
+                                        <MenuItem Header="Add to line chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToLineChart]"/>
-                                    <MenuItem Header="Add to variogram chart"
+                                        <MenuItem Header="Add to variogram chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToVariogramChart]"/>
-                                    <MenuItem Header="Add to box-whisker chart"
+                                        <MenuItem Header="Add to box-whisker chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToBoxWhiskerChart]"/>
-                                    <MenuItem Header="Add to bar chart"
+                                        <MenuItem Header="Add to bar chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToBarChart]"/>
-                                    <MenuItem Header="Add to 3D chart"
+                                        <MenuItem Header="Add to 3D chart"
                                               cal:Message.Attach="[Event Click] = [Action AddTo3DChart]"/>
-                                    <MenuItem Header="Add to ternary chart"
+                                        <MenuItem Header="Add to ternary chart"
                                               cal:Message.Attach="[Event Click] = [Action AddToTernaryChart]"/>
-                                    <MenuItem Header="Add to cluster"
+                                        <MenuItem Header="Add to cluster"
                                               cal:Message.Attach="[Event Click] = [Action AddToCluster]"/>
-                                    <MenuItem Header="Add to PCA"
+                                        <MenuItem Header="Add to PCA"
                                               cal:Message.Attach="[Event Click] = [Action AddToPca]"/>
-                                    <MenuItem Header="Add to Sammon"
+                                        <MenuItem Header="Add to Sammon"
                                               cal:Message.Attach="[Event Click] = [Action AddToSammon]"/>
-                                    <MenuItem Header="Add to Correlation"
+                                        <MenuItem Header="Add to Correlation"
                                               cal:Message.Attach="[Event Click] = [Action AddToCorrelation]"/>
-                                </ContextMenu>
-                            </Grid.ContextMenu>
-                            <ContentControl cal:View.Model="{Binding SingleParameterViewModel}"/>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Charts">
-                        <Grid>
-                            <TabControl VerticalAlignment="Stretch">
-                                <TabItem Header="Line chart">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding LineAndScatterChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Semi-variogram">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding VariogramChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Box-Whisker-Chart">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding BoxWhiskerChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Histogram">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding BarChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="3D">
-                                    <Grid >
-                                        <ContentControl cal:View.Model="{Binding LineChart3DUnivariateViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Ternary chart">
-                                    <Grid>
-                                        <ContentControl cal:View.Model="{Binding TernaryChartViewModel}"/>
-                                    </Grid>
-                                </TabItem>
-                            </TabControl>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="Statistical analyses">
-                        <TabControl>
-                            <TabItem Header="Correlation analysis">
-                                <Grid>
-                                    <ContentControl
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <ContentControl cal:View.Model="{Binding SingleParameterViewModel}"/>
+                            </Grid>
+                        </xcad:LayoutDocument>
+                        <xcad:LayoutDocument ContentId="_charts" 
+                                                 Title="Charts"
+                                                 CanClose="False">
+                            <Grid>
+                                <TabControl VerticalAlignment="Stretch">
+                                    <TabItem Header="Line chart">
+                                        <Grid>
+                                            <ContentControl cal:View.Model="{Binding LineAndScatterChartViewModel}"/>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Semi-variogram">
+                                        <Grid>
+                                            <ContentControl cal:View.Model="{Binding VariogramChartViewModel}"/>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Box-Whisker-Chart">
+                                        <Grid>
+                                            <ContentControl cal:View.Model="{Binding BoxWhiskerChartViewModel}"/>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Histogram">
+                                        <Grid>
+                                            <ContentControl cal:View.Model="{Binding BarChartViewModel}"/>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="3D">
+                                        <Grid >
+                                            <ContentControl cal:View.Model="{Binding LineChart3DUnivariateViewModel}"/>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Ternary chart">
+                                        <Grid>
+                                            <ContentControl cal:View.Model="{Binding TernaryChartViewModel}"/>
+                                        </Grid>
+                                    </TabItem>
+                                </TabControl>
+                            </Grid>
+                        </xcad:LayoutDocument>
+                        <xcad:LayoutDocument ContentId="_statistics" 
+                                                 Title="Statistics"
+                                                 CanClose="False">
+                            <Grid>
+                                <TabControl>
+                                    <TabItem Header="Correlation analysis">
+                                        <Grid>
+                                            <ContentControl
                                                         cal:View.Model="{Binding CorrelationHelperViewModel}"/>
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="Principal Component Analysis">
-                                <Grid>
-                                    <ContentControl
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Principal Component Analysis">
+                                        <Grid>
+                                            <ContentControl
                                             cal:View.Model="{Binding PrincipalComponentAnalysisViewModel}"/>
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="Sammon Projection">
-                                <Grid>
-                                    <ContentControl
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Sammon Projection">
+                                        <Grid>
+                                            <ContentControl
                                             cal:View.Model="{Binding SammonProjectionViewModel}"/>
-                                </Grid>
-                            </TabItem>
-                            <TabItem Header="Cluster Analysis">
-                                <Grid>
-                                    <ContentControl cal:View.Model="{Binding ClusteringViewModel}"/>
-                                    <Button Style="{StaticResource HyperlinkButton}"
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Cluster Analysis">
+                                        <Grid>
+                                            <ContentControl cal:View.Model="{Binding ClusteringViewModel}"/>
+                                            <Button Style="{StaticResource HyperlinkButton}"
                                                     Content="Refresh data"
                                                     HorizontalAlignment="Right"
                                                     FontSize="{StaticResource FontSizeVerySmall}"
                                                     VerticalAlignment="Top"
                                                     Margin="0"
                                                     cal:Message.Attach="AddDataToCluster"/>
-                                </Grid>
-                            </TabItem>
-                            <!--<TabItem Header="AHP">
+                                        </Grid>
+                                    </TabItem>
+                                    <!--<TabItem Header="AHP">
                                 <Grid>
                                     <ContentControl
                                             cal:View.Model="{Binding AnalyticalHierarchyProcessViewModel}"/>
                                 </Grid>
                             </TabItem>-->
-                        </TabControl>
-                    </TabItem>
-                </TabControl>
-            </Grid>
-        </ControlTemplate>
-    </UserControl.Template>
+                                </TabControl>
+                            </Grid>
+                        </xcad:LayoutDocument>
+                    </xcad:LayoutDocumentPane>
+                </xcad:LayoutDocumentPaneGroup >
+            </xcad:LayoutPanel>
+        </xcad:LayoutRoot>
+    </xcad:DockingManager>
+    <!--<TabControl HorizontalAlignment="Stretch">
+                        <TabItem Header="Data">
+                            
+                        </TabItem>
+                        <TabItem Header="Charts">
+
+                        </TabItem>
+                        <TabItem Header="Statistical analyses">
+                           
+                        </TabItem>
+                    </TabControl>-->
 </UserControl>

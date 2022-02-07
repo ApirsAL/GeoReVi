@@ -98,6 +98,7 @@ namespace GeoReVi
             BarType = _bco.BarType;
 
             DataCollection = _bco.DataCollection;
+            CreateChart();
         }
 
         /// <summary>
@@ -107,6 +108,7 @@ namespace GeoReVi
         {
             this.Bp = new List<BoxPlotSeries>();
             DataCollection = new BindableCollection<BoxPlotSeries>();
+            CreateChart();
         }
 
         #endregion

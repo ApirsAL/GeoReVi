@@ -4,46 +4,49 @@ using System;
 using System.Collections.Generic;
 using System.Device.Location;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Threading.Tasks;
 
 namespace GeoReVi
 {
     public static class GeographyHelper
     {
-        //Calculating the distance matrix of a set of points
-        public static async Task<Tuple<alglib.sparsematrix, alglib.sparsematrix>> DistanceMatrix(Mesh Points, VariogramHelper vh, int maximumNumberOfPointPairsPerPoint = 50)
+
+        /// <summary>
+        /// Calculates the value difference and distance nx2 matrix of a mesh 
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        public static async Task<double[,]> GetDifferenceDistanceMatrix(Mesh mesh, VariogramHelper vh)
         {
+            if (mesh?.Vertices?.Count == 0)
+                return null;
 
-            if(maximumNumberOfPointPairsPerPoint < Points.Vertices.Count())
-                Points.Vertices = new System.Collections.ObjectModel.ObservableCollection<LocationTimeValue>(Points.Vertices.PickRandom(maximumNumberOfPointPairsPerPoint).ToList());
+            int count = ArrayHelper.CalculateGaussSumation(mesh.Vertices.Count) - mesh.Vertices.Count;
 
-            alglib.sparsematrix distanceMatrix;
-            alglib.sparsematrix diffMatrix;
-            alglib.sparsecreate(Points.Vertices.Count(), Points.Vertices.Count(), out distanceMatrix);
-            alglib.sparsecreate(Points.Vertices.Count(), Points.Vertices.Count(), out diffMatrix);
+            double[,] ret = new double[count, 2];
 
-            for (int i = 0; i < Points.Vertices.Count(); i += 1)
-            {
-                //Searching the neighborhood according to a search ellipsoid
-                int[] neighborhood = await SpatialNeighborhoodHelper.SearchByDistance(Points.Vertices, Points.Vertices[i], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge, maximumNumberOfPointPairsPerPoint);
+            int counter = 0; 
 
-                await Task.Delay(0);
-
-                for (int j = 0; j < neighborhood.Length; j++)
+            for (int i = 0; i < mesh.Vertices.Count(); i++)
+                for (int j = 1; j < mesh.Vertices.Count() - i; j++)
                 {
                     try
                     {
-                        if (neighborhood[j] == i)
+                        //Searching the neighborhood according to a search ellipsoid
+                        int[] neighborhood = await SpatialNeighborhoodHelper.SearchByDistance(new List<LocationTimeValue>() { mesh.Vertices[i] }, mesh.Vertices[j], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge);
+
+                        // Checking if point is in neighborhood
+                        if (neighborhood?.Length == 0)
                             continue;
 
-                        // Retrieving the values' difference
-                        double diff = Points.Vertices[neighborhood[j]].Value[0] - Points.Vertices[i].Value[0];
+                        // Calculating the values' difference
+                        ret[counter, 0] = Math.Abs(mesh.Vertices[i].Value[0] - mesh.Vertices[j].Value[0]);
 
-                        // Retrieving the distance
-                        double dist = Points.Vertices[i].GetEuclideanDistance(Points.Vertices[neighborhood[j]]);
+                        // Calculating the distance
+                        ret[counter, 1] = mesh.Vertices[i].GetEuclideanDistance(mesh.Vertices[j]);
 
-                        alglib.sparseset(diffMatrix, i, neighborhood[j], diff);
-                        alglib.sparseset(distanceMatrix, i, neighborhood[j], dist); 
+                        counter++;
                     }
                     catch
                     {
@@ -52,9 +55,9 @@ namespace GeoReVi
 
                 }
 
-            }
+            ret = ArrayHelper.CopyArray(ret, 0, 0, counter, 2);
 
-            return new Tuple<alglib.sparsematrix, alglib.sparsematrix>(distanceMatrix,diffMatrix);
+            return ret;
         }
 
         /// <summary>

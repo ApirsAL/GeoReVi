@@ -202,6 +202,11 @@ namespace GeoReVi
             return ret;
         }
 
+        public static bool IsInsideSearchEllipsoid()
+        {
+            return true;
+        }
+
         /// <summary>
         /// Checks whether a point is inside an ellipse
         /// </summary>

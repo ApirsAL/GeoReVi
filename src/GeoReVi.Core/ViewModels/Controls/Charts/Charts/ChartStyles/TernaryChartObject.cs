@@ -70,6 +70,7 @@ namespace GeoReVi
             BarType = _tco.BarType;
 
             DataCollection = _tco.DataCollection;
+            CreateChart();
         }
 
         /// <summary>
@@ -78,6 +79,7 @@ namespace GeoReVi
         public TernaryChartObject()
         {
             DataCollection = new BindableCollection<LineSeries>();
+            CreateChart();
         }
 
         #endregion

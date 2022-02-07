@@ -233,6 +233,8 @@ namespace GeoReVi
             BarType = _lco.BarType;
 
             DataCollection = _lco.DataCollection;
+
+            CreateChart();
         }
 
         /// <summary>
@@ -241,6 +243,7 @@ namespace GeoReVi
         public LineChartObject()
         {
             DataCollection = new BindableCollection<LineSeries>();
+            CreateChart();
         }
 
         #endregion
@@ -541,12 +544,12 @@ namespace GeoReVi
 
             for (int i = 0; i < brushes.Count; i++)
             {
-                var a = new LocationTimeValue(Xmax, stepHeight * i);
+                var a = new LocationTimeValue(Xmax, Ymin + stepHeight * i);
 
                 Rectangle2D rect = new Rectangle2D()
                 {
                     Brush = brushes[i],
-                    X = NormalizePoint(a).X + 2,
+                    X = NormalizePoint(a).X + 15,
                     Y = Math.Abs(NormalizePoint(a).Y),
                     Height = NormalizePoint(new LocationTimeValue(0, Ymax - stepHeight, 0)).Y + 1
                 };
@@ -569,12 +572,12 @@ namespace GeoReVi
 
                 for (int i = 0; i < ColorMap.LabelSubdivisions + 1; i++)
                 {
-                    var a = new LocationTimeValue(Xmax, stepHeight * i);
+                    var a = new LocationTimeValue(Xmax, Ymin + stepHeight * i);
 
                     Label tb = new Label()
                     {
                         Text = (ColorMap.Ymin + step * i).ToString(),
-                        X = NormalizePoint(a).X + 24,
+                        X = NormalizePoint(a).X + 40,
                         Y = Math.Abs(NormalizePoint(a).Y) - MeasureString(Math.Round(ColorMap.Ymin + step * i, 2).ToString()).Height
                     };
 
@@ -614,36 +617,82 @@ namespace GeoReVi
         /// <summary>
         /// Subdivides the axes based on the min an max values of the data set
         /// </summary>
-        public void SubdivideAxes()
+        public virtual void SubdivideAxes()
         {
-
             try
             {
-                double minX = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).X)).Min();
-                double minY = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).Y)).Min();
-                double maxX = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).X)).Max();
-                double maxY = DataCollection.SelectMany(x => x.LinePoints.Select(y => DeNormalizePoint(y).Y)).Max();
+                // Initiating values
+                double minX = 0;
+                double minY = 0;
+                double maxX = 10;
+                double maxY = 10;
 
-                LocationTimeValue Mins = new LocationTimeValue(
-                    minX,
-                    minY);
+                //Assigning the property for the x axis
+                List<double> xValues = new List<double>(); 
 
-                LocationTimeValue Maxs = new LocationTimeValue(
-        maxX,
-        maxY);
+                switch (XProperty)
+                {
+                    case SelectedPropertyEnum.XAxis:
+                        xValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.X)).ToList();
+                        break;
+                    case SelectedPropertyEnum.YAxis:
+                        xValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.Y)).ToList();
+                        break;
+                    case SelectedPropertyEnum.ZAxis:
+                        xValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.Z)).ToList();
+                        break;
+                    default:
+                        try
+                        {
+                            xValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), XProperty))])).ToList();
+                        }
+                        catch
+                        {
+                            throw new Exception("Property not available.");
+                        }
+                        break;
+                }
 
-                Xmin = Mins.X;
-                Xmax = Maxs.X;
-                Ymin = Mins.Y;
-                Ymax = Maxs.Y;
+                //Assigning the property for the y axis
+                List<double> yValues = new List<double>();
+
+                switch (YProperty)
+                {
+                    case SelectedPropertyEnum.XAxis:
+                        yValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.X)).ToList();
+                        break;
+                    case SelectedPropertyEnum.YAxis:
+                        yValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.Y)).ToList();
+                        break;
+                    case SelectedPropertyEnum.ZAxis:
+                        yValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.Z)).ToList();
+                        break;
+                    default:
+                        try
+                        {
+                            yValues = DataSet.SelectMany(x => x.Vertices.Select(y => y.Value[(int)Enum.Parse(typeof(SelectedPropertyEnum), Enum.GetName(typeof(SelectedPropertyEnum), XProperty))])).ToList();
+                        }
+                        catch
+                        {
+                            throw new Exception("Property not available.");
+                        }
+                        break;
+                }
+
+                Xmin = xValues.Min();
+                Xmax = xValues.Max();
+
+                Ymin = yValues.Min();
+                Ymax = yValues.Max();
+
+                UpdateChart();
 
             }
             catch
             {
-
+                throw new Exception("Axes couldn't be scaled.");
             }
         }
-
 
         #endregion
     }
