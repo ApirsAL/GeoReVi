@@ -304,17 +304,22 @@ namespace GeoReVi
 
             for (int k = 0; k < DataSets.Count(); k++)
             {
+                var dataSets = DataSets[k].Vertices.ToList();
+
+                if(dataSets.Count >= 5000)
+                {
+                    dataSets.Shuffle();
+                    dataSets = dataSets.Take(5000).ToList();
+                }
+
                 //Initializing the list of variogram values
                 List<XY> variogramValues = new List<XY>();
 
                 for (int a = 0; a < NumberBins + 1; a++)
                     variogramValues.Add(new XY());
 
-                // Getting the difference matrix
-                var differenceMatrix = await GeographyHelper.GetDifferenceDistanceMatrix(new Mesh(DataSets[k]), this);
-
-                var values = differenceMatrix.GetColumn<double>(0);
-                var distances = differenceMatrix.GetColumn<double>(1);
+                var values = await GeographyHelper.GetDifferences(dataSets, this);
+                var distances = await GeographyHelper.GetDistances(dataSets, this);
 
                 // Subdividing into bins
                 double[] bins = DistributionHelper.Subdivide(distances, NumberBins);

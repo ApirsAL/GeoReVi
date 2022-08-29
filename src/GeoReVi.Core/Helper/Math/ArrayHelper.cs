@@ -45,13 +45,13 @@ namespace GeoReVi
         /// </summary>
         /// <param name="count"></param>
         /// <returns></returns>
-        public static int CalculateGaussSumation(int count)
+        public static long CalculateGaussSumation(int count)
         {
             if (count <= 0)
                 return 0;
 
             // https://de.wikipedia.org/wiki/Gau%C3%9Fsche_Summenformel
-            return (count * count + count) / 2;
+            return ((long)count * (long)count + (long)count) / (long)2;
         }
 
         /// <summary>

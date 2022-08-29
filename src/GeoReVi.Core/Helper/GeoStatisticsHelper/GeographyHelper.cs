@@ -17,34 +17,37 @@ namespace GeoReVi
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
-        public static async Task<double[,]> GetDifferenceDistanceMatrix(Mesh mesh, VariogramHelper vh)
+        public static async Task<double[]> GetDistances(List<LocationTimeValue> vertices, VariogramHelper vh)
         {
-            if (mesh?.Vertices?.Count == 0)
+            if (vertices?.Count == 0)
                 return null;
 
-            int count = ArrayHelper.CalculateGaussSumation(mesh.Vertices.Count) - mesh.Vertices.Count;
+            long count = ArrayHelper.CalculateGaussSumation(vertices.Count) - vertices.Count;
 
-            double[,] ret = new double[count, 2];
+            if (count > int.MaxValue)
+                count = int.MaxValue;
+
+            double[] distances = new double[Convert.ToInt32(count)];
 
             int counter = 0; 
 
-            for (int i = 0; i < mesh.Vertices.Count(); i++)
-                for (int j = 1; j < mesh.Vertices.Count() - i; j++)
+            for (int i = 0; i < vertices.Count(); i++)
+                for (int j = 1; j < vertices.Count() - i; j++)
                 {
                     try
                     {
+                        if (counter == int.MaxValue)
+                            break;
+
                         //Searching the neighborhood according to a search ellipsoid
-                        int[] neighborhood = await SpatialNeighborhoodHelper.SearchByDistance(new List<LocationTimeValue>() { mesh.Vertices[i] }, mesh.Vertices[j], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge);
+                        int[] neighborhood = await SpatialNeighborhoodHelper.SearchByDistance(new List<LocationTimeValue>() { vertices[i] }, vertices[j], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge);
 
                         // Checking if point is in neighborhood
                         if (neighborhood?.Length == 0)
                             continue;
 
-                        // Calculating the values' difference
-                        ret[counter, 0] = Math.Abs(mesh.Vertices[i].Value[0] - mesh.Vertices[j].Value[0]);
-
                         // Calculating the distance
-                        ret[counter, 1] = mesh.Vertices[i].GetEuclideanDistance(mesh.Vertices[j]);
+                        distances[counter] = vertices[i].GetEuclideanDistance(vertices[j]);
 
                         counter++;
                     }
@@ -55,9 +58,56 @@ namespace GeoReVi
 
                 }
 
-            ret = ArrayHelper.CopyArray(ret, 0, 0, counter, 2);
+            return distances.Take(counter).ToArray();
+        }
 
-            return ret;
+        /// <summary>
+        /// Calculates the value difference and distance nx2 matrix of a mesh 
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
+        public static async Task<double[]> GetDifferences(List<LocationTimeValue> vertices, VariogramHelper vh)
+        {
+            if (vertices?.Count == 0)
+                return null;
+
+            long count = ArrayHelper.CalculateGaussSumation(vertices.Count) - vertices.Count;
+
+            if (count > int.MaxValue)
+                count = int.MaxValue / 2;
+
+            double[] differences = new double[count];
+
+            int counter = 0;
+
+            for (int i = 0; i < vertices.Count(); i++)
+                for (int j = 1; j < vertices.Count() - i; j++)
+                {
+                    try
+                    {
+                        if (counter == int.MaxValue)
+                            break;
+
+                        //Searching the neighborhood according to a search ellipsoid
+                        int[] neighborhood = await SpatialNeighborhoodHelper.SearchByDistance(new List<LocationTimeValue>() { vertices[i] }, vertices[j], vh.RangeX, vh.RangeY, vh.RangeZ, vh.Azimuth, vh.Dip, vh.Plunge);
+
+                        // Checking if point is in neighborhood
+                        if (neighborhood?.Length == 0)
+                            continue;
+
+                        // Calculating the values' difference
+                        differences[counter] = Math.Abs(vertices[i].Value[0] - vertices[j].Value[0]);
+
+                        counter++;
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                }
+
+            return differences.Take(counter).ToArray();
         }
 
         /// <summary>
